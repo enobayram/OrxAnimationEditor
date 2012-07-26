@@ -25,15 +25,19 @@ import orxanimeditor.animation.Animation;
 import orxanimeditor.animation.Frame;
 
 public class FrameEditorView extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener{
-	BufferedImage image;
-	File		  imageFile;
-	EditorMainWindow editorFrame;
-	int				 checkerSize = 20;
-	int			  zoom = 1;
+	BufferedImage 		image;
+	File		  		imageFile;
+	EditorMainWindow 	editorFrame;
+	FrameEditor			parent;
+	int					checkerSize = 20;
+	int					zoom = 1;
+
+	
 	public FrameEditorView(File file, EditorMainWindow editorFrame) {
 		this.editorFrame = editorFrame;
 		imageFile = file;
 		image = editorFrame.imageManager.openImage(file);
+		parent = editorFrame.frameEditor;
 		
 		setPreferredSize(new Dimension(image.getWidth(), image.getHeight()));
 		addMouseListener(this);
@@ -100,13 +104,17 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 				g.fillRect(i, j, checkerSize, checkerSize);
 	}
 	
+	private int snap(int snapMe){
+		return java.lang.Math.round( snapMe/parent.snapSize )*parent.snapSize;
+	}
+	
 	@Override public void mouseDragged(MouseEvent e) {
 		Frame selected = getSelectedFrame();
 		if(selected != null) {
 			if((e.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) == MouseEvent.BUTTON1_DOWN_MASK) {
 				Rectangle rect = selected.getRectangle();
-				int x = rect.x, y = rect.y;
-				int dx = getViewX(e)-x, dy = getViewY(e)-y;
+				int x = snap(rect.x), y = snap(rect.y);
+				int dx = snap(getViewX(e)-x), dy = snap(getViewY(e)-y);
 				selected.setRectangle(new Rectangle(x,y,dx,dy));
 				selected.setImageFile(imageFile);
 			}

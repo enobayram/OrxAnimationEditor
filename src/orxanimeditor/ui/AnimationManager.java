@@ -14,11 +14,14 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.ScrollPaneLayout;
 import javax.swing.TransferHandler;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -32,17 +35,22 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 	EditorMainWindow editor;
 	JToolBar  toolbar;
 	JTree	  animationTree;
+		
+	//ImageIcon image = (new ImageIcon(getClass().getResource("yourpackage/mypackage/image.gif")));
+	
 	static ImageIcon newFrameIcon = new ImageIcon("icons/NewFrame.png");
 	static ImageIcon newAnimationIcon = new ImageIcon("icons/NewAnimation.png");
 	static ImageIcon frameIcon = new ImageIcon("icons/Frame.png");
 	static ImageIcon animationIcon = new ImageIcon("icons/Animation.png");		
 	static ImageIcon animationCollapsedIcon = new ImageIcon("icons/AnimationCollapsed.png");		
-	
+	 
 	JButton newFrameButton;
 	JButton newAnimationButton;
 	
 	int newFrameSuffix = 0;
 	int newAnimationSuffix = 0;
+
+
 
 	
 	public AnimationManager(EditorMainWindow editorFrame) {
@@ -97,10 +105,10 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 			editor.data.animationTree.add(new Animation("NewAnimation" + newAnimationSuffix++));
 			((DefaultTreeModel) animationTree.getModel()).reload(editor.data.animationTree);
 		}
+
 		repaint();
 	}
-	
-	
+		
 	public Frame getSelectedFrame() {
 		TreePath selectionPath = animationTree.getSelectionPath();
 		if(selectionPath==null) return null;

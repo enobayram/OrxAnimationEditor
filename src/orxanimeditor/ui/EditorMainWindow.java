@@ -6,6 +6,7 @@
  * 
  * AUTHOR: Enis Bayramoglu
  * E-MAIL: enisbayramoglu@gmail.com
+ * Thanks to KarloBob for his contributions
  * */
 
 
