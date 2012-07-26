@@ -23,8 +23,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.InputStream;
 import java.util.LinkedList;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -44,33 +47,34 @@ import orxanimeditor.io.ImageManager;
 
 @SuppressWarnings("serial")
 public class EditorMainWindow extends JFrame {
-	AnimationManager animationManager;
-	FrameEditor 	 frameEditor;
-	AnimationViewer  animationViewer;
+	AnimationManager 	animationManager;
+	FrameEditor 	 	frameEditor;
+	AnimationViewer  	animationViewer;
+	AnimationSetEditor 	animationSetEditor;
 
-	JMenuBar 		 menuBar;
+	JMenuBar 		 	menuBar;
 
-	JMenu			 fileMenu;
-	JMenuItem		 openAnimationDataItem;
-	JMenuItem		 saveAnimationDataItem;
-	JMenuItem		 setTargetItem;
-	JMenuItem		 writeToTargetItem;
-	JMenuItem		 appendToTargetItem;	
-	JMenuItem		 openImageItem;
+	JMenu			 	fileMenu;
+	JMenuItem		 	openAnimationDataItem;
+	JMenuItem			saveAnimationDataItem;
+	JMenuItem		 	setTargetItem;
+	JMenuItem		 	writeToTargetItem;
+	JMenuItem		 	appendToTargetItem;	
+	JMenuItem		 	openImageItem;
 
-	JMenu			 editMenu;
-	JMenuItem		 increaseKeyValueItem;
-	JMenuItem 		 decreaseKeyValueItem;
-	JMenuItem		 flipXItem;
-	JMenuItem		 flipYItem;
+	JMenu			 	editMenu;
+	JMenuItem		 	increaseKeyValueItem;
+	JMenuItem 		 	decreaseKeyValueItem;
+	JMenuItem		 	flipXItem;
+	JMenuItem		 	flipYItem;
 	
-	JFileChooser	 imageChooser = new JFileChooser();
-	JFileChooser	 editorDataChooser = new JFileChooser();
-	JFileChooser	 iniChooser = new JFileChooser();
+	JFileChooser	 	imageChooser = new JFileChooser();
+	JFileChooser	 	editorDataChooser = new JFileChooser();
+	JFileChooser	 	iniChooser = new JFileChooser();
 	
-	EditorData 		 data = new EditorData();
+	EditorData 		 	data = new EditorData();
 	
-	ImageManager	 imageManager = new ImageManager();
+	ImageManager	 	imageManager = new ImageManager();
 	
 	LinkedList<EditListener> editListeners = new LinkedList<EditListener>();
 	
@@ -87,15 +91,18 @@ public class EditorMainWindow extends JFrame {
 		super("Orx Animation Editor");
 		prepareTree();
 		setLayout(new BorderLayout());
-		animationManager = new AnimationManager(this);
-		frameEditor      = new FrameEditor(this);
-		animationViewer  = new AnimationViewer(this);
+		animationManager 	= new AnimationManager(this);
+		frameEditor      	= new FrameEditor(this);
+		animationViewer  	= new AnimationViewer(this);
+		animationSetEditor	= new AnimationSetEditor(this);
 		
-		animationManager.animationTree.addTreeSelectionListener(frameEditor);
 		animationManager.animationTree.addTreeSelectionListener(animationViewer);
+		animationManager.animationTree.addTreeSelectionListener(frameEditor);
+		animationManager.animationTree.addTreeSelectionListener(animationManager);
 		addEditListneer(animationViewer);
 		
-		JSplitPane leftSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, animationManager, animationViewer);
+		JSplitPane leftLowerSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, animationViewer, animationSetEditor);
+		JSplitPane leftSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, animationManager, leftLowerSplitPane);
 		JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftSplitPane, frameEditor);
 		prepareMenuBar();
 		getContentPane().add(mainSplitPane, BorderLayout.CENTER);
@@ -194,6 +201,7 @@ public class EditorMainWindow extends JFrame {
 			if(editorDataChooser.showOpenDialog(EditorMainWindow.this)==JFileChooser.APPROVE_OPTION) {
 				AnimIO.readEditorData(editorDataChooser.getSelectedFile(),data);
 				animationManager.reload();
+				animationSetEditor.dataLoaded();
 				repaint();
 			}
 		}
@@ -278,4 +286,13 @@ public class EditorMainWindow extends JFrame {
 		}	
 	}
 
+	ImageIcon getImageIcon(String path) {
+		try {
+			InputStream in = ClassLoader.getSystemResourceAsStream(path);
+			return new ImageIcon(ImageIO.read(in));
+		} catch (Exception e) {
+			// We're not running from a jar file
+			return new ImageIcon(path);
+		}
+	}
 }

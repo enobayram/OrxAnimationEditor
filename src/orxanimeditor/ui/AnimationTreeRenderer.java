@@ -25,16 +25,16 @@ public class AnimationTreeRenderer extends DefaultTreeCellRenderer {
             boolean hasFocus) {
         super.getTreeCellRendererComponent(
                 tree, value, sel,
-                expanded, leaf, row,
+                expanded, false, row,
                 hasFocus);
         if(value instanceof Animation) {
         	if(expanded)
         		setIcon(manager.animationIcon);
         	else
         		setIcon(manager.animationCollapsedIcon);
-        }
-        if(value instanceof Frame) {
+        } else if(value instanceof Frame) {
         	setIcon(manager.frameIcon);
+        } else {
         }
         
         if(value == manager.selectedAnimation || value == manager.selectedFrame)

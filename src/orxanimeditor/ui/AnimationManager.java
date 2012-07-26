@@ -81,21 +81,11 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 	
 
 	private void loadIcons() {
-		newFrameIcon 			= getImageIcon("icons/NewFrame.png");
-		newAnimationIcon 		= getImageIcon("icons/NewAnimation.png");
-		frameIcon 				= getImageIcon("icons/Frame.png");
-		animationIcon 			= getImageIcon("icons/Animation.png");		
-		animationCollapsedIcon 	= getImageIcon("icons/AnimationCollapsed.png");	
-	}
-	
-	ImageIcon getImageIcon(String path) {
-		try {
-			InputStream in = ClassLoader.getSystemResourceAsStream(path);
-			return new ImageIcon(ImageIO.read(in));
-		} catch (Exception e) {
-			// We're not running from a jar file
-			return new ImageIcon(path);
-		}
+		newFrameIcon 			= editor.getImageIcon("icons/NewFrame.png");
+		newAnimationIcon 		= editor.getImageIcon("icons/NewAnimation.png");
+		frameIcon 				= editor.getImageIcon("icons/Frame.png");
+		animationIcon 			= editor.getImageIcon("icons/Animation.png");		
+		animationCollapsedIcon 	= editor.getImageIcon("icons/AnimationCollapsed.png");	
 	}
 	
 	private void prepareToolbar() {
@@ -117,7 +107,7 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 		animationTree.setCellEditor(new DefaultCellEditor(new JTextField()));
 		animationTree.setEditable(true);
 		animationTree.addKeyListener(this);
-		animationTree.addTreeSelectionListener(this);
+//		animationTree.addTreeSelectionListener(this);
 	}
 	
 
@@ -174,6 +164,7 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 					}
 					if(node instanceof Animation) {
 						getRootNode().add((Animation)node.clone());
+						reload(getRootNode());
 					}
 				}
 				break;				
