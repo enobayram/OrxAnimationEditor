@@ -9,6 +9,10 @@ import orxanimeditor.animation.Animation;
 import orxanimeditor.animation.Frame;
 
 public class AnimationTreeRenderer extends DefaultTreeCellRenderer {
+	AnimationManager manager;
+	public AnimationTreeRenderer(AnimationManager manager) {
+		this.manager = manager;
+	}
 	@Override
 	public Component getTreeCellRendererComponent(
             JTree tree,
@@ -24,13 +28,13 @@ public class AnimationTreeRenderer extends DefaultTreeCellRenderer {
                 hasFocus);
         if(value instanceof Animation) {
         	if(expanded)
-        		setIcon(AnimationManager.animationIcon);
+        		setIcon(manager.animationIcon);
         	else
-        		setIcon(AnimationManager.animationCollapsedIcon);
+        		setIcon(manager.animationCollapsedIcon);
         	setToolTipText("An Animation");
         }
         if(value instanceof Frame) {
-        	setIcon(AnimationManager.frameIcon);
+        	setIcon(manager.frameIcon);
         	setToolTipText("A Frame");
         }
 		return this;

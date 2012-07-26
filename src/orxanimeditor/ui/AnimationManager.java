@@ -2,11 +2,18 @@ package orxanimeditor.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URL;
 
+import javax.imageio.ImageIO;
 import javax.swing.DefaultCellEditor;
 import javax.swing.DropMode;
 import javax.swing.ImageIcon;
@@ -38,11 +45,11 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 		
 	//ImageIcon image = (new ImageIcon(getClass().getResource("yourpackage/mypackage/image.gif")));
 	
-	static ImageIcon newFrameIcon = new ImageIcon("icons/NewFrame.png");
-	static ImageIcon newAnimationIcon = new ImageIcon("icons/NewAnimation.png");
-	static ImageIcon frameIcon = new ImageIcon("icons/Frame.png");
-	static ImageIcon animationIcon = new ImageIcon("icons/Animation.png");		
-	static ImageIcon animationCollapsedIcon = new ImageIcon("icons/AnimationCollapsed.png");		
+	ImageIcon newFrameIcon;
+	ImageIcon newAnimationIcon;
+	ImageIcon frameIcon;
+	ImageIcon animationIcon;		
+	ImageIcon animationCollapsedIcon;		
 	 
 	JButton newFrameButton;
 	JButton newAnimationButton;
@@ -69,6 +76,21 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 	
 
 	private void loadIcons() {
+		newFrameIcon 			= getImageIcon("icons/NewFrame.png");
+		newAnimationIcon 		= getImageIcon("icons/NewAnimation.png");
+		frameIcon 				= getImageIcon("icons/Frame.png");
+		animationIcon 			= getImageIcon("icons/Animation.png");		
+		animationCollapsedIcon 	= getImageIcon("icons/AnimationCollapsed.png");	
+	}
+	
+	ImageIcon getImageIcon(String path) {
+		try {
+			InputStream in = ClassLoader.getSystemResourceAsStream(path);
+			return new ImageIcon(ImageIO.read(in));
+		} catch (Exception e) {
+			// We're not running from a jar file
+			return new ImageIcon(path);
+		}
 	}
 	
 	private void prepareToolbar() {
@@ -86,7 +108,7 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 	
 	private void prepareTree() {
 		animationTree = new JTree(editor.data.animationTree);
-		animationTree.setCellRenderer(new AnimationTreeRenderer());
+		animationTree.setCellRenderer(new AnimationTreeRenderer(this));
 		animationTree.setCellEditor(new DefaultCellEditor(new JTextField()));
 		animationTree.setEditable(true);
 		animationTree.addKeyListener(this);
