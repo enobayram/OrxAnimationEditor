@@ -1,3 +1,14 @@
+/* This program is free software. It comes without any warranty, to
+ * the extent permitted by applicable law. You can redistribute it
+ * and/or modify it under the terms of the Do What The Fuck You Want
+ * To Public License, Version 2, as published by Sam Hocevar. See
+ * http://sam.zoy.org/wtfpl/COPYING for more details. 
+ * 
+ * AUTHOR: Enis Bayramoglu
+ * E-MAIL: enisbayramoglu@gmail.com
+ * */
+
+
 package orxanimeditor.ui;
 
 import java.awt.BorderLayout;
@@ -142,7 +153,7 @@ public class EditorMainWindow extends JFrame {
 		openImageItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.ALT_DOWN_MASK));
 		
 		
-		editMenu = new JMenu("File");
+		editMenu = new JMenu("Edit");
 		menuBar.add(editMenu);
 
 		increaseKeyValueItem = new JMenuItem("Increase Key Duration");
