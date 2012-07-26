@@ -99,7 +99,9 @@ public class EditorMainWindow extends JFrame {
 		animationManager.animationTree.addTreeSelectionListener(animationViewer);
 		animationManager.animationTree.addTreeSelectionListener(frameEditor);
 		animationManager.animationTree.addTreeSelectionListener(animationManager);
-		addEditListneer(animationViewer);
+		addEditListener(animationViewer);
+		addEditListener(animationSetEditor);
+		addEditListener(frameEditor);
 		
 		JSplitPane leftLowerSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, animationViewer, animationSetEditor);
 		JSplitPane leftSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, animationManager, leftLowerSplitPane);
@@ -109,7 +111,7 @@ public class EditorMainWindow extends JFrame {
 		getContentPane().add(menuBar, BorderLayout.NORTH);
 		pack();
 		setMinimumSize(getSize());
-		setSize(new Dimension(800, 600));
+		setSize(new Dimension(1000, 700));
 		setVisible(true);
 		
 		addWindowListener(new WindowAdapter() {
@@ -188,6 +190,11 @@ public class EditorMainWindow extends JFrame {
 		
 	}
 	
+	void poke() {
+		doLayout();
+		repaint();		
+	}
+	
 	ActionListener openImageAction = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			if(imageChooser.showOpenDialog(EditorMainWindow.this)==JFileChooser.APPROVE_OPTION) {
@@ -252,7 +259,7 @@ public class EditorMainWindow extends JFrame {
 		}
 	};
 		
-	public void addEditListneer(EditListener l) {editListeners.add(l);}
+	public void addEditListener(EditListener l) {editListeners.add(l);}
 
 	public void fireEdit() {
 		for(EditListener l: editListeners) l.edited();	

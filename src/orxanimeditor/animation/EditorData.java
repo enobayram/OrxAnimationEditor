@@ -24,5 +24,18 @@ public class EditorData implements Serializable{
 	public File getTargetFolder() {
 		return new File(targetIni.getParent());
 	}
+	
+	public Animation[] getAnimations() {
+		Animation[] animations = new Animation[animationTree.getChildCount()];
+		if(animations.length>0) {
+			for(int ai = 0; ai<animationTree.getChildCount(); ai++)	animations[ai] = (Animation) animationTree.getChildAt(ai);
+		}
+		return animations;
+	}
+
+	public void removeAnimation(Animation animation) {
+		animation.removeFromParent();
+		for(AnimationSet set: animationSets) set.removeAnimation(animation);
+	}
 
 }

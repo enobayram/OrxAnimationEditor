@@ -2,6 +2,7 @@ package orxanimeditor.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Button;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -16,12 +17,18 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 
+import orxanimeditor.animation.Animation;
 import orxanimeditor.animation.AnimationSet;
 
-public class AnimationSetEditor extends JPanel implements ActionListener, KeyListener{
+public class AnimationSetEditor extends JPanel implements ActionListener, EditListener{
 	JTabbedPane animationSets;
 	JToolBar	toolbar;
 	JButton		newAnimationSetButton;
+	JButton		deleteAnimationSetButton;
+	JButton		addAnimationButton;
+	JButton		deleteAnimButton;
+	JButton		deleteLinkButton;
+	
 	HashMap<AnimationSet, AnimationSetViewer> setsTable = new HashMap<>();
 	
 	EditorMainWindow editor;
@@ -37,7 +44,7 @@ public class AnimationSetEditor extends JPanel implements ActionListener, KeyLis
 		
 		add(toolbar, BorderLayout.NORTH);
 		add(animationSets, BorderLayout.CENTER);
-		animationSets.addKeyListener(this);
+		
 	}
 
 	private void prepareToolbar() {
@@ -45,8 +52,28 @@ public class AnimationSetEditor extends JPanel implements ActionListener, KeyLis
 		newAnimationSetButton = new JButton(editor.getImageIcon("icons/newAnimationSet.png"));
 		newAnimationSetButton.setToolTipText("Create new animation set");
 		newAnimationSetButton.addActionListener(this);
-
+		
+		deleteAnimationSetButton = new JButton(editor.getImageIcon("icons/deleteAnimationSet.png"));
+		deleteAnimationSetButton.setToolTipText("Delete the selected animation set");
+		deleteAnimationSetButton.addActionListener(this);
+		
+		addAnimationButton    = new JButton(editor.getImageIcon("icons/newAnimation.png"));
+		addAnimationButton.setToolTipText("Add an animation to the current animation set");
+		addAnimationButton.addActionListener(this);
+		
+		deleteAnimButton = new JButton(editor.getImageIcon("icons/deleteAnimation.png"));
+		deleteAnimButton.setToolTipText("Remove the currently selected animation from this set");
+		deleteAnimButton.addActionListener(this);
+		
+		deleteLinkButton = new JButton(editor.getImageIcon("icons/deleteLink.png"));
+		deleteLinkButton.setToolTipText("Delete the currently selected link");
+		deleteLinkButton.addActionListener(this);
+		
 		toolbar.add(newAnimationSetButton);
+		toolbar.add(deleteAnimationSetButton);
+		toolbar.add(addAnimationButton);
+		toolbar.add(deleteAnimButton);
+		toolbar.add(deleteLinkButton);
 	}
 	
 	public void dataLoaded() {
@@ -57,15 +84,36 @@ public class AnimationSetEditor extends JPanel implements ActionListener, KeyLis
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		String newSetName = JOptionPane.showInputDialog("New Animation Set Name:");
-		if(newSetName.isEmpty()) return;
-		AnimationSet newSet = new AnimationSet(newSetName);
-		editor.data.animationSets.add(newSet);
-		createNewViewer(newSet);
+		AnimationSetViewer view = (AnimationSetViewer) animationSets.getSelectedComponent();
+		if(e.getSource()==newAnimationSetButton) {
+			String newSetName = JOptionPane.showInputDialog("New Animation Set Name:");
+			if(newSetName==null || newSetName.isEmpty()) return;
+			AnimationSet newSet = new AnimationSet(newSetName);
+			editor.data.animationSets.add(newSet);
+			createNewViewer(newSet);
+		} else  { // The rest of the buttons are related to a view
+			if(view==null) { // So if no view is selected, an error is shown
+				JOptionPane.showMessageDialog(editor, "No animation set selected!","Error!",JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			if(e.getSource() == deleteAnimationSetButton) {
+				deleteViewer(view);
+			} else if(e.getSource() == addAnimationButton) {
+				Animation chosen = (Animation) JOptionPane.showInputDialog(editor, "Choose the animation to add to the current set", "Add Animation", 
+					    JOptionPane.QUESTION_MESSAGE, editor.animationManager.animationIcon, 
+						editor.data.getAnimations(), null);
+				if(chosen == null) return;
+				view.addAnimation(chosen);
+			} else if(e.getSource() == deleteAnimButton) {
+				view.deleteAnimation();
+			} else if(e.getSource() == deleteLinkButton) {
+				view.deleteLink();
+			}
+		}
 	}
 
 	private void createNewViewer(AnimationSet newSet) {
-		AnimationSetViewer newViewer = new AnimationSetViewer(newSet);
+		AnimationSetViewer newViewer = new AnimationSetViewer(editor, newSet);
 		animationSets.add(newViewer,newSet.name);
 		setsTable.put(newSet, newViewer);
 	}
@@ -77,17 +125,8 @@ public class AnimationSetEditor extends JPanel implements ActionListener, KeyLis
 	}
 	
 	@Override
-	public void keyPressed(KeyEvent e) {
-		switch(e.getKeyCode()) {
-		case KeyEvent.VK_DELETE:
-			AnimationSetViewer view = (AnimationSetViewer) animationSets.getSelectedComponent();
-			if(view!=null) deleteViewer(view);
-			System.out.println("here");
-			break;
-		}
-		System.out.println("here2");
+	public void edited() {
+		repaint();		
 	}
-
-	@Override public void keyReleased(KeyEvent arg0) {}
-	@Override public void keyTyped(KeyEvent arg0) {}
+	
 }

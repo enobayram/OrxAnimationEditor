@@ -21,6 +21,8 @@ import javax.swing.JOptionPane;
 import javax.swing.tree.MutableTreeNode;
 
 import orxanimeditor.animation.Animation;
+import orxanimeditor.animation.AnimationSet;
+import orxanimeditor.animation.AnimationSet.Link;
 import orxanimeditor.animation.EditorData;
 import orxanimeditor.animation.Frame;
 import orxanimeditor.ui.EditorMainWindow;
@@ -77,6 +79,9 @@ public class AnimIO {
 		
 	private static void streamData(EditorData data, OutputStream os) {
 		PrintStream p = new PrintStream(os);
+		for(AnimationSet set: data.animationSets) {
+			exportAnimationSet(p,set);
+		}
 		for(int ai=0; ai<data.animationTree.getChildCount(); ai++) {
 			Animation animation = (Animation) data.animationTree.getChildAt(ai);
 			exportAnimation(p,animation);
@@ -85,6 +90,36 @@ public class AnimIO {
 				exportFrame(p,f,data.getTargetFolder());
 			}
 		}
+	}
+
+	private static void exportAnimationSet(PrintStream p, AnimationSet set) {
+		p.println("["+set.name+"]");
+		if(set.animations.size()>0) {
+			p.print("AnimationList = ");
+			for(int ai=0; ai<set.animations.size(); ai++) {
+				Animation animation = set.animations.get(ai);
+				p.print(animation.getName());
+				if(ai!=set.animations.size()-1) p.print("#");
+			}
+		}
+		p.println();
+		if(set.links.size()>0) {
+			p.print("LinkList =");
+			for(int li = 0; li<set.links.size(); li++) {
+				Link link = set.links.get(li);
+				p.print(link.getName());
+				if(li!=set.links.size()-1) p.print("#");
+			}
+		}
+		p.println();
+		for(Link link: set.links) exportLink(p,link);
+		
+	}
+
+	private static void exportLink(PrintStream p, Link link) {
+		p.println("["+link.getName()+"[");
+		p.println("Source      = " + link.getSource().getName());
+		p.println("Destination = " + link.getDestination().getName());
 	}
 
 	private static void exportFrame(PrintStream p, Frame f, File baseDirectory) {

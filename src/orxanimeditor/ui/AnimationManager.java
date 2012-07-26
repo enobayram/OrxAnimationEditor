@@ -30,6 +30,8 @@ import javax.swing.ScrollPaneLayout;
 import javax.swing.TransferHandler;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -41,7 +43,7 @@ import javax.xml.bind.annotation.XmlType.DEFAULT;
 import orxanimeditor.animation.Animation;
 import orxanimeditor.animation.Frame;
 
-public class AnimationManager extends JPanel implements ActionListener, KeyListener, TreeSelectionListener {
+public class AnimationManager extends JPanel implements ActionListener, KeyListener, TreeSelectionListener, TreeModelListener {
 	EditorMainWindow editor;
 	JToolBar  toolbar;
 	JTree	  animationTree;
@@ -107,7 +109,8 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 		animationTree.setCellEditor(new DefaultCellEditor(new JTextField()));
 		animationTree.setEditable(true);
 		animationTree.addKeyListener(this);
-//		animationTree.addTreeSelectionListener(this);
+		animationTree.getModel().addTreeModelListener(this);
+//		animationTree.addTreeSelectionListener(this); // this has to happen outside, otherwise the listener will be called last
 	}
 	
 
@@ -224,12 +227,16 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 		}
 	}
 	
+	void removeNodeFromParent(DefaultMutableTreeNode node) {
+		((DefaultTreeModel) animationTree.getModel()).removeNodeFromParent(node);
+	}
+	
 	class DeleteVisitor implements EditVisitor {
 		public void edit(Animation animation) {
-			animation.removeFromParent();
+			removeNodeFromParent(animation);
 		}
 		public void edit(Frame frame) {
-			frame.removeFromParent();
+			removeNodeFromParent(frame);
 		}
 	}
 
@@ -255,6 +262,31 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 		}
 		animationTree.repaint(10);
 		
+	}
+
+
+	@Override
+	public void treeNodesChanged(TreeModelEvent e) {
+		editor.fireEdit();
+	}
+
+
+	@Override
+	public void treeNodesInserted(TreeModelEvent e) {
+	}
+
+
+	@Override
+	public void treeNodesRemoved(TreeModelEvent e) {
+		for(Object removedObject: e.getChildren())
+			if(removedObject instanceof Animation) 
+				editor.data.removeAnimation((Animation) removedObject);
+		editor.poke();
+	}
+
+
+	@Override
+	public void treeStructureChanged(TreeModelEvent e) {
 	}
 	
 }
