@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
+import java.util.LinkedList;
 
 import javax.imageio.ImageIO;
 import javax.swing.DefaultCellEditor;
@@ -33,12 +34,14 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+import javax.xml.bind.annotation.XmlType.DEFAULT;
 
 import orxanimeditor.animation.Animation;
 import orxanimeditor.animation.Frame;
 
-public class AnimationManager extends JPanel implements ActionListener, KeyListener {
+public class AnimationManager extends JPanel implements ActionListener, KeyListener, TreeSelectionListener {
 	EditorMainWindow editor;
 	JToolBar  toolbar;
 	JTree	  animationTree;
@@ -57,8 +60,10 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 	int newFrameSuffix = 0;
 	int newAnimationSuffix = 0;
 
+	Animation selectedAnimation = null;
+	Frame selectedFrame = null;
 
-
+	DefaultMutableTreeNode[] clipboard = new DefaultMutableTreeNode[0];
 	
 	public AnimationManager(EditorMainWindow editorFrame) {
 		editor = editorFrame;
@@ -112,6 +117,7 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 		animationTree.setCellEditor(new DefaultCellEditor(new JTextField()));
 		animationTree.setEditable(true);
 		animationTree.addKeyListener(this);
+		animationTree.addTreeSelectionListener(this);
 	}
 	
 
@@ -132,19 +138,11 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 	}
 		
 	public Frame getSelectedFrame() {
-		TreePath selectionPath = animationTree.getSelectionPath();
-		if(selectionPath==null) return null;
-		Object lastSelected = selectionPath.getLastPathComponent();
-		if(lastSelected instanceof Frame) return (Frame) lastSelected;
-		else return null;
+		return selectedFrame;
 	}
 	
 	public Animation getSelectedAnimation() {
-		TreePath selectionPath = animationTree.getSelectionPath();
-		if(selectionPath==null) return null;
-		Object lastSelected = selectionPath.getLastPathComponent();
-		if(lastSelected instanceof Animation) return (Animation) lastSelected;
-		else return null;
+		return selectedAnimation;
 	}
 
 
@@ -156,16 +154,29 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 		((DefaultTreeModel)animationTree.getModel()).reload(node);
 	}
 
+	DefaultMutableTreeNode getRootNode() {
+		return (DefaultMutableTreeNode) animationTree.getModel().getRoot();		
+	}
+	
 	@Override
 	public void keyPressed(KeyEvent e) {
 
 		if(e.isControlDown()) {
 			switch (e.getKeyCode()) {
 			case KeyEvent.VK_C:
-				
+				clipboard = getSelectedNodes();
 				break;
 			case KeyEvent.VK_V:
-				break;
+				for(DefaultMutableTreeNode node: clipboard) {
+					if(node instanceof Frame && selectedAnimation!=null) {
+						selectedAnimation.add((Frame)node.clone());
+						reload(selectedAnimation);
+					}
+					if(node instanceof Animation) {
+						getRootNode().add((Animation)node.clone());
+					}
+				}
+				break;				
 			}
 		} else {
 			switch (e.getKeyCode()) {
@@ -179,6 +190,15 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 			}
 		}
 		
+	}
+	
+	public DefaultMutableTreeNode[] getSelectedNodes() {
+		DefaultMutableTreeNode[] nodes= new DefaultMutableTreeNode[animationTree.getSelectionCount()];
+		if(nodes.length>0) {
+			int i=0;
+			for(TreePath p: animationTree.getSelectionPaths()) nodes[i++] = (DefaultMutableTreeNode) p.getLastPathComponent();
+		}
+		return nodes;
 	}
 	
 	public void keyReleased(KeyEvent arg0) {}
@@ -220,6 +240,30 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 		public void edit(Frame frame) {
 			frame.removeFromParent();
 		}
+	}
+
+	@Override
+	public void valueChanged(TreeSelectionEvent e) {
+		if(!e.isAddedPath()) {
+			selectedAnimation = null;
+			selectedFrame = null;
+		} else {
+			Object selected = e.getPath().getLastPathComponent();
+			if(selected instanceof Frame) {
+				selectedFrame = (Frame) selected;
+				selectedAnimation = null;
+			}
+			else if(selected instanceof Animation) {
+				selectedFrame = null;
+				selectedAnimation = (Animation) selected;
+			}
+			else {
+				selectedFrame = null;
+				selectedAnimation = null;
+			}
+		}
+		animationTree.repaint(10);
+		
 	}
 	
 }

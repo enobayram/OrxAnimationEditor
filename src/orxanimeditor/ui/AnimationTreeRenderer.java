@@ -1,5 +1,6 @@
 package orxanimeditor.ui;
 
+import java.awt.Color;
 import java.awt.Component;
 
 import javax.swing.JTree;
@@ -31,12 +32,16 @@ public class AnimationTreeRenderer extends DefaultTreeCellRenderer {
         		setIcon(manager.animationIcon);
         	else
         		setIcon(manager.animationCollapsedIcon);
-        	setToolTipText("An Animation");
         }
         if(value instanceof Frame) {
         	setIcon(manager.frameIcon);
-        	setToolTipText("A Frame");
         }
+        
+        if(value == manager.selectedAnimation || value == manager.selectedFrame)
+        	setForeground(Color.BLUE);
+        else
+        	setForeground(Color.BLACK);
+        
 		return this;
 	}
 }
