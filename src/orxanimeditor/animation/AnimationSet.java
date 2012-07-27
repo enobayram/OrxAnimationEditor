@@ -45,7 +45,8 @@ public class AnimationSet implements Serializable{
 		private Animation destination;
 		Link(Animation source, Animation destination) {this.setSource(source); this.setDestination(destination);}
 		public String getName() {
-			return getSource().getName() + "2" + getDestination().getName();
+			if(source == destination) return source.getName()+"loop";
+			else return source.getName() + "2" + source.getName();
 		}
 		public Animation getSource() {
 			return source;

@@ -51,28 +51,41 @@ public class AnimationSetViewer extends JScrollPane implements MouseListener {
 		@Override
 		public void paint(Graphics g) {
 			super.paint(g);
-			for(int ai=0; ai<set.animations.size(); ai++) {
-				Animation animation = set.animations.get(ai);
+			for(Animation animation: set.animations) {
 				if(animation==selectedAnimation) g.setColor(Color.BLUE);
 				else g.setColor(Color.BLACK);
-				Point center = centerOfCircle(ai);
+				Point center = getCenter(animation);
 				g.drawOval(center.x-ANIMATIONRADIUS, center.y-ANIMATIONRADIUS, 2*ANIMATIONRADIUS, 2*ANIMATIONRADIUS);
 				g.drawString(animation.getName(), center.x-ANIMATIONRADIUS, center.y-5);
 			}
 			for(Link link: set.links) {
 				if(link == selectedLink) g.setColor(Color.BLUE);
 				else 	g.setColor(Color.BLACK);
-
-				Point sourceCenter = centerOfCircle(set.animations.indexOf(link.getSource()));
-				Point destinationCenter = centerOfCircle(set.animations.indexOf(link.getDestination()));
+				drawLink(g, link);
+			}
+		}
+		
+		void drawLink(Graphics g, Link link) {
+			if(link.getSource()!= link.getDestination()) {
+				Point sourceCenter = getCenter(link.getSource());
+				Point destinationCenter = getCenter(link.getDestination());
 				Point bias = biasVector(sourceCenter, destinationCenter);
 				int sx = sourceCenter.x+bias.x, sy = sourceCenter.y+bias.y;
 				int dx = destinationCenter.x-bias.x, dy = destinationCenter.y-bias.y;
 				g.drawLine(sx,sy ,dx ,dy );
-				g.fillOval(dx-CONNECTIONDOTRADIUS, dy-CONNECTIONDOTRADIUS, 2*CONNECTIONDOTRADIUS, 2*CONNECTIONDOTRADIUS);
+				g.fillOval(dx-CONNECTIONDOTRADIUS, dy-CONNECTIONDOTRADIUS, 2*CONNECTIONDOTRADIUS, 2*CONNECTIONDOTRADIUS); 
+			} else {
+				Point center = getCenter(link.getSource());
+				double theta = Math.atan2(center.y-getHeight()/2, center.x-getWidth()/2);
+				Point start = circumferenceOnAngle(center, theta-0.3);
+				Point end = circumferenceOnAngle(center, theta+0.3);
+				Point arcCenter = new Point((start.x+end.x)/2, (start.y+end.y)/2);
+				int arcRadius = (int) arcCenter.distance(end);
+				int thetaDeg = (int) (-theta*180/Math.PI);
+				g.drawArc(arcCenter.x-arcRadius, arcCenter.y-arcRadius, 2*arcRadius, 2*arcRadius, thetaDeg-90, 180);
+				g.fillOval(end.x-CONNECTIONDOTRADIUS, end.y-CONNECTIONDOTRADIUS, 2*CONNECTIONDOTRADIUS, 2*CONNECTIONDOTRADIUS);
 			}
-		}
-		
+		}		
 		Point biasVector(Point source, Point dest) {
 			Point result = new Point();
 			int dx = dest.x - source.x, dy = dest.y - source.y;
@@ -97,6 +110,14 @@ public class AnimationSetViewer extends JScrollPane implements MouseListener {
 
 	}
 	
+	private Point getCenter(Animation animation) {
+		return centerOfCircle(set.animations.indexOf(animation));
+	}
+
+	Point circumferenceOnAngle(Point center, double theta) {
+		return new Point(center.x+(int)(Math.cos(theta)*ANIMATIONRADIUS), center.y+(int)(Math.sin(theta)*ANIMATIONRADIUS));
+	}
+	
 	Point centerOfCircle(int index) {
 		double r = getScatterRadius();
 		double theta = 2*Math.PI*index/set.animations.size();
@@ -110,17 +131,17 @@ public class AnimationSetViewer extends JScrollPane implements MouseListener {
 		return 2*ANIMATIONRADIUS/Math.sin(2*Math.PI/(2*set.animations.size()));
 	}
 	@Override
-	public void mouseClicked(MouseEvent e) {
+	public void mousePressed(MouseEvent e) {
 		if(selectedAnimation == null) {
 			selectedAnimation = pickAnimation(e.getPoint());
 			selectedLink      = null;
 		} else {
 			Animation otherAnimation = pickAnimation(e.getPoint());
-			if(otherAnimation!=null && otherAnimation!=selectedAnimation) {
+			if(otherAnimation!=null) {
 				selectedLink = set.getOrCreateLink(selectedAnimation,otherAnimation);
 				selectedAnimation = null;
 			} else {
-				selectedAnimation = otherAnimation;
+				selectedAnimation = null;
 			}
 		}
 		
@@ -128,15 +149,16 @@ public class AnimationSetViewer extends JScrollPane implements MouseListener {
 	}
 	private Animation pickAnimation(Point point) {
 		for(int ai=0; ai<set.animations.size(); ai++) {
-			if(centerOfCircle(ai).distance(point)<ANIMATIONRADIUS) {
-				return set.animations.get(ai);
+			Animation animation = set.animations.get(ai);
+			if(getCenter(animation).distance(point)<ANIMATIONRADIUS) {
+				return animation;
 			}
 		}
 		return null;
 	}
 	@Override public void mouseEntered(MouseEvent e) {}
 	@Override public void mouseExited(MouseEvent e) {}
-	@Override public void mousePressed(MouseEvent e) {}
+	@Override public void mouseClicked(MouseEvent e) {}
 	@Override public void mouseReleased(MouseEvent e) {}
 	public void deleteAnimation() {
 		if(selectedAnimation!=null) {
