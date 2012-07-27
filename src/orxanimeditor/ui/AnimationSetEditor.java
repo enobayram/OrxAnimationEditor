@@ -29,7 +29,7 @@ public class AnimationSetEditor extends JPanel implements ActionListener, EditLi
 	JButton		deleteAnimButton;
 	JButton		deleteLinkButton;
 	
-	HashMap<AnimationSet, AnimationSetViewer> setsTable = new HashMap<>();
+	HashMap<AnimationSet, AnimationSetViewer> setsTable = new HashMap<AnimationSet,AnimationSetViewer>();
 	
 	EditorMainWindow editor;
 	

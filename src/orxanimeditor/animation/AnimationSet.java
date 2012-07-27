@@ -7,8 +7,8 @@ public class AnimationSet implements Serializable{
 	private static final long serialVersionUID = 6664178554050675892L;
 	
 	public String name;
-	public LinkedList<Animation> animations = new LinkedList<>();
-	public LinkedList<Link> 	  links 	 = new LinkedList<>();
+	public LinkedList<Animation> animations = new LinkedList<Animation>();
+	public LinkedList<Link> 	  links 	 = new LinkedList<Link>();
 	
 	public AnimationSet(String name) {
 		this.name = name;
@@ -32,7 +32,7 @@ public class AnimationSet implements Serializable{
 	
 	public void removeAnimation(Animation animation) {
 		animations.remove(animation);
-		LinkedList<Link> toRemove = new LinkedList<>();
+		LinkedList<Link> toRemove = new LinkedList<Link>();
 		for(Link l:links) {
 			if(animation == l.source || animation == l.destination) toRemove.add(l);
 		}
