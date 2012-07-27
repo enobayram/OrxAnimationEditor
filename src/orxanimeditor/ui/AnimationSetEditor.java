@@ -49,7 +49,7 @@ public class AnimationSetEditor extends JPanel implements ActionListener, EditLi
 
 	private void prepareToolbar() {
 		toolbar = new JToolBar();
-		newAnimationSetButton = new JButton(editor.getImageIcon("icons/newAnimationSet.png"));
+		newAnimationSetButton = new JButton(editor.getImageIcon("icons/NewAnimationSet.png"));
 		newAnimationSetButton.setToolTipText("Create new animation set");
 		newAnimationSetButton.addActionListener(this);
 		
@@ -57,7 +57,7 @@ public class AnimationSetEditor extends JPanel implements ActionListener, EditLi
 		deleteAnimationSetButton.setToolTipText("Delete the selected animation set");
 		deleteAnimationSetButton.addActionListener(this);
 		
-		addAnimationButton    = new JButton(editor.getImageIcon("icons/newAnimation.png"));
+		addAnimationButton    = new JButton(editor.getImageIcon("icons/NewAnimation.png"));
 		addAnimationButton.setToolTipText("Add an animation to the current animation set");
 		addAnimationButton.addActionListener(this);
 		
