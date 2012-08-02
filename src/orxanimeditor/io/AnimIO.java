@@ -117,7 +117,8 @@ public class AnimIO {
 	}
 
 	private static void exportLink(PrintStream p, Link link) {
-		p.println("["+link.getName()+"[");
+		//Change -]
+		p.println("["+link.getName()+"]");
 		p.println("Source      = " + link.getSource().getName());
 		p.println("Destination = " + link.getDestination().getName());
 	}
