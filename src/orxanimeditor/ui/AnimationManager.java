@@ -176,7 +176,7 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 			switch (e.getKeyCode()) {
 			case KeyEvent.VK_SPACE:
 				Frame selectedFrame = getSelectedFrame();
-				if(selectedFrame!=null) editor.frameEditor.openImage(selectedFrame.getImageFile());
+				if(selectedFrame!=null) editor.frameEditor.openImage(selectedFrame.getImageFile().getAbsoluteFile());
 				break;
 			case KeyEvent.VK_DELETE:
 				applyEditVisitor(new DeleteVisitor(), true,true);

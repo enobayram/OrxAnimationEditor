@@ -21,6 +21,7 @@ public class ImageManager {
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				System.err.println("File name:"+file.getPath());
 			}
 		}
 		return result;

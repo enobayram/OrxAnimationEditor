@@ -32,6 +32,8 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 	int					checkerSize = 20;
 	int					zoom = 1;
 
+	Rectangle			lastRect = new Rectangle(-1, -1, -1, -1);
+	Point 				lastPivot = new Point(-1,-1);
 	
 	public FrameEditorView(File file, EditorMainWindow editorFrame) {
 		this.editorFrame = editorFrame;
@@ -76,7 +78,7 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 	private int getViewHeight() {return image.getHeight()*zoom;}
 	
 	private void paintFrame(Graphics g, Frame frame) {
-		if(frame.getImageFile()==imageFile) {
+		if(frame.getImageFile()!= null && frame.getImageFile().getAbsoluteFile().equals(imageFile)) {
 			if(frame.getRectangle()!=null){
 				g.setColor(Color.BLACK);
 				Rectangle rect = frame.properRectangle();
@@ -109,21 +111,44 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 	}
 	
 	@Override public void mouseDragged(MouseEvent e) {
-		Frame selected = getSelectedFrame();
-		if(selected != null) {
-			if((e.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) == MouseEvent.BUTTON1_DOWN_MASK) {
-				Rectangle rect = selected.getRectangle();
-				int x = snap(rect.x), y = snap(rect.y);
-				int dx = snap(getViewX(e)-x), dy = snap(getViewY(e)-y);
-				selected.setRectangle(new Rectangle(x,y,dx,dy));
-				selected.setImageFile(imageFile);
-			}
-			if((e.getModifiersEx() & MouseEvent.BUTTON3_DOWN_MASK) == MouseEvent.BUTTON3_DOWN_MASK)
-				selected.setPivot(new Point(getViewX(e),getViewY(e)));
+		if(!parent.isUsingLastRect()) {
+			Frame selected = getSelectedFrame();
+			if(selected != null) {
+				if((e.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) == MouseEvent.BUTTON1_DOWN_MASK) {
+					Rectangle rect = selected.getRectangle();
+					int x = snap(rect.x), y = snap(rect.y);
+					int dx = snap(getViewX(e)-x), dy = snap(getViewY(e)-y);
+					Rectangle newRectangle = new Rectangle(x,y,dx,dy);
+					selected.setRectangle(newRectangle);
+					selected.setImageFile(editorFrame.data.project.getRelativeFile(imageFile));
+					lastRect = (Rectangle) newRectangle.clone();
+					lastPivot = selected.getPivot();
+				}
+				if((e.getModifiersEx() & MouseEvent.BUTTON3_DOWN_MASK) == MouseEvent.BUTTON3_DOWN_MASK) {
+					selected.setPivot(new Point(getViewX(e),getViewY(e)));
+					lastPivot.x = getViewX(e); lastPivot.y = getViewY(e);
 
-			repaint();
-			fireEdit();
-		}	
+				}
+				repaint();
+				fireEdit();
+			}	
+		} else {
+			Frame selected = getSelectedFrame();
+			if((e.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) == MouseEvent.BUTTON1_DOWN_MASK) {
+				
+				int x = snap(getViewX(e)), y = snap(getViewY(e));	
+				
+				selected.setRectangle(new Rectangle(x,y,lastRect.width,lastRect.height));
+				selected.setImageFile(editorFrame.data.project.getRelativeFile(imageFile));
+				
+				int PivotDX = lastPivot.x - lastRect.x;
+				int PivotDY = lastPivot.y - lastRect.y;
+				selected.setPivot(new Point(x+PivotDX,y+PivotDY));
+				
+				repaint();
+				fireEdit();
+			}
+		}
 	}
 
 	@Override public void mouseMoved(MouseEvent e) {}
@@ -141,18 +166,38 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		Frame selected = getSelectedFrame();
-		if(selected != null) {
+		if (!parent.isUsingLastRect()) {
+			Frame selected = getSelectedFrame();
+			if(selected != null) {
+				if(e.getButton() == MouseEvent.BUTTON1) {
+					selected.setRectangle(new Rectangle(getViewX(e),getViewY(e),0,0));
+					selected.setImageFile(editorFrame.data.project.getRelativeFile(imageFile));
+					lastPivot = selected.getPivot();
+					selected.setPivot(null);
+				}
+				if(e.getButton() == MouseEvent.BUTTON3) {
+					selected.setPivot(new Point(getViewX(e),getViewY(e)));
+					lastPivot.x = getViewX(e); lastPivot.x = getViewY(e);
+				}
+				
+				repaint();
+				fireEdit();
+			}	
+		}
+		else 
+		{
 			if(e.getButton() == MouseEvent.BUTTON1) {
-				selected.setRectangle(new Rectangle(getViewX(e),getViewY(e),0,0));
-				selected.setImageFile(imageFile);
-			}
-			if(e.getButton() == MouseEvent.BUTTON3) 
-				selected.setPivot(new Point(getViewX(e),getViewY(e)));
-
-			repaint();
-			fireEdit();
-		}	
+				Frame selected  = getSelectedFrame();
+				selected.setRectangle(new Rectangle(getViewX(e),getViewY(e),lastRect.width,lastRect.height));
+				selected.setImageFile(editorFrame.data.project.getRelativeFile(imageFile));
+				int PivotDX = lastPivot.x - lastRect.x;
+				int PivotDY = lastPivot.y - lastRect.y;
+				selected.setPivot(new Point(getViewX(e)+PivotDX,getViewY(e)+PivotDY));
+				
+				repaint();
+				fireEdit();
+			}	
+		}
 	}
 
 	private void fireEdit() {

@@ -62,7 +62,7 @@ public class AnimationViewer extends JPanel implements TreeSelectionListener, Ed
 
 	private void drawFrame(Graphics g, Frame frame) {
 		if(frame!=null && frame.getImageFile()!=null && frame.properRectangle()!=null) {
-			BufferedImage image = editor.imageManager.openImage(frame.getImageFile());
+			BufferedImage image = editor.imageManager.openImage(frame.getImageFile().getAbsoluteFile());
 			Rectangle rect = frame.properRectangle();
 			Point pivot = frame.getPivot();
 			int offsetX = getWidth()/2-pivot.x;

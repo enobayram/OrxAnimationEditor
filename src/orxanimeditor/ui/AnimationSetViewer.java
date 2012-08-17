@@ -8,6 +8,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.beans.Transient;
 
 import javax.swing.JPanel;
@@ -16,8 +17,9 @@ import javax.swing.JScrollPane;
 import orxanimeditor.animation.Animation;
 import orxanimeditor.animation.AnimationSet;
 import orxanimeditor.animation.AnimationSet.Link;
+import orxanimeditor.animation.AnimationSet.SetSpecificAnimationData;
 
-public class AnimationSetViewer extends JScrollPane implements MouseListener {
+public class AnimationSetViewer extends JScrollPane implements MouseListener, MouseMotionListener {
 	
 	final int ANIMATIONRADIUS = 30;
 	final int CONNECTIONDOTRADIUS = 3;
@@ -38,6 +40,7 @@ public class AnimationSetViewer extends JScrollPane implements MouseListener {
 		this.set = set;
 		display.setBackground(Color.WHITE);
 		display.addMouseListener(this);
+		display.addMouseMotionListener(this);
 	}
 	public void addAnimation(Animation chosen) {
 		if(set.animations.contains(chosen)) return;
@@ -111,8 +114,19 @@ public class AnimationSetViewer extends JScrollPane implements MouseListener {
 	}
 	
 	private Point getCenter(Animation animation) {
+		if(set.setSpecificAnimationData.containsKey(animation)) {
+			SetSpecificAnimationData animationData = set.setSpecificAnimationData.get(animation);
+			if(animationData.center!=null) 
+				return animationData.center;
+		}
+		
+		return getDefaultCenter(animation);
+	}
+	
+	private Point getDefaultCenter(Animation animation) {
 		return centerOfCircle(set.animations.indexOf(animation));
 	}
+
 
 	Point circumferenceOnAngle(Point center, double theta) {
 		return new Point(center.x+(int)(Math.cos(theta)*ANIMATIONRADIUS), center.y+(int)(Math.sin(theta)*ANIMATIONRADIUS));
@@ -144,7 +158,10 @@ public class AnimationSetViewer extends JScrollPane implements MouseListener {
 				selectedAnimation = null;
 			}
 		}
-		
+		if(e.getButton() == MouseEvent.BUTTON2){
+			selectedAnimation = null;
+			selectedLink      = null;
+		}
 		display.repaint();
 	}
 	private Animation pickAnimation(Point point) {
@@ -160,6 +177,32 @@ public class AnimationSetViewer extends JScrollPane implements MouseListener {
 	@Override public void mouseExited(MouseEvent e) {}
 	@Override public void mouseClicked(MouseEvent e) {}
 	@Override public void mouseReleased(MouseEvent e) {}
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		if((e.getModifiersEx() & MouseEvent.BUTTON3_DOWN_MASK) == MouseEvent.BUTTON3_DOWN_MASK) {
+			if(selectedAnimation == null) {
+				selectedAnimation = pickAnimation(e.getPoint());
+				selectedLink      = null;
+			}
+			else{
+				selectedAnimation = pickAnimation(e.getPoint());
+				if ( selectedAnimation != null ){
+					SetSpecificAnimationData selectedData;
+					if(!set.setSpecificAnimationData.containsKey(selectedAnimation)) {
+						selectedData = new SetSpecificAnimationData();
+						set.setSpecificAnimationData.put(selectedAnimation, selectedData);
+					} else {
+						selectedData = set.setSpecificAnimationData.get(selectedAnimation);
+					}
+					selectedData.center = e.getPoint();
+					display.repaint();
+				}
+			}
+		}
+	}
+	@Override public void mouseMoved(MouseEvent e) {}
+
 	public void deleteAnimation() {
 		if(selectedAnimation!=null) {
 			set.removeAnimation(selectedAnimation);

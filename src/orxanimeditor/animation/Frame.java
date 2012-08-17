@@ -7,24 +7,26 @@ import java.io.File;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import orxanimeditor.animation.Project.RelativeFile;;
+
 public class Frame extends DefaultMutableTreeNode {
 	private static final long serialVersionUID = -2408945560259717838L;
-	File imageFile;
+	RelativeFile imageFile;
 	Rectangle rect;
 	private boolean flipX = false;
 	boolean flipY = false;
-	private Point pivot = new Point(-1,-1);
+	private Point pivot = null;
 	private double keyDuration = -1;
 	
 	public Frame(String name) {
 		super(name);
 	}
 	
-	public void setImageFile(File file) {
+	public void setImageFile(RelativeFile file) {
 		imageFile = file;
 	}
 	
-	public File getImageFile() {
+	public RelativeFile getImageFile() {
 		return imageFile;
 	}
 	
@@ -60,7 +62,7 @@ public class Frame extends DefaultMutableTreeNode {
 	}
 
 	public Point getPivot() {
-		if(pivot.x<0) return new Point(rect.x+rect.width/2, rect.y+rect.height/2);
+		if(pivot==null) return new Point(rect.x+rect.width/2, rect.y+rect.height/2);
 		else return pivot;
 	}
 

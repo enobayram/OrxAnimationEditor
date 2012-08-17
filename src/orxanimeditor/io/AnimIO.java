@@ -51,7 +51,7 @@ public class AnimIO {
            EditorData newData = (EditorData) in.readObject();
            in.close();
            fileIn.close();
-           data.acquireFromData(newData);
+           data.acquireFromData(newData,file);
            return;
        }catch(IOException i)
        {
@@ -63,12 +63,12 @@ public class AnimIO {
 	}
 	
 	public static void exportEditorData(EditorMainWindow editor, EditorData data, boolean append) {
-		if(data.targetIni==null) {
+		if(data.project.targetIni==null) {
 			JOptionPane.showMessageDialog(editor, "Target .ini file is not set");
 			return;
 		}
         try {
-			FileOutputStream fileOut = new FileOutputStream(data.targetIni, append);
+			FileOutputStream fileOut = new FileOutputStream(data.project.targetIni.getAbsoluteFile(), append);
 			streamData(data, fileOut);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -87,7 +87,7 @@ public class AnimIO {
 			exportAnimation(p,animation);
 			for(int fi = 0; fi<animation.getChildCount(); fi++) {
 				Frame f = (Frame) animation.getChildAt(fi);
-				exportFrame(p,f,data.getTargetFolder());
+				exportFrame(p,f,data.project.getTargetFolder());
 			}
 		}
 	}
@@ -128,7 +128,7 @@ public class AnimIO {
 		Point     pivot = f.getPivot();
 		pivot.x -= rect.x;
 		pivot.y -= rect.y;
-		File imageFile = f.getImageFile();
+		File imageFile = f.getImageFile().getAbsoluteFile();
 		File imagePath = new File("");
 		try {
 			imagePath = getRelativeFile(imageFile, baseDirectory);

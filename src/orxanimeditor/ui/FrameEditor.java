@@ -10,11 +10,13 @@ import java.util.Map;
 
 import javax.print.attribute.HashAttributeSet;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
+import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -30,6 +32,8 @@ public class FrameEditor extends JPanel implements TreeSelectionListener, Change
 	JToolBar toolbar;
 	JSlider SnapSlider;
 	int snapSize = 5;
+	JToggleButton useLastRectButton;
+
 
 	Map<File, JScrollPane> openedFiles = new HashMap<File, JScrollPane>();
 	public FrameEditor(EditorMainWindow editorFrame) {
@@ -56,8 +60,15 @@ public class FrameEditor extends JPanel implements TreeSelectionListener, Change
 		SnapSlider.setMinorTickSpacing(1);
 		SnapSlider.setPaintTicks(true);
 		SnapSlider.setPaintLabels(true);
+		
+		ImageIcon useLastRectIcon = editor.getImageIcon("icons/oldRec.png");	
+		toolbar.add(useLastRectButton = new JToggleButton(useLastRectIcon));	
+		useLastRectButton.setToolTipText("Use your last rectangle");		
+
+
 	}
 
+	boolean isUsingLastRect() {return useLastRectButton.isSelected();}
 
 	public void openImage(File file) {
 		if(file==null) return;

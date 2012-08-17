@@ -1,6 +1,8 @@
 package orxanimeditor.animation;
 
+import java.awt.Point;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 public class AnimationSet implements Serializable{
@@ -9,9 +11,15 @@ public class AnimationSet implements Serializable{
 	public String name;
 	public LinkedList<Animation> animations = new LinkedList<Animation>();
 	public LinkedList<Link> 	  links 	 = new LinkedList<Link>();
+	public HashMap<Animation, SetSpecificAnimationData> setSpecificAnimationData;
 	
 	public AnimationSet(String name) {
 		this.name = name;
+		init();
+	}
+	
+	public void init() {
+		setSpecificAnimationData = new HashMap<Animation, SetSpecificAnimationData>();		
 	}
 	
 	public Link	getOrCreateLink(Animation source, Animation destination) {
@@ -60,5 +68,9 @@ public class AnimationSet implements Serializable{
 		public void setDestination(Animation destination) {
 			this.destination = destination;
 		}
+	}
+	
+	public static class SetSpecificAnimationData {
+		public Point center;
 	}
 }

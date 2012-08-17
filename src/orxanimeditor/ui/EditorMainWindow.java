@@ -25,6 +25,8 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.InputStream;
 import java.util.LinkedList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -33,10 +35,12 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import orxanimeditor.animation.Animation;
@@ -55,8 +59,9 @@ public class EditorMainWindow extends JFrame {
 	JMenuBar 		 	menuBar;
 
 	JMenu			 	fileMenu;
-	JMenuItem		 	openAnimationDataItem;
-	JMenuItem			saveAnimationDataItem;
+	JMenuItem		 	newAnimationProjectItem;
+	JMenuItem		 	openAnimationProjectItem;
+	JMenuItem			saveAnimationProjectItem;
 	JMenuItem		 	setTargetItem;
 	JMenuItem		 	writeToTargetItem;
 	JMenuItem		 	appendToTargetItem;	
@@ -72,8 +77,7 @@ public class EditorMainWindow extends JFrame {
 	JFileChooser	 	editorDataChooser = new JFileChooser();
 	JFileChooser	 	iniChooser = new JFileChooser();
 	
-	EditorData 		 	data = new EditorData();
-	
+	EditorData 		 	data;	
 	ImageManager	 	imageManager = new ImageManager();
 	
 	LinkedList<EditListener> editListeners = new LinkedList<EditListener>();
@@ -89,6 +93,7 @@ public class EditorMainWindow extends JFrame {
 	
 	public EditorMainWindow() {
 		super("Orx Animation Editor");
+		data = new EditorData();
 		prepareTree();
 		setLayout(new BorderLayout());
 		animationManager 	= new AnimationManager(this);
@@ -102,7 +107,7 @@ public class EditorMainWindow extends JFrame {
 		addEditListener(animationViewer);
 		addEditListener(animationSetEditor);
 		addEditListener(frameEditor);
-		
+
 		JSplitPane leftLowerSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, animationViewer, animationSetEditor);
 		JSplitPane leftSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, animationManager, leftLowerSplitPane);
 		JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftSplitPane, frameEditor);
@@ -114,6 +119,12 @@ public class EditorMainWindow extends JFrame {
 		setSize(new Dimension(1000, 700));
 		setVisible(true);
 		
+		editorDataChooser.setFileFilter(new FileNameExtensionFilter("Orx Animation Project", "oap"));
+		
+		SetProjectDialog setProjectDialog = new SetProjectDialog(this);
+		setProjectDialog.setLocation(500, 350);
+		setProjectDialog.setVisible(true);
+				
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
@@ -132,14 +143,19 @@ public class EditorMainWindow extends JFrame {
 		fileMenu = new JMenu("File");
 		menuBar.add(fileMenu);
 		
-		openAnimationDataItem = new JMenuItem("Open Animation Data");
-		fileMenu.add(openAnimationDataItem);
-		openAnimationDataItem.addActionListener(openAnimationDataListener);		
-		openAnimationDataItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.ALT_DOWN_MASK));
+		newAnimationProjectItem = new JMenuItem("New Animation Project");
+		fileMenu.add(newAnimationProjectItem);
+		newAnimationProjectItem.addActionListener(newAnimationProjectListener);
+		newAnimationProjectItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.ALT_DOWN_MASK));
 		
-		saveAnimationDataItem = new JMenuItem("Save Animation Data");
-		fileMenu.add(saveAnimationDataItem);
-		saveAnimationDataItem.addActionListener(saveAnimationDataListener);
+		openAnimationProjectItem = new JMenuItem("Open Animation Project");
+		fileMenu.add(openAnimationProjectItem);
+		openAnimationProjectItem.addActionListener(openAnimationProjectListener);		
+		openAnimationProjectItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.ALT_DOWN_MASK));
+		
+		saveAnimationProjectItem = new JMenuItem("Save Animation Project");
+		fileMenu.add(saveAnimationProjectItem);
+		saveAnimationProjectItem.addActionListener(saveAnimationProjectListener);
 		
 		fileMenu.add(new JSeparator());
 		
@@ -203,31 +219,54 @@ public class EditorMainWindow extends JFrame {
 		}
 	};
 	
-	ActionListener openAnimationDataListener = new ActionListener() {
+	ActionListener newAnimationProjectListener = new ActionListener() {
 		public void actionPerformed(ActionEvent arg0) {
-			if(editorDataChooser.showOpenDialog(EditorMainWindow.this)==JFileChooser.APPROVE_OPTION) {
-				AnimIO.readEditorData(editorDataChooser.getSelectedFile(),data);
-				animationManager.reload();
-				animationSetEditor.dataLoaded();
-				repaint();
-			}
+			newProjectAction();
 		}
 	};
 	
-	ActionListener saveAnimationDataListener = new ActionListener() {
+	public void newProjectAction() {
+		if(editorDataChooser.showSaveDialog(EditorMainWindow.this)==JFileChooser.APPROVE_OPTION) {
+			File projectFile=editorDataChooser.getSelectedFile();
+			if(!projectFile.exists() && !Pattern.matches(".*\\..*",projectFile.getName())) {
+				projectFile = new File(projectFile.getPath()+".oap");
+			}
+			data.acquireFromData(new EditorData(),projectFile);
+			animationManager.reload();
+			animationSetEditor.dataLoaded();
+			repaint();
+		}
+	}
+	
+	ActionListener openAnimationProjectListener = new ActionListener() {
+		public void actionPerformed(ActionEvent arg0) {
+			openProjectAction();
+		}
+	};
+	
+	public void openProjectAction() {
+		if(editorDataChooser.showOpenDialog(EditorMainWindow.this)==JFileChooser.APPROVE_OPTION) {
+			File projectFile = editorDataChooser.getSelectedFile();
+			AnimIO.readEditorData(projectFile,data);
+			animationManager.reload();
+			animationSetEditor.dataLoaded();
+			repaint();
+		}
+	}
+	
+	
+	ActionListener saveAnimationProjectListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			if(editorDataChooser.showSaveDialog(EditorMainWindow.this)==JFileChooser.APPROVE_OPTION) {
-				AnimIO.writeEditorData(data,editorDataChooser.getSelectedFile());
-			}			
+				AnimIO.writeEditorData(data,data.project.projectFile);
 		}
 	};
 	
 	ActionListener setTargetItemActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			if(iniChooser.showSaveDialog(EditorMainWindow.this)==JFileChooser.APPROVE_OPTION) {
-				data.targetIni=iniChooser.getSelectedFile();
-				imageChooser.setCurrentDirectory(data.getTargetFolder());
-				editorDataChooser.setCurrentDirectory(data.getTargetFolder());
+				data.project.targetIni=data.project.getRelativeFile(iniChooser.getSelectedFile());
+				imageChooser.setCurrentDirectory(data.project.getTargetFolder());
+				editorDataChooser.setCurrentDirectory(data.project.getTargetFolder());
 			}						
 		}
 	};
