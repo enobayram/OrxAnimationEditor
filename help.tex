@@ -1,4 +1,7 @@
 \documentclass{article}
+
+\usepackage{graphicx}
+
 \title{Orx Animation Editor Help}
 \author{Enis Bayramoglu (enobayram)}
 \date{\today}
@@ -19,28 +22,111 @@ animations, but they are, as of now, out of scope of this editor, since much mor
 
 Note that the Orx Animation Editor is heavily under development, and it's even hard to call it at its alpha stage. That said, I've already started using it for
 my personal projects, and I hope it will be useful to someone even with its current set of features. If you start using it for any real purpose, and plan to invest
-effort into it, please let me know at the \textit{Orx Animation Editor} thread in the Orx forums.
+time and effort into it, please let me know at the \textit{Graphical Orx Animation Editor} thread in the Orx forums.
 
 \section{Set Project Dialog}
+The editor always has to have an active project at any given time. This is needed in order to ensure that any referenced files have a relative base location. The project
+file marks that base location. The intention is to be able to bundle the project file with the rest of an Orx based project and retain the ability to move the bundle together accross file systems.
+
+In summary, this dialog forces you to create a new animation project or open an existing one before you can do anything else.
 
 \subsection{New Animation Project}
+Choose a new file to be your animation project file. If you don't specify any extension (which you are encouraged not to), the default extension is .oap. As of now, I've
+only tested the case when the animation project file resides in a common ancestor folder of the target .ini file and the referenced image files, so you're encouraged to
+do the same.
 
 \subsection{Open Animation Project}
+As the name suggests... 
+
+One thing to note here is that I'm trying to keep the saved projects forward compatible. If you have any compatibility problems with a most recent version, please let me know.
 
 \section{Animation Manager}
+The animation manager is used to create, delete and copy animations and frames. The selected object (animation or frame) is also watched by the Frame Editor and the
+Animation Viewer views.
+
+The two buttons \includegraphics{icons/NewAnimation} and \includegraphics{icons/NewFrame} are used to create a new animation and a new frame respectively. Note that
+in order to create a new frame, you need to select an animation first. The frame will be appended to this animation.
+
+\subsection{Hotkeys}
+\begin{description}
+\item[Ctrl+C/V] The animation manager supports Ctrl+C -> Ctrl+V to copy and paste animations and frames. Note that, trying to copy a combination of animations and frames ignores the selected frames. So you can either copy a set of animations, or a set of frames (into another animation)
+\item[Del]   This will delete the current selection
+\item[Space] When a frame is selected, pressing Space will jump the frame editor to the image referenced by that frame.
+
+\end{description}
 
 \section{Animation Viewer}
+The animation viewer is very primitive at the moment. It simply shows whatever is last selected in the Animation Manager. I'm planning to add the ability to choose
+what to view, as well as to be able to view sequence of animations.
 
 \section{Frame Editor}
+The frame editor is currently used to set three properties of the last selected frame:
+\begin{itemize}
+\item the image file
+\item the frame rectangle
+\item the pivot
+\end{itemize}
+
+The frame editor toolbar is currently composed of two tools:
+\begin{description}
+\item[Snap Slider] This slider allows to set the grid size (in pixels) for snapping, while a frame rectangle is being drawn.
+\item[Old Rec]	This toggle button enables reusing the previously drawn rectangle.
+\end{description}
+
+The frame rectangle is set by left clicking and dragging on the image. The behavior of this operation is modified by the snap slider. The rectangle corners snap to
+the nodes of a virtual grid whose size is defined by the snap slider. When the "Old Rec" is activated, the last drawn rectangle, along with its pivot is used. The frame
+image is automatically set to the current image, whenever a rectangle is drawn.
+
+The pivot is set by right-clicking anywhere on the image. The default pivot is the center of a newly drawn rectangle.
+
+It is possible to zoom in the Frame Editor using the mouse wheel.
 
 \section{Animation Set Editor}
+
+In the Animation Set Editor, it is possible to:
+\begin{itemize}
+\item Create new animation sets / Delete them
+\item Add animations to an existing animation set / remove them
+\item Create/Remove links between animations
+\item Visually organize animations in the Animation Set Editor view.
+\end{itemize}
+
+\subsection{Toolbar}
+\begin{description}
+\item[\includegraphics{icons/NewAnimationSet}: Create a new animation set]
+\item[\includegraphics{icons/deleteAnimationSet}: Delete the current animation set]
+\item[\includegraphics{icons/NewAnimation}: Add an animation to the current animation set]
+\item[\includegraphics{icons/deleteAnimation}: Remove the currently selected animation from the current animation set]
+\item[\includegraphics{icons/deleteLink}: Remove the currently selected animation link from the current animation set]
+\end{description}
+
+\subsection{Creating and Selecting Links}
+In order to create a link, first select the source animation by left-clicking on it. Then, select the target animation again by left-clicking on it. This way, a new
+link will be created, and it will be the current selection. In order to select an already existing link, repeat the previous steps as if you're creating it from scratch,
+no new links will be created, the already existing one will be selected.
+
+\subsection{Organising Animation Icons}
+The animation icons in the Animation Set Editor view can me dragged around by right-clicking on an icon and dragging.
 
 \section{Menu Bar}
 
 \subsection{File}
+The file menu is used to manipulate animation projects, set the target .ini file, write to the target .ini file and open a new image in the frame editor.
+
+\subsubsection{Notes}
+\begin{itemize}
+\item The project file IS NOT saved incrementally after each operation inside the editor. One needs to save it as needed. There is also a prompt to save
+the project before closing the editor.
+\item When you're writing to an .ini file, beware that the editor does not currently check for the consistency of the resulting file. For instance, if you have
+any two items (animations, frames, animationsets) with the same name, the ini file will have duplicate entries, and it'll probably cause troubles. In the future,
+a diagnostic will be shown in case of such problems.
+\end{itemize}
 
 \subsection{Edit}
+Currently, the edit section has utilities for editing the selected frames. It is possible to increase/decrease frame key durations as well as flip the keys in x/y
+axes using the items in the Edit menu.
 
 \subsection{Help}
+The help menu is only used to view this document at the moment.
 
 \end{document}

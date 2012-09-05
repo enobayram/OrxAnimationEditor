@@ -1,0 +1,367 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<!--Converted with LaTeX2HTML 2008 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Orx Animation Editor Help</TITLE>
+<META NAME="description" CONTENT="Orx Animation Editor Help">
+<META NAME="keywords" CONTENT="help">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="LaTeX2HTML v2008">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="help.css">
+
+</HEAD>
+
+<BODY >
+<H1 ALIGN="CENTER">Orx Animation Editor Help</H1>
+<DIV CLASS="author_info">
+
+<P ALIGN="CENTER"><STRONG>Enis Bayramoglu (enobayram)</STRONG></P>
+<P ALIGN="CENTER"><STRONG>September 5, 2012</STRONG></P>
+</DIV>
+<BR>
+
+<H2><A NAME="SECTION00010000000000000000">
+Contents</A>
+</H2>
+<!--Table of Contents-->
+
+<UL CLASS="TofC">
+<LI><A NAME="tex2html21"
+  HREF="help.html#SECTION00020000000000000000">Preface</A>
+<LI><A NAME="tex2html22"
+  HREF="help.html#SECTION00030000000000000000">Introduction</A>
+<LI><A NAME="tex2html23"
+  HREF="help.html#SECTION00040000000000000000">Set Project Dialog</A>
+<UL>
+<LI><A NAME="tex2html24"
+  HREF="help.html#SECTION00041000000000000000">New Animation Project</A>
+<LI><A NAME="tex2html25"
+  HREF="help.html#SECTION00042000000000000000">Open Animation Project</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html26"
+  HREF="help.html#SECTION00050000000000000000">Animation Manager</A>
+<UL>
+<LI><A NAME="tex2html27"
+  HREF="help.html#SECTION00051000000000000000">Hotkeys</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html28"
+  HREF="help.html#SECTION00060000000000000000">Animation Viewer</A>
+<LI><A NAME="tex2html29"
+  HREF="help.html#SECTION00070000000000000000">Frame Editor</A>
+<LI><A NAME="tex2html30"
+  HREF="help.html#SECTION00080000000000000000">Animation Set Editor</A>
+<UL>
+<LI><A NAME="tex2html31"
+  HREF="help.html#SECTION00081000000000000000">Toolbar</A>
+<LI><A NAME="tex2html32"
+  HREF="help.html#SECTION00082000000000000000">Creating and Selecting Links</A>
+<LI><A NAME="tex2html33"
+  HREF="help.html#SECTION00083000000000000000">Organising Animation Icons</A>
+</UL>
+<BR>
+<LI><A NAME="tex2html34"
+  HREF="help.html#SECTION00090000000000000000">Menu Bar</A>
+<UL>
+<LI><A NAME="tex2html35"
+  HREF="help.html#SECTION00091000000000000000">File</A>
+<LI><A NAME="tex2html36"
+  HREF="help.html#SECTION00092000000000000000">Edit</A>
+<LI><A NAME="tex2html37"
+  HREF="help.html#SECTION00093000000000000000">Help</A>
+</UL></UL>
+<!--End of Table of Contents-->
+<P>
+
+<H1><A NAME="SECTION00020000000000000000">
+Preface</A>
+</H1>
+This help system is meant to fill the need for a minimal help support for the Orx Animation Editor. I reckon that as the editor complexity increases,
+we'll probably end up using a more advanced help browser, but for now, I hope this will suffice.
+
+<P>
+I'm planning to update this document as new features are added, but if you notice that it's outdated, please inform me (enobayram) on the Orx forums.
+
+<P>
+
+<H1><A NAME="SECTION00030000000000000000">
+Introduction</A>
+</H1>
+The Orx Animation Editor has been created with a hope to satisfy the need for <SPAN  CLASS="textbf">minimal</SPAN> animation editing without touching Orx .ini files. As nice as
+.ini files might be, they're a bit cumbersome for specifying sprite animations and animation sets. I imagine they must also be cumbersome for skeletal
+animations, but they are, as of now, out of scope of this editor, since much more professional programs (like Spriter) are under development for that purpose. Unless the duplicated (and hard) work for skeletal animations is justified, I am planning to stick to the mentioned minimal scope.
+
+<P>
+Note that the Orx Animation Editor is heavily under development, and it's even hard to call it at its alpha stage. That said, I've already started using it for
+my personal projects, and I hope it will be useful to someone even with its current set of features. If you start using it for any real purpose, and plan to invest
+time and effort into it, please let me know at the <SPAN  CLASS="textit">Graphical Orx Animation Editor</SPAN> thread in the Orx forums.
+
+<P>
+
+<H1><A NAME="SECTION00040000000000000000">
+Set Project Dialog</A>
+</H1>
+The editor always has to have an active project at any given time. This is needed in order to ensure that any referenced files have a relative base location. The project
+file marks that base location. The intention is to be able to bundle the project file with the rest of an Orx based project and retain the ability to move the bundle together accross file systems.
+
+<P>
+In summary, this dialog forces you to create a new animation project or open an existing one before you can do anything else.
+
+<P>
+
+<H2><A NAME="SECTION00041000000000000000">
+New Animation Project</A>
+</H2>
+Choose a new file to be your animation project file. If you don't specify any extension (which you are encouraged not to), the default extension is .oap. As of now, I've
+only tested the case when the animation project file resides in a common ancestor folder of the target .ini file and the referenced image files, so you're encouraged to
+do the same.
+
+<P>
+
+<H2><A NAME="SECTION00042000000000000000">
+Open Animation Project</A>
+</H2>
+As the name suggests... 
+
+<P>
+One thing to note here is that I'm trying to keep the saved projects forward compatible. If you have any compatibility problems with a most recent version, please let me know.
+
+<P>
+
+<H1><A NAME="SECTION00050000000000000000">
+Animation Manager</A>
+</H1>
+The animation manager is used to create, delete and copy animations and frames. The selected object (animation or frame) is also watched by the Frame Editor and the
+Animation Viewer views.
+
+<P>
+The two buttons <IMG
+  WIDTH="40" HEIGHT="40" ALIGN="BOTTOM" BORDER="0"
+ SRC="./NewAnimation.png"
+ ALT="Image NewAnimation"> and <IMG
+  WIDTH="40" HEIGHT="40" ALIGN="BOTTOM" BORDER="0"
+ SRC="./NewFrame.png"
+ ALT="Image NewFrame"> are used to create a new animation and a new frame respectively. Note that
+in order to create a new frame, you need to select an animation first. The frame will be appended to this animation.
+
+<P>
+
+<H2><A NAME="SECTION00051000000000000000">
+Hotkeys</A>
+</H2>
+<DL>
+<DT><STRONG>Ctrl+C/V</STRONG></DT>
+<DD>The animation manager supports Ctrl+C -&gt; Ctrl+V to copy and paste animations and frames. Note that, trying to copy a combination of animations and frames ignores the selected frames. So you can either copy a set of animations, or a set of frames (into another animation)
+</DD>
+<DT><STRONG>Del</STRONG></DT>
+<DD>This will delete the current selection
+</DD>
+<DT><STRONG>Space</STRONG></DT>
+<DD>When a frame is selected, pressing Space will jump the frame editor to the image referenced by that frame.
+
+<P>
+</DD>
+</DL>
+
+<P>
+
+<H1><A NAME="SECTION00060000000000000000">
+Animation Viewer</A>
+</H1>
+The animation viewer is very primitive at the moment. It simply shows whatever is last selected in the Animation Manager. I'm planning to add the ability to choose
+what to view, as well as to be able to view sequence of animations.
+
+<P>
+
+<H1><A NAME="SECTION00070000000000000000">
+Frame Editor</A>
+</H1>
+The frame editor is currently used to set three properties of the last selected frame:
+
+<UL>
+<LI>the image file
+</LI>
+<LI>the frame rectangle
+</LI>
+<LI>the pivot
+</LI>
+</UL>
+
+<P>
+The frame editor toolbar is currently composed of two tools:
+<DL>
+<DT><STRONG>Snap Slider</STRONG></DT>
+<DD>This slider allows to set the grid size (in pixels) for snapping, while a frame rectangle is being drawn.
+</DD>
+<DT><STRONG>Old Rec</STRONG></DT>
+<DD>This toggle button enables reusing the previously drawn rectangle.
+</DD>
+</DL>
+
+<P>
+The frame rectangle is set by left clicking and dragging on the image. The behavior of this operation is modified by the snap slider. The rectangle corners snap to
+the nodes of a virtual grid whose size is defined by the snap slider. When the "Old Rec" is activated, the last drawn rectangle, along with its pivot is used. The frame
+image is automatically set to the current image, whenever a rectangle is drawn.
+
+<P>
+The pivot is set by right-clicking anywhere on the image. The default pivot is the center of a newly drawn rectangle.
+
+<P>
+It is possible to zoom in the Frame Editor using the mouse wheel.
+
+<P>
+
+<H1><A NAME="SECTION00080000000000000000">
+Animation Set Editor</A>
+</H1>
+
+<P>
+In the Animation Set Editor, it is possible to:
+
+<UL>
+<LI>Create new animation sets / Delete them
+</LI>
+<LI>Add animations to an existing animation set / remove them
+</LI>
+<LI>Create/Remove links between animations
+</LI>
+<LI>Visually organize animations in the Animation Set Editor view.
+</LI>
+</UL>
+
+<P>
+
+<H2><A NAME="SECTION00081000000000000000">
+Toolbar</A>
+</H2>
+<DL>
+<DT><STRONG><IMG
+  WIDTH="40" HEIGHT="40" ALIGN="BOTTOM" BORDER="0"
+ SRC="./NewAnimationSet.png"
+ ALT="Image NewAnimationSet">: Create a new animation set</STRONG></DT>
+<DD>
+</DD>
+<DT><STRONG><IMG
+  WIDTH="40" HEIGHT="40" ALIGN="BOTTOM" BORDER="0"
+ SRC="./deleteAnimationSet.png"
+ ALT="Image deleteAnimationSet">: Delete the current animation set</STRONG></DT>
+<DD>
+</DD>
+<DT><STRONG><IMG
+  WIDTH="40" HEIGHT="40" ALIGN="BOTTOM" BORDER="0"
+ SRC="./NewAnimation.png"
+ ALT="Image NewAnimation">: Add an animation to the current animation set</STRONG></DT>
+<DD>
+</DD>
+<DT><STRONG><IMG
+  WIDTH="40" HEIGHT="40" ALIGN="BOTTOM" BORDER="0"
+ SRC="./deleteAnimation.png"
+ ALT="Image deleteAnimation">: Remove the currently selected animation from the current animation set</STRONG></DT>
+<DD>
+</DD>
+<DT><STRONG><IMG
+  WIDTH="40" HEIGHT="40" ALIGN="BOTTOM" BORDER="0"
+ SRC="./deleteLink.png"
+ ALT="Image deleteLink">: Remove the currently selected animation link from the current animation set</STRONG></DT>
+<DD>
+</DD>
+</DL>
+
+<P>
+
+<H2><A NAME="SECTION00082000000000000000">
+Creating and Selecting Links</A>
+</H2>
+In order to create a link, first select the source animation by left-clicking on it. Then, select the target animation again by left-clicking on it. This way, a new
+link will be created, and it will be the current selection. In order to select an already existing link, repeat the previous steps as if you're creating it from scratch,
+no new links will be created, the already existing one will be selected.
+
+<P>
+
+<H2><A NAME="SECTION00083000000000000000">
+Organising Animation Icons</A>
+</H2>
+The animation icons in the Animation Set Editor view can me dragged around by right-clicking on an icon and dragging.
+
+<P>
+
+<H1><A NAME="SECTION00090000000000000000">
+Menu Bar</A>
+</H1>
+
+<P>
+
+<H2><A NAME="SECTION00091000000000000000">
+File</A>
+</H2>
+The file menu is used to manipulate animation projects, set the target .ini file, write to the target .ini file and open a new image in the frame editor.
+
+<P>
+
+<H3><A NAME="SECTION00091100000000000000">
+Notes</A>
+</H3>
+
+<UL>
+<LI>The project file IS NOT saved incrementally after each operation inside the editor. One needs to save it as needed. There is also a prompt to save
+the project before closing the editor.
+</LI>
+<LI>When you're writing to an .ini file, beware that the editor does not currently check for the consistency of the resulting file. For instance, if you have
+any two items (animations, frames, animationsets) with the same name, the ini file will have duplicate entries, and it'll probably cause troubles. In the future,
+a diagnostic will be shown in case of such problems.
+</LI>
+</UL>
+
+<P>
+
+<H2><A NAME="SECTION00092000000000000000">
+Edit</A>
+</H2>
+Currently, the edit section has utilities for editing the selected frames. It is possible to increase/decrease frame key durations as well as flip the keys in x/y
+axes using the items in the Edit menu.
+
+<P>
+
+<H2><A NAME="SECTION00093000000000000000">
+Help</A>
+</H2>
+The help menu is only used to view this document at the moment.
+
+<P>
+
+<H1><A NAME="SECTION000100000000000000000">
+About this document ...</A>
+</H1>
+ <STRONG>Orx Animation Editor Help</STRONG><P>
+This document was generated using the
+<A HREF="http://www.latex2html.org/"><STRONG>LaTeX</STRONG>2<tt>HTML</tt></A> translator Version 2008 (1.71)
+<P>
+Copyright &#169; 1993, 1994, 1995, 1996,
+Nikos Drakos, 
+Computer Based Learning Unit, University of Leeds.
+<BR>
+Copyright &#169; 1997, 1998, 1999,
+<A HREF="http://www.maths.mq.edu.au/~ross/">Ross Moore</A>, 
+Mathematics Department, Macquarie University, Sydney.
+<P>
+The command line arguments were: <BR>
+ <STRONG>latex2html</STRONG> <TT>help.tex -no_navigation -split 0</TT>
+<P>
+The translation was initiated by Enis Bayramoglu on 2012-09-05
+<BR><HR>
+<ADDRESS>
+Enis Bayramoglu
+2012-09-05
+</ADDRESS>
+</BODY>
+</HTML>
