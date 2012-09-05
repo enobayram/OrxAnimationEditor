@@ -125,7 +125,7 @@ public class AnimIO {
 
 	private static void exportFrame(PrintStream p, Frame f, File baseDirectory) {
 		Rectangle rect = f.properRectangle();
-		Point     pivot = f.getPivot();
+		Point     pivot = (Point) f.getPivot().clone();
 		pivot.x -= rect.x;
 		pivot.y -= rect.y;
 		File imageFile = f.getImageFile().getAbsoluteFile();

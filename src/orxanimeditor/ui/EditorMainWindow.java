@@ -73,6 +73,10 @@ public class EditorMainWindow extends JFrame {
 	JMenuItem		 	flipXItem;
 	JMenuItem		 	flipYItem;
 	
+	JMenu			 	helpMenu;
+	JMenuItem		 	helpMenuItem;
+
+	
 	JFileChooser	 	imageChooser = new JFileChooser();
 	JFileChooser	 	editorDataChooser = new JFileChooser();
 	JFileChooser	 	iniChooser = new JFileChooser();
@@ -81,6 +85,8 @@ public class EditorMainWindow extends JFrame {
 	ImageManager	 	imageManager = new ImageManager();
 	
 	LinkedList<EditListener> editListeners = new LinkedList<EditListener>();
+	
+	HelpViewer			helpViewer = new HelpViewer(this);
 	
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
@@ -204,6 +210,13 @@ public class EditorMainWindow extends JFrame {
 		flipYItem.addActionListener(editActionListener);
 		flipYItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, InputEvent.ALT_DOWN_MASK));
 		
+		helpMenu = new JMenu("Help");
+		menuBar.add(helpMenu);
+		
+		helpMenuItem = new JMenuItem("Help Contents");
+		helpMenu.add(helpMenuItem);
+		helpMenuItem.addActionListener(helpContentsActionListener);
+		
 	}
 	
 	void poke() {
@@ -297,6 +310,14 @@ public class EditorMainWindow extends JFrame {
 			fireEdit();
 		}
 	};
+	
+	ActionListener helpContentsActionListener = new ActionListener() {
+		public void actionPerformed(ActionEvent arg0) {
+			helpViewer.setModal(false);
+			helpViewer.setVisible(true);
+		}
+	};
+
 		
 	public void addEditListener(EditListener l) {editListeners.add(l);}
 
@@ -340,5 +361,5 @@ public class EditorMainWindow extends JFrame {
 			// We're not running from a jar file
 			return new ImageIcon(path);
 		}
-	}
+	}	
 }

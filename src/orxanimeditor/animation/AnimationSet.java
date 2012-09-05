@@ -4,6 +4,8 @@ import java.awt.Point;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class AnimationSet implements Serializable{
 	private static final long serialVersionUID = 6664178554050675892L;
@@ -11,7 +13,7 @@ public class AnimationSet implements Serializable{
 	public String name;
 	public LinkedList<Animation> animations = new LinkedList<Animation>();
 	public LinkedList<Link> 	  links 	 = new LinkedList<Link>();
-	public HashMap<Animation, SetSpecificAnimationData> setSpecificAnimationData;
+	public Map<Animation, SetSpecificAnimationData> setSpecificAnimationData;
 	
 	public AnimationSet(String name) {
 		this.name = name;
@@ -19,7 +21,8 @@ public class AnimationSet implements Serializable{
 	}
 	
 	public void init() {
-		setSpecificAnimationData = new HashMap<Animation, SetSpecificAnimationData>();		
+		if(setSpecificAnimationData == null)
+			setSpecificAnimationData = new HashMap<Animation, SetSpecificAnimationData>();		
 	}
 	
 	public Link	getOrCreateLink(Animation source, Animation destination) {
@@ -70,7 +73,7 @@ public class AnimationSet implements Serializable{
 		}
 	}
 	
-	public static class SetSpecificAnimationData {
+	public static class SetSpecificAnimationData implements Serializable {
 		public Point center;
 	}
 }
