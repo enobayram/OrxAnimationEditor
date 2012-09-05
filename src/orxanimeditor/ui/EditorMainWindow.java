@@ -40,6 +40,7 @@ import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -130,15 +131,35 @@ public class EditorMainWindow extends JFrame {
 		SetProjectDialog setProjectDialog = new SetProjectDialog(this);
 		setProjectDialog.setLocation(500, 350);
 		setProjectDialog.setVisible(true);
-				
-		addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent e) {
-				System.exit(0);
-			}
-		});
+		
+		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		addWindowListener(windowAdapter);
 		
 	}
+	
+	WindowAdapter windowAdapter = new WindowAdapter() {
+		@Override
+		public void windowClosing(WindowEvent e) {
+			int choice = JOptionPane.showConfirmDialog(EditorMainWindow.this
+					,"Save the animation project before exiting?\n" +
+					 "(Note that currently this message pops up regardless\n " +
+					 "of any change to the animation project...)"
+					 , "Save Project"
+					 , JOptionPane.YES_NO_CANCEL_OPTION
+					 , JOptionPane.QUESTION_MESSAGE);
+			switch(choice) {
+			case JOptionPane.YES_OPTION:
+				saveProject();
+				System.exit(0);
+				break;
+			case JOptionPane.NO_OPTION:
+				System.exit(0);
+				break;
+			case JOptionPane.CANCEL_OPTION:
+				break;
+			}
+		}
+	};
 	
 	private void prepareTree() {
 		
@@ -245,10 +266,16 @@ public class EditorMainWindow extends JFrame {
 				projectFile = new File(projectFile.getPath()+".oap");
 			}
 			data.acquireFromData(new EditorData(),projectFile);
-			animationManager.reload();
-			animationSetEditor.dataLoaded();
-			repaint();
+			projectChanged();
 		}
+	}
+	
+	private void projectChanged() {
+		imageChooser.setCurrentDirectory(data.project.projectFile.getParentFile());
+		iniChooser.setCurrentDirectory(data.project.projectFile.getParentFile());
+		animationManager.reload();
+		animationSetEditor.dataLoaded();
+		repaint();		
 	}
 	
 	ActionListener openAnimationProjectListener = new ActionListener() {
@@ -261,18 +288,20 @@ public class EditorMainWindow extends JFrame {
 		if(editorDataChooser.showOpenDialog(EditorMainWindow.this)==JFileChooser.APPROVE_OPTION) {
 			File projectFile = editorDataChooser.getSelectedFile();
 			AnimIO.readEditorData(projectFile,data);
-			animationManager.reload();
-			animationSetEditor.dataLoaded();
-			repaint();
+			projectChanged();
 		}
 	}
 	
 	
 	ActionListener saveAnimationProjectListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-				AnimIO.writeEditorData(data,data.project.projectFile);
+			saveProject();
 		}
 	};
+	
+	public void saveProject() {
+		AnimIO.writeEditorData(data,data.project.projectFile);		
+	}
 	
 	ActionListener setTargetItemActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {

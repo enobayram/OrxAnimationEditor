@@ -9,7 +9,6 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.beans.Transient;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -99,14 +98,12 @@ public class AnimationSetViewer extends JScrollPane implements MouseListener, Mo
 		}
 		
 		@Override
-		@Transient
 		public Dimension getMinimumSize() {
 			int displayRadius = (int) getScatterRadius() + ANIMATIONRADIUS;
 			return new Dimension(2*displayRadius, 2*displayRadius);
 		}
 		
 		@Override
-		@Transient
 		public Dimension getPreferredSize() {
 			return getMinimumSize();
 		}
