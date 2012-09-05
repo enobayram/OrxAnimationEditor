@@ -9,6 +9,7 @@ import java.net.URL;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
@@ -33,15 +34,18 @@ public class HelpViewer extends JDialog implements HyperlinkListener {
 		helpContents.setEditable(false);
 		helpContents.setContentType("text/html");
 		try {
-			helpContents.setPage(new File(helpFile).toURI().toURL());
+			File helpInFile = new File(helpFile);
+			if(!helpInFile.exists()) {
+				throw new IOException();
+			}			
+			helpContents.setPage(helpInFile.toURI().toURL());
 		} catch (IOException e) {
 			try {
-				helpContents.setPage(ClassLoader.getSystemResource(helpFile));
-			} catch (MalformedURLException e1) {
+				URL helpInJar = ClassLoader.getSystemResource(helpFile);
+				helpContents.setPage(helpInJar);
+			} catch (Exception e1) {
 				e1.printStackTrace();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
+			} 
 		}
 
 		helpContents.addHyperlinkListener(this);

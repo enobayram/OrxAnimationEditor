@@ -87,7 +87,7 @@ public class EditorMainWindow extends JFrame {
 	
 	LinkedList<EditListener> editListeners = new LinkedList<EditListener>();
 	
-	HelpViewer			helpViewer = new HelpViewer(this);
+	HelpViewer			helpViewer;
 	
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
@@ -107,6 +107,7 @@ public class EditorMainWindow extends JFrame {
 		frameEditor      	= new FrameEditor(this);
 		animationViewer  	= new AnimationViewer(this);
 		animationSetEditor	= new AnimationSetEditor(this);
+		helpViewer 			= new HelpViewer(this);
 		
 		animationManager.animationTree.addTreeSelectionListener(animationViewer);
 		animationManager.animationTree.addTreeSelectionListener(frameEditor);
