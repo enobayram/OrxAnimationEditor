@@ -13,9 +13,9 @@ import orxanimeditor.animation.Frame;
 import orxanimeditor.ui.AnimationManager;
 
 public class AnimationTreeRenderer extends DefaultTreeCellRenderer {
-	AnimationManager manager;
-	public AnimationTreeRenderer(AnimationManager manager) {
-		this.manager = manager;
+	AnimationTree animationTree;
+	public AnimationTreeRenderer(AnimationTree manager) {
+		this.animationTree = manager;
 	}
 	@Override
 	public Component getTreeCellRendererComponent(
@@ -33,16 +33,16 @@ public class AnimationTreeRenderer extends DefaultTreeCellRenderer {
         Object valueData = value;
         if(valueData instanceof Animation) {
         	if(expanded)
-        		setIcon(manager.animationIcon);
+        		setIcon(AnimationManager.animationIcon);
         	else
-        		setIcon(manager.animationCollapsedIcon);
+        		setIcon(AnimationManager.animationCollapsedIcon);
         } else if(valueData instanceof Frame) {
-        	setIcon(manager.frameIcon);
+        	setIcon(AnimationManager.frameIcon);
         } else if(valueData instanceof EditorData) {
         	setText("Animations");
         }
         
-        if(value == manager.getSelectedNode())
+        if(value == animationTree.getSelectedNode())
         	setForeground(Color.BLUE);
         else
         	setForeground(Color.BLACK);

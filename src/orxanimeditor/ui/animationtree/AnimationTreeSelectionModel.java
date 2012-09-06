@@ -2,6 +2,7 @@ package orxanimeditor.ui.animationtree;
 
 import java.util.LinkedList;
 
+import javax.swing.event.TreeSelectionEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeSelectionModel;
 import javax.swing.tree.TreePath;
@@ -9,6 +10,10 @@ import javax.swing.tree.TreePath;
 import orxanimeditor.animation.HierarchicalData;
 
 public class AnimationTreeSelectionModel extends DefaultTreeSelectionModel {
+	AnimationTree tree;
+	public AnimationTreeSelectionModel(AnimationTree tree) {
+		this.tree = tree;
+	}
 	@Override public void addSelectionPath(TreePath path) {
 		if(path.getLastPathComponent() instanceof HierarchicalData)
 			super.addSelectionPath(path);
@@ -37,5 +42,11 @@ public class AnimationTreeSelectionModel extends DefaultTreeSelectionModel {
 				filteredPaths.add(path);		
 		}
 		super.setSelectionPaths(filteredPaths.toArray(new TreePath[0]));
+	}
+	
+	@Override
+	protected void fireValueChanged(TreeSelectionEvent e) {
+		tree.selectedNode = e.getPath().getLastPathComponent();
+		super.fireValueChanged(e);
 	}
 }

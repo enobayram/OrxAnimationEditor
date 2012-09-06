@@ -8,7 +8,7 @@ public class Animation implements HierarchicalData, Serializable, Cloneable{
 	private double defaultKeyDuration = 0.3;
 	private String name;
 	private LinkedList<Frame> frames = new LinkedList<Frame>();
-	private EditorData parent = null;
+	private transient EditorData parent = null;
 	public Animation(String name) {
 		this.name=name;
 	}

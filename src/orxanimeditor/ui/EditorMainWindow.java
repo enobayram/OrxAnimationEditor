@@ -109,7 +109,6 @@ public class EditorMainWindow extends JFrame {
 		
 		animationManager.animationTree.addTreeSelectionListener(frameEditor);
 		animationManager.animationTree.addTreeSelectionListener(animationViewer);
-		animationManager.animationTree.addTreeSelectionListener(animationManager);
 
 		JSplitPane leftLowerSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, animationViewer, animationSetEditor);
 		JSplitPane leftSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, animationManager, leftLowerSplitPane);

@@ -143,16 +143,18 @@ public class AnimationSetViewer extends JScrollPane implements MouseListener, Mo
 	}
 	@Override
 	public void mousePressed(MouseEvent e) {
-		if(selectedAnimation == null) {
-			selectedAnimation = pickAnimation(e.getPoint());
-			selectedLink      = null;
-		} else {
-			Animation otherAnimation = pickAnimation(e.getPoint());
-			if(otherAnimation!=null) {
-				selectedLink = set.getOrCreateLink(selectedAnimation,otherAnimation);
-				selectedAnimation = null;
+		if(e.getButton() == MouseEvent.BUTTON1) {
+			if(selectedAnimation == null) {
+				selectedAnimation = pickAnimation(e.getPoint());
+				selectedLink      = null;
 			} else {
-				selectedAnimation = null;
+				Animation otherAnimation = pickAnimation(e.getPoint());
+				if(otherAnimation!=null) {
+					selectedLink = set.getOrCreateLink(selectedAnimation,otherAnimation);
+					selectedAnimation = null;
+				} else {
+					selectedAnimation = null;
+				}
 			}
 		}
 		if(e.getButton() == MouseEvent.BUTTON2){
@@ -178,23 +180,18 @@ public class AnimationSetViewer extends JScrollPane implements MouseListener, Mo
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		if((e.getModifiersEx() & MouseEvent.BUTTON3_DOWN_MASK) == MouseEvent.BUTTON3_DOWN_MASK) {
-			if(selectedAnimation == null) {
-				selectedAnimation = pickAnimation(e.getPoint());
-				selectedLink      = null;
-			}
-			else{
-				selectedAnimation = pickAnimation(e.getPoint());
-				if ( selectedAnimation != null ){
-					SetSpecificAnimationData selectedData;
-					if(!set.setSpecificAnimationData.containsKey(selectedAnimation)) {
-						selectedData = new SetSpecificAnimationData();
-						set.setSpecificAnimationData.put(selectedAnimation, selectedData);
-					} else {
-						selectedData = set.setSpecificAnimationData.get(selectedAnimation);
-					}
-					selectedData.center = e.getPoint();
-					display.repaint();
+			Animation draggingAnimation = pickAnimation(e.getPoint());
+			if ( draggingAnimation != null ){
+				SetSpecificAnimationData selectedData;
+				if(!set.setSpecificAnimationData.containsKey(draggingAnimation)) {
+					selectedData = new SetSpecificAnimationData();
+					set.setSpecificAnimationData.put(draggingAnimation, selectedData);
+				} else {
+					selectedData = set.setSpecificAnimationData.get(draggingAnimation);
 				}
+				selectedData.center = e.getPoint();
+				display.repaint();
+			
 			}
 		}
 	}
