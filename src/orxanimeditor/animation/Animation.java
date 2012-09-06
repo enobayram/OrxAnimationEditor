@@ -13,7 +13,7 @@ public class Animation implements HierarchicalData, Serializable, Cloneable{
 		this.name=name;
 	}
 	
-	protected EditorData getParent() {
+	public EditorData getParent() {
 		return parent;
 	}
 	
@@ -54,8 +54,12 @@ public class Animation implements HierarchicalData, Serializable, Cloneable{
 	public int getFrameIndex(Frame frame) {return frames.indexOf(frame);}
 	
 	public void addFrame(Frame frame) {
+		addFrame(frame, getFrameCount());
+	}
+	
+	public void addFrame(Frame frame, int index) {
 		frame.setParent(this);
-		frames.add(frame);
+		frames.add(index,frame);
 		parent.fireFrameAdded(this, frame);
 	}
 

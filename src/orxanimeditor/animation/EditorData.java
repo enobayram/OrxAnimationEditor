@@ -28,8 +28,12 @@ public class EditorData implements Serializable{
 	}
 	
 	public void addAnimation(Animation animation) {
+		addAnimation(animation,getAnimationCount());
+	}
+	
+	public void addAnimation(Animation animation, int index) {
 		animation.setParent(this);
-		animations.add(animation);
+		animations.add(index,animation);
 		fireAnimationAdded(animation);
 	}
 

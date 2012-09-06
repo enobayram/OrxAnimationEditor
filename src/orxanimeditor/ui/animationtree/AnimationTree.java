@@ -28,9 +28,9 @@ public class AnimationTree extends JTree implements TreeWillExpandListener{
 		setSelectionModel(selectionModel);
 		//animationTree.addTreeSelectionListener(this);
 		addTreeWillExpandListener(this);
-		//setTransferHandler(new AnimationTreeTransferHandler());
+		setTransferHandler(new AnimationTreeTransferHandler());
 		setDragEnabled(true);
-		setDropMode(DropMode.INSERT);
+		setDropMode(DropMode.ON_OR_INSERT);
 		setRootVisible(false);
 	}
 

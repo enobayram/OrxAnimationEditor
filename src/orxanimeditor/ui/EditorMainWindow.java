@@ -67,6 +67,7 @@ public class EditorMainWindow extends JFrame {
 	JMenuItem		 	writeToTargetItem;
 	JMenuItem		 	appendToTargetItem;	
 	JMenuItem		 	openImageItem;
+	JMenuItem			exitItem;
 
 	JMenu			 	editMenu;
 	JMenuItem		 	increaseKeyValueItem;
@@ -135,24 +136,35 @@ public class EditorMainWindow extends JFrame {
 	WindowAdapter windowAdapter = new WindowAdapter() {
 		@Override
 		public void windowClosing(WindowEvent e) {
-			int choice = JOptionPane.showConfirmDialog(EditorMainWindow.this
-					,"Save the animation project before exiting?\n" +
-					 "(Note that currently this message pops up regardless\n " +
-					 "of any change to the animation project...)"
-					 , "Save Project"
-					 , JOptionPane.YES_NO_CANCEL_OPTION
-					 , JOptionPane.QUESTION_MESSAGE);
-			switch(choice) {
-			case JOptionPane.YES_OPTION:
-				saveProject();
-				System.exit(0);
-				break;
-			case JOptionPane.NO_OPTION:
-				System.exit(0);
-				break;
-			case JOptionPane.CANCEL_OPTION:
-				break;
-			}
+			exit();
+		}
+	};
+	
+	private void exit() {
+		int choice = JOptionPane.showConfirmDialog(EditorMainWindow.this
+				,"Save the animation project before exiting?\n" +
+				 "(Note that currently this message pops up regardless\n " +
+				 "of any change to the animation project...)"
+				 , "Save Project"
+				 , JOptionPane.YES_NO_CANCEL_OPTION
+				 , JOptionPane.QUESTION_MESSAGE);
+		switch(choice) {
+		case JOptionPane.YES_OPTION:
+			saveProject();
+			System.exit(0);
+			break;
+		case JOptionPane.NO_OPTION:
+			System.exit(0);
+			break;
+		case JOptionPane.CANCEL_OPTION:
+			break;
+		}
+	}
+	
+	private ActionListener exitAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			exit();
 		}
 	};
 	
@@ -199,7 +211,12 @@ public class EditorMainWindow extends JFrame {
 		fileMenu.add(openImageItem);
 		openImageItem.addActionListener(openImageAction);
 		openImageItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.ALT_DOWN_MASK));
-		
+
+		fileMenu.add(new JSeparator());
+
+		exitItem = new JMenuItem("Exit");
+		fileMenu.add(exitItem);
+		exitItem.addActionListener(exitAction);
 		
 		editMenu = new JMenu("Edit");
 		menuBar.add(editMenu);

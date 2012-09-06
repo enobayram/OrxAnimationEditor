@@ -32,7 +32,7 @@ public class AnimationTreeRenderer extends DefaultTreeCellRenderer {
                 hasFocus);
         Object valueData = value;
         if(valueData instanceof Animation) {
-        	if(expanded)
+        	if(expanded || leaf)
         		setIcon(AnimationManager.animationIcon);
         	else
         		setIcon(AnimationManager.animationCollapsedIcon);

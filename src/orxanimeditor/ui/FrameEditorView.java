@@ -129,7 +129,7 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 			}	
 		} else {
 			Frame selected = getSelectedFrame();
-			if((e.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) == MouseEvent.BUTTON1_DOWN_MASK) {
+			if(selected!=null && (e.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) == MouseEvent.BUTTON1_DOWN_MASK) {
 				
 				int x = snap(getViewX(e)), y = snap(getViewY(e));	
 				
@@ -175,14 +175,14 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 		}
 		else 
 		{
-			if(e.getButton() == MouseEvent.BUTTON1) {
-				Frame selected  = getSelectedFrame();
+			Frame selected  = getSelectedFrame();
+			if(selected!=null && e.getButton() == MouseEvent.BUTTON1) {
 				selected.setRectangle(new Rectangle(getViewX(e),getViewY(e),lastRect.width,lastRect.height));
 				selected.setImageFile(editorFrame.data.project.getRelativeFile(imageFile));
 				int PivotDX = lastPivot.x - lastRect.x;
 				int PivotDY = lastPivot.y - lastRect.y;
 				selected.setPivot(new Point(getViewX(e)+PivotDX,getViewY(e)+PivotDY));				
-			}	
+			}
 		}
 	}
 
