@@ -103,7 +103,7 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 		JTextField tmp = new JTextField();
 		tmp.setPreferredSize(new Dimension(200,50));
 		tmp.setDragEnabled(true);
-		toolbar.add(tmp);
+		//toolbar.add(tmp); //This is nice to have for experimenting with drag and drop
 	}
 	
 	private void prepareTree() {
