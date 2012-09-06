@@ -23,8 +23,9 @@ import javax.swing.tree.TreePath;
 
 import orxanimeditor.animation.Animation;
 import orxanimeditor.animation.Frame;
+import orxanimeditor.animation.FrameListener;
 
-public class FrameEditorView extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener{
+public class FrameEditorView extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener, FrameListener{
 	BufferedImage 		image;
 	File		  		imageFile;
 	EditorMainWindow 	editorFrame;
@@ -45,6 +46,7 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		addMouseWheelListener(this);
+		editorFrame.data.addFrameListener(this);
 	}
 	
 	LinkedList<EditListener> editListeners = new LinkedList<EditListener>();
@@ -55,22 +57,17 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 		g.fillRect(0, 0, getWidth(), getHeight());
 		drawCheckerPattern(g.create(0, 0, getViewWidth(), getViewHeight()));
 		g.drawImage(image,0,0, image.getWidth()*zoom, image.getHeight()*zoom,0,0,image.getWidth(),image.getHeight(),null);
-		TreePath[] selectionPaths = editorFrame.animationManager.animationTree.getSelectionPaths();
-		if(selectionPaths!=null) {
-			for(TreePath p: selectionPaths) {
-				Object selected = p.getLastPathComponent();
-				if(selected instanceof Animation) {
-					Animation animation = (Animation) selected;
-					if(animation.getChildCount()==0) continue;
-					for(Frame frame = (Frame) animation.getFirstChild(); frame!=null; frame = (Frame) frame.getNextSibling()) {
-						paintFrame(g, frame);
-					}
-				} 
-				if (selected instanceof Frame) {
-					Frame frame = (Frame) selected;
-					paintFrame(g,frame);
+		for(Object selected: editorFrame.animationManager.getSelectedObjects()) {
+			if(selected instanceof Animation) {
+				Animation animation = (Animation) selected;
+				for(Frame frame: animation.getFrames()) {
+					paintFrame(g, frame);
 				}
-			}
+			} 
+			if (selected instanceof Frame) {
+				Frame frame = (Frame) selected;
+				paintFrame(g,frame);
+			}		
 		}
 	}
 	
@@ -129,8 +126,6 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 					lastPivot.x = getViewX(e); lastPivot.y = getViewY(e);
 
 				}
-				repaint();
-				fireEdit();
 			}	
 		} else {
 			Frame selected = getSelectedFrame();
@@ -144,9 +139,6 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 				int PivotDX = lastPivot.x - lastRect.x;
 				int PivotDY = lastPivot.y - lastRect.y;
 				selected.setPivot(new Point(x+PivotDX,y+PivotDY));
-				
-				repaint();
-				fireEdit();
 			}
 		}
 	}
@@ -179,9 +171,6 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 					selected.setPivot(new Point(getViewX(e),getViewY(e)));
 					lastPivot.x = getViewX(e); lastPivot.x = getViewY(e);
 				}
-				
-				repaint();
-				fireEdit();
 			}	
 		}
 		else 
@@ -192,16 +181,9 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 				selected.setImageFile(editorFrame.data.project.getRelativeFile(imageFile));
 				int PivotDX = lastPivot.x - lastRect.x;
 				int PivotDY = lastPivot.y - lastRect.y;
-				selected.setPivot(new Point(getViewX(e)+PivotDX,getViewY(e)+PivotDY));
-				
-				repaint();
-				fireEdit();
+				selected.setPivot(new Point(getViewX(e)+PivotDX,getViewY(e)+PivotDY));				
 			}	
 		}
-	}
-
-	private void fireEdit() {
-		editorFrame.fireEdit();
 	}
 
 	private int getViewX(MouseEvent e) {
@@ -231,6 +213,21 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 		editorFrame.getContentPane().repaint();
 		editorFrame.doLayout();
 		repaint();
+	}
+
+	@Override
+	public void frameAdded(Animation parent, Frame frame) {
+		repaint(10);
+	}
+
+	@Override
+	public void frameRemoved(Animation parent, Frame frame) {
+		repaint(10);
+	}
+
+	@Override
+	public void frameEdited(Frame frame) {
+		repaint(10);
 	}
 }
 

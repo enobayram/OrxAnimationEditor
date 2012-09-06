@@ -84,9 +84,7 @@ public class EditorMainWindow extends JFrame {
 	
 	EditorData 		 	data;	
 	ImageManager	 	imageManager = new ImageManager();
-	
-	LinkedList<EditListener> editListeners = new LinkedList<EditListener>();
-	
+		
 	HelpViewer			helpViewer;
 	
 	public static void main(String[] args) {
@@ -109,12 +107,9 @@ public class EditorMainWindow extends JFrame {
 		animationSetEditor	= new AnimationSetEditor(this);
 		helpViewer 			= new HelpViewer(this);
 		
-		animationManager.animationTree.addTreeSelectionListener(animationViewer);
 		animationManager.animationTree.addTreeSelectionListener(frameEditor);
+		animationManager.animationTree.addTreeSelectionListener(animationViewer);
 		animationManager.animationTree.addTreeSelectionListener(animationManager);
-		addEditListener(animationViewer);
-		addEditListener(animationSetEditor);
-		addEditListener(frameEditor);
 
 		JSplitPane leftLowerSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, animationViewer, animationSetEditor);
 		JSplitPane leftSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, animationManager, leftLowerSplitPane);
@@ -274,8 +269,6 @@ public class EditorMainWindow extends JFrame {
 	private void projectChanged() {
 		imageChooser.setCurrentDirectory(data.project.projectFile.getParentFile());
 		iniChooser.setCurrentDirectory(data.project.projectFile.getParentFile());
-		animationManager.reload();
-		animationSetEditor.dataLoaded();
 		repaint();		
 	}
 	
@@ -326,18 +319,17 @@ public class EditorMainWindow extends JFrame {
 	ActionListener editActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			if(e.getSource()==flipXItem) {
-				animationManager.applyEditVisitor(new FlipVisitor(true), true, false);
+				animationManager.applyEditVisitor(new FlipVisitor(true));
 			}
 			if(e.getSource()==flipYItem) {
-				animationManager.applyEditVisitor(new FlipVisitor(false), true, false);
+				animationManager.applyEditVisitor(new FlipVisitor(false));
 			}
 			if(e.getSource()==increaseKeyValueItem) {
-				animationManager.applyEditVisitor(new KeyDurationVisitor(1.2), true, false);
+				animationManager.applyEditVisitor(new KeyDurationVisitor(1.2));
 			}
 			if(e.getSource()==decreaseKeyValueItem) {
-				animationManager.applyEditVisitor(new KeyDurationVisitor(1/1.2), true, false);
+				animationManager.applyEditVisitor(new KeyDurationVisitor(1/1.2));
 			}
-			fireEdit();
 		}
 	};
 	
@@ -348,18 +340,12 @@ public class EditorMainWindow extends JFrame {
 		}
 	};
 
-		
-	public void addEditListener(EditListener l) {editListeners.add(l);}
-
-	public void fireEdit() {
-		for(EditListener l: editListeners) l.edited();	
-	}
-	
+			
 	class FlipVisitor implements EditVisitor {
 		boolean flipX;
 		public FlipVisitor(boolean flipX) {this.flipX = flipX;}
 		public void edit(Animation animation) {
-			for(int fi=0; fi<animation.getChildCount(); fi++) edit((Frame) animation.getChildAt(fi));
+			for(Frame frame: animation.getFrames()) edit(frame);
 		}
 		public void edit(Frame frame) {
 			if(flipX) frame.setFlipX(!frame.getFlipX());

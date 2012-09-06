@@ -5,7 +5,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.TreeMap;
 
 public class AnimationSet implements Serializable{
 	private static final long serialVersionUID = 6664178554050675892L;
@@ -74,6 +73,7 @@ public class AnimationSet implements Serializable{
 	}
 	
 	public static class SetSpecificAnimationData implements Serializable {
+		private static final long serialVersionUID = -4754354627090679467L;
 		public Point center;
 	}
 }

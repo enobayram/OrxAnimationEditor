@@ -18,9 +18,11 @@ import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 
 import orxanimeditor.animation.Animation;
+import orxanimeditor.animation.AnimationListener;
 import orxanimeditor.animation.AnimationSet;
+import orxanimeditor.animation.DataLoadListener;
 
-public class AnimationSetEditor extends JPanel implements ActionListener, EditListener{
+public class AnimationSetEditor extends JPanel implements ActionListener, DataLoadListener, AnimationListener{
 	JTabbedPane animationSets;
 	JToolBar	toolbar;
 	JButton		newAnimationSetButton;
@@ -44,7 +46,9 @@ public class AnimationSetEditor extends JPanel implements ActionListener, EditLi
 		
 		add(toolbar, BorderLayout.NORTH);
 		add(animationSets, BorderLayout.CENTER);
-		
+
+		editor.data.addDataLoadListener(this);
+		editor.data.addAnimationListener(this);
 	}
 
 	private void prepareToolbar() {
@@ -123,10 +127,20 @@ public class AnimationSetEditor extends JPanel implements ActionListener, EditLi
 		editor.data.animationSets.remove(view.set);
 		animationSets.remove(view);
 	}
-	
+
 	@Override
-	public void edited() {
-		repaint();		
+	public void animationAdded(Animation animation) {
+		repaint(10);
+	}
+
+	@Override
+	public void animationRemoved(Animation animation) {
+		repaint(10);
+	}
+
+	@Override
+	public void animationEdited(Animation animation) {
+		repaint(10);
 	}
 	
 }

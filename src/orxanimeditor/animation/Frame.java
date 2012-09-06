@@ -2,14 +2,11 @@ package orxanimeditor.animation;
 
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.geom.Point2D;
-import java.io.File;
+import java.io.Serializable;
 
-import javax.swing.tree.DefaultMutableTreeNode;
+import orxanimeditor.animation.Project.RelativeFile;
 
-import orxanimeditor.animation.Project.RelativeFile;;
-
-public class Frame extends DefaultMutableTreeNode {
+public class Frame implements HierarchicalData, Serializable, Cloneable{
 	private static final long serialVersionUID = -2408945560259717838L;
 	RelativeFile imageFile;
 	Rectangle rect;
@@ -17,13 +14,17 @@ public class Frame extends DefaultMutableTreeNode {
 	boolean flipY = false;
 	private Point pivot = null;
 	private double keyDuration = -1;
+	private String name;
+	private Animation parent = null;
 	
 	public Frame(String name) {
-		super(name);
+		this.name = name;
+		this.parent = null;
 	}
 	
 	public void setImageFile(RelativeFile file) {
 		imageFile = file;
+		fireEdit();
 	}
 	
 	public RelativeFile getImageFile() {
@@ -32,17 +33,19 @@ public class Frame extends DefaultMutableTreeNode {
 	
 	public void setRectangle(Rectangle rect) {
 		this.rect = (Rectangle) rect.clone();
+		fireEdit();
 	}
 	public Rectangle getRectangle() {
-		return rect;
+		return (Rectangle)rect.clone();
 	}
 
 	public String getName() {
-		return (String) getUserObject();
+		return name;
 	}
 
 	public void setName(String name) {
-		setUserObject(name);
+		this.name = name;
+		fireEdit();
 	}
 	
 	public Rectangle properRectangle() {
@@ -59,15 +62,17 @@ public class Frame extends DefaultMutableTreeNode {
 
 	public void setKeyDuration(double keyDuration) {
 		this.keyDuration = keyDuration;
+		fireEdit();
 	}
 
 	public Point getPivot() {
 		if(pivot==null) return new Point(rect.x+rect.width/2, rect.y+rect.height/2);
-		else return pivot;
+		else return (Point) pivot.clone();
 	}
 
 	public void setPivot(Point pivot) {
 		this.pivot = pivot;
+		fireEdit();
 	}
 
 	public boolean getFlipX() {
@@ -76,6 +81,7 @@ public class Frame extends DefaultMutableTreeNode {
 
 	public void setFlipX(boolean flipX) {
 		this.flipX = flipX;
+		fireEdit();
 	}
 	
 	public boolean getFlipY() {
@@ -84,7 +90,38 @@ public class Frame extends DefaultMutableTreeNode {
 
 	public void setFlipY(boolean flipY) {
 		this.flipY = flipY;
+		fireEdit();
 	}
 	
+	private void fireEdit() {
+		parent.getParent().fireFrameEdited(this);
+	}
+	
+	public Animation getParent() {
+		return parent;
+	}
 
+	protected void setParent(Animation animation) {
+		parent = animation;
+	}
+
+	@Override
+	public void remove() {
+		parent.removeFrame(this);
+	}
+
+	@Override
+	public String toString() {
+		return name;
+	}
+	
+	@Override
+	public Frame clone() {
+		try {
+			return (Frame) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new AssertionError();
+		}
+	}
+	
 }

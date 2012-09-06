@@ -1,13 +1,16 @@
-package orxanimeditor.ui;
+package orxanimeditor.ui.animationtree;
 
 import java.awt.Color;
 import java.awt.Component;
 
 import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
 import orxanimeditor.animation.Animation;
+import orxanimeditor.animation.EditorData;
 import orxanimeditor.animation.Frame;
+import orxanimeditor.ui.AnimationManager;
 
 public class AnimationTreeRenderer extends DefaultTreeCellRenderer {
 	AnimationManager manager;
@@ -27,17 +30,19 @@ public class AnimationTreeRenderer extends DefaultTreeCellRenderer {
                 tree, value, sel,
                 expanded, false, row,
                 hasFocus);
-        if(value instanceof Animation) {
+        Object valueData = value;
+        if(valueData instanceof Animation) {
         	if(expanded)
         		setIcon(manager.animationIcon);
         	else
         		setIcon(manager.animationCollapsedIcon);
-        } else if(value instanceof Frame) {
+        } else if(valueData instanceof Frame) {
         	setIcon(manager.frameIcon);
-        } else {
+        } else if(valueData instanceof EditorData) {
+        	setText("Animations");
         }
         
-        if(value == manager.selectedAnimation || value == manager.selectedFrame)
+        if(value == manager.getSelectedNode())
         	setForeground(Color.BLUE);
         else
         	setForeground(Color.BLACK);

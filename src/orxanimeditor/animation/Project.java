@@ -7,11 +7,14 @@ import java.io.Serializable;
 import orxanimeditor.io.AnimIO;
 
 public class Project implements Serializable{
+	private static final long serialVersionUID = -896630792781084533L;
 	public File			 projectFile = null;
 	public RelativeFile			 targetIni = null;
 
 	
 	public class RelativeFile implements Serializable{
+
+		private static final long serialVersionUID = 1541356514107556900L;
 		File relativePath;
 		public RelativeFile(File absoluteFile) {
 			try {

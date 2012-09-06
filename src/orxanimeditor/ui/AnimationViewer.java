@@ -15,15 +15,17 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 
 import orxanimeditor.animation.Animation;
+import orxanimeditor.animation.AnimationListener;
 import orxanimeditor.animation.Frame;
+import orxanimeditor.animation.FrameListener;
 
-public class AnimationViewer extends JPanel implements TreeSelectionListener, EditListener{
+public class AnimationViewer extends JPanel implements TreeSelectionListener, AnimationListener, FrameListener{
 
 	EditorMainWindow editor;
 	
 	Animation 	selectedAnimation=null;
 	Frame 		selectedFrame=null;
-	Frame		nextFrame=null;
+	int			nextFrameIndex=0;
 
 	Timer		timer = new Timer();
 	
@@ -36,8 +38,8 @@ public class AnimationViewer extends JPanel implements TreeSelectionListener, Ed
 	public void paint(Graphics g) {
 		super.paint(g);
 		if(selectedFrame!=null) drawFrame(g,selectedFrame);
-		if(selectedAnimation!=null && nextFrame != null) {
-			drawFrame(g,nextFrame);
+		if(selectedAnimation!=null && nextFrameIndex<selectedAnimation.getFrameCount()) {
+			drawFrame(g,selectedAnimation.getFrame(nextFrameIndex));
 		}
 
 	}
@@ -45,10 +47,9 @@ public class AnimationViewer extends JPanel implements TreeSelectionListener, Ed
 	private void setupNextFrame() {
 		timer.schedule(new TimerTask() { public void run() { 
 				SwingUtilities.invokeLater(new Runnable() { public void run() {
-					if(selectedAnimation==null || nextFrame == null) return;
-					
-					nextFrame = (Frame) selectedAnimation.getChildAfter(nextFrame);
-					if(nextFrame==null) nextFrame = (Frame) selectedAnimation.getFirstChild();
+					if(selectedAnimation==null || nextFrameIndex>=selectedAnimation.getFrameCount()) return;
+					nextFrameIndex++;
+					if(nextFrameIndex>=selectedAnimation.getFrameCount()) nextFrameIndex = 0;
 					repaint();
 					setupNextFrame();
 			}});
@@ -56,6 +57,7 @@ public class AnimationViewer extends JPanel implements TreeSelectionListener, Ed
 	}
 
 	private long getFrameDelay() {
+		Frame nextFrame = selectedAnimation.getFrame(nextFrameIndex);
 		if(nextFrame.getKeyDuration()>0) return (long) (nextFrame.getKeyDuration()*1000);
 		else return (long) (selectedAnimation.getDefaultKeyDuration() * 1000);
 	}
@@ -87,11 +89,10 @@ public class AnimationViewer extends JPanel implements TreeSelectionListener, Ed
 		if(ani!=null) {
 			selectedAnimation=ani;
 			selectedFrame = null;
-			if(ani.getChildCount()>0) {
-				nextFrame = (Frame) ani.getFirstChild();
+			nextFrameIndex = 0;
+			if(ani.getFrameCount()>0) {
 				setupNextFrame();
 			}
-			else nextFrame = null;
 		} else if(frame!=null) {
 			selectedAnimation = null;
 			selectedFrame = frame;
@@ -99,12 +100,37 @@ public class AnimationViewer extends JPanel implements TreeSelectionListener, Ed
 			selectedAnimation = null;
 			selectedFrame = null;
 		}
-		repaint();
+		repaint(10);
 	}
 
 	@Override
-	public void edited() {
-		if(selectedFrame!=null) repaint();
+	public void frameAdded(Animation parent, Frame frame) {
+		repaint(10);
+	}
+
+	@Override
+	public void frameRemoved(Animation parent, Frame frame) {
+		repaint(10);
+	}
+
+	@Override
+	public void frameEdited(Frame frame) {
+		repaint(10);
+	}
+
+	@Override
+	public void animationAdded(Animation animation) {
+		repaint(10);
+	}
+
+	@Override
+	public void animationRemoved(Animation animation) {
+		repaint(10);
+	}
+
+	@Override
+	public void animationEdited(Animation animation) {
+		repaint(10);
 	}
 	
 	

@@ -1,20 +1,33 @@
 package orxanimeditor.animation;
 
-import javax.swing.tree.DefaultMutableTreeNode;
+import java.io.Serializable;
+import java.util.LinkedList;
 
-public class Animation extends DefaultMutableTreeNode {
+public class Animation implements HierarchicalData, Serializable, Cloneable{
 	private static final long serialVersionUID = 171588831429924711L;
 	private double defaultKeyDuration = 0.3;
+	private String name;
+	private LinkedList<Frame> frames = new LinkedList<Frame>();
+	private EditorData parent = null;
 	public Animation(String name) {
-		super(name);
+		this.name=name;
+	}
+	
+	protected EditorData getParent() {
+		return parent;
+	}
+	
+	protected void setParent(EditorData data) {
+		this.parent = data;
 	}
 	
 	public String getName() {
-		return (String) getUserObject();
+		return name;
 	}
 
 	public void setName(String name) {
-		setUserObject(name);
+		this.name=name;
+		parent.fireAnimationEdited(this);
 	}
 
 	public double getDefaultKeyDuration() {
@@ -23,5 +36,58 @@ public class Animation extends DefaultMutableTreeNode {
 
 	public void setDefaultKeyDuration(double defaultKeyDuration) {
 		this.defaultKeyDuration = defaultKeyDuration;
+		parent.fireAnimationEdited(this);
 	}
+	
+	public Frame[] getFrames() {
+		return frames.toArray(new Frame[0]);
+	}
+	
+	public int getFrameCount() {
+		return frames.size();
+	}
+	
+	public Frame getFrame(int index) {
+		return frames.get(index);
+	}
+	
+	public int getFrameIndex(Frame frame) {return frames.indexOf(frame);}
+	
+	public void addFrame(Frame frame) {
+		frame.setParent(this);
+		frames.add(frame);
+		parent.fireFrameAdded(this, frame);
+	}
+
+	public void removeFrame(Frame frame) {
+		frames.remove(frame);
+		parent.fireFrameRemoved(this, frame);
+	}
+
+	@Override
+	public void remove() {
+		for(Frame frame: getFrames()) removeFrame(frame);
+		parent.removeAnimation(this);
+	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
+	
+	@Override
+	public Animation clone() {
+		try {
+			Animation clone = (Animation) super.clone();
+			clone.frames = new LinkedList<Frame>();
+			for(Frame frame: frames) clone.addFrame(frame.clone());
+			return clone;
+		} catch (CloneNotSupportedException e) {
+			throw new AssertionError();
+		}
+	}
+	
+//	public Frame getNextFrame(Frame frame) {
+//		return frames.
+//	}
 }

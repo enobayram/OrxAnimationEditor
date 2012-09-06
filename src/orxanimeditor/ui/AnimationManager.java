@@ -2,59 +2,52 @@ package orxanimeditor.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URL;
-import java.util.LinkedList;
 
-import javax.imageio.ImageIO;
-import javax.swing.DefaultCellEditor;
-import javax.swing.DropMode;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSlider;
-import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
-import javax.swing.ScrollPaneLayout;
-import javax.swing.TransferHandler;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeModelEvent;
-import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
+import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreePath;
-import javax.xml.bind.annotation.XmlType.DEFAULT;
+import javax.swing.tree.TreeSelectionModel;
 
 import orxanimeditor.animation.Animation;
+import orxanimeditor.animation.AnimationListener;
+import orxanimeditor.animation.DataLoadListener;
 import orxanimeditor.animation.Frame;
+import orxanimeditor.animation.FrameListener;
+import orxanimeditor.animation.HierarchicalData;
+import orxanimeditor.ui.animationtree.AnimationTreeEditor;
+import orxanimeditor.ui.animationtree.AnimationTreeModel;
+import orxanimeditor.ui.animationtree.AnimationTreeRenderer;
+import orxanimeditor.ui.animationtree.AnimationTreeSelectionModel;
 
-public class AnimationManager extends JPanel implements ActionListener, KeyListener, TreeSelectionListener, TreeModelListener {
+public class AnimationManager extends JPanel implements ActionListener, KeyListener, TreeSelectionListener, AnimationListener, FrameListener, DataLoadListener {
 	EditorMainWindow editor;
 	JToolBar  toolbar;
-	JTree	  animationTree;
+	public JTree	  animationTree;
+	public AnimationTreeModel animationTreeModel;
 		
 	//ImageIcon image = (new ImageIcon(getClass().getResource("yourpackage/mypackage/image.gif")));
 	
-	ImageIcon newFrameIcon;
-	ImageIcon newAnimationIcon;
-	ImageIcon frameIcon;
-	ImageIcon animationIcon;		
-	ImageIcon animationCollapsedIcon;		
+	public ImageIcon newFrameIcon;
+	public ImageIcon newAnimationIcon;
+	public ImageIcon frameIcon;
+	public ImageIcon animationIcon;		
+	public ImageIcon animationCollapsedIcon;		
 	 
 	JButton newFrameButton;
 	JButton newAnimationButton;
@@ -62,10 +55,11 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 	int newFrameSuffix = 0;
 	int newAnimationSuffix = 0;
 
-	Animation selectedAnimation = null;
-	Frame selectedFrame = null;
+	//Animation selectedAnimation = null;
+	//Frame selectedFrame = null;
+	Object selectedNode = null;
 
-	DefaultMutableTreeNode[] clipboard = new DefaultMutableTreeNode[0];
+	Object[] clipboard = new Object[0];
 	
 	public AnimationManager(EditorMainWindow editorFrame) {
 		editor = editorFrame;
@@ -79,6 +73,10 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 		add(pane, BorderLayout.CENTER);
 		setMinimumSize(new Dimension(300, 200));
 		setPreferredSize(getMinimumSize());
+		
+		editor.data.addAnimationListener(this);
+		editor.data.addFrameListener(this);
+		editor.data.addDataLoadListener(this);
 	}
 	
 
@@ -104,13 +102,27 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 	}
 	
 	private void prepareTree() {
-		animationTree = new JTree(editor.data.animationTree);
-		animationTree.setCellRenderer(new AnimationTreeRenderer(this));
-		animationTree.setCellEditor(new DefaultCellEditor(new JTextField()));
+		animationTree = new JTree();
+		AnimationTreeRenderer renderer = new AnimationTreeRenderer(this);
+		animationTree.setCellRenderer(renderer);
+		animationTree.setCellEditor(new AnimationTreeEditor(animationTree, renderer));
 		animationTree.setEditable(true);
 		animationTree.addKeyListener(this);
-		animationTree.getModel().addTreeModelListener(this);
-//		animationTree.addTreeSelectionListener(this); // this has to happen outside, otherwise the listener will be called last
+		//animationTree.getModel().addTreeModelListener(this);
+		TreeSelectionModel selectionModel = new AnimationTreeSelectionModel();
+		animationTree.setSelectionModel(selectionModel);
+		//animationTree.addTreeSelectionListener(this);
+		animationTree.addTreeWillExpandListener(new TreeWillExpandListener() {
+			@Override public void treeWillExpand(TreeExpansionEvent arg0)	throws ExpandVetoException {}
+			@Override
+			public void treeWillCollapse(TreeExpansionEvent arg0)
+					throws ExpandVetoException {
+				if(arg0.getPath().getLastPathComponent()==editor.data)
+					throw new ExpandVetoException(arg0);
+			}
+		});
+		animationTreeModel = new AnimationTreeModel(editor.data);
+		animationTree.setModel(animationTreeModel);
 	}
 	
 
@@ -119,36 +131,32 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 		if(e.getSource()==newFrameButton) {
 			Animation selectedAnimation = getSelectedAnimation();
 			if(selectedAnimation == null) return;
-			selectedAnimation.add(new Frame("NewFrame" + newFrameSuffix++));
-			((DefaultTreeModel) animationTree.getModel()).reload(selectedAnimation);
+			Frame newFrame = new Frame("NewFrame" + newFrameSuffix++);
+			selectedAnimation.addFrame(newFrame);			
 		}
 		if(e.getSource()==newAnimationButton) {
-			editor.data.animationTree.add(new Animation("NewAnimation" + newAnimationSuffix++));
-			((DefaultTreeModel) animationTree.getModel()).reload(editor.data.animationTree);
+			Animation newAnimation = new Animation("NewAnimation" + newAnimationSuffix++);
+			editor.data.addAnimation(newAnimation);
 		}
-
-		repaint();
 	}
-		
+	
+			
 	public Frame getSelectedFrame() {
-		return selectedFrame;
+		if(selectedNode == null) return null;
+		Object selectedObject = selectedNode;
+		if( selectedObject instanceof Frame)
+			return (Frame) selectedObject;
+		else 
+			return null;
 	}
 	
 	public Animation getSelectedAnimation() {
-		return selectedAnimation;
-	}
-
-
-	public void reload() {
-		((DefaultTreeModel) animationTree.getModel()).reload();		
-	}
-	
-	public void reload(DefaultMutableTreeNode node) {
-		((DefaultTreeModel)animationTree.getModel()).reload(node);
-	}
-
-	DefaultMutableTreeNode getRootNode() {
-		return (DefaultMutableTreeNode) animationTree.getModel().getRoot();		
+		if(selectedNode == null) return null;
+		Object selectedObject = selectedNode;
+		if( selectedObject instanceof Animation)
+			return (Animation) selectedObject;
+		else 
+			return null;
 	}
 	
 	@Override
@@ -160,14 +168,14 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 				clipboard = getSelectedNodes();
 				break;
 			case KeyEvent.VK_V:
-				for(DefaultMutableTreeNode node: clipboard) {
-					if(node instanceof Frame && selectedAnimation!=null) {
-						selectedAnimation.add((Frame)node.clone());
-						reload(selectedAnimation);
+				for(Object node: clipboard) {
+					Object nodeObject = node;
+					Animation selectedAnimation = getSelectedAnimation();
+					if(nodeObject instanceof Frame && selectedAnimation!=null) {
+						selectedAnimation.addFrame(((Frame)nodeObject).clone());
 					}
-					if(node instanceof Animation) {
-						getRootNode().add((Animation)node.clone());
-						reload(getRootNode());
+					if(nodeObject instanceof Animation) {
+						editor.data.addAnimation(((Animation)nodeObject).clone());
 					}
 				}
 				break;				
@@ -179,18 +187,20 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 				if(selectedFrame!=null) editor.frameEditor.openImage(selectedFrame.getImageFile().getAbsoluteFile());
 				break;
 			case KeyEvent.VK_DELETE:
-				applyEditVisitor(new DeleteVisitor(), true,true);
+				for(HierarchicalData data: getSelectedObjects()) {
+					data.remove();
+				}
 				break;
 			}
 		}
 		
 	}
 	
-	public DefaultMutableTreeNode[] getSelectedNodes() {
-		DefaultMutableTreeNode[] nodes= new DefaultMutableTreeNode[animationTree.getSelectionCount()];
+	private HierarchicalData[] getSelectedNodes() {
+		HierarchicalData[] nodes= new HierarchicalData[animationTree.getSelectionCount()];
 		if(nodes.length>0) {
 			int i=0;
-			for(TreePath p: animationTree.getSelectionPaths()) nodes[i++] = (DefaultMutableTreeNode) p.getLastPathComponent();
+			for(TreePath p: animationTree.getSelectionPaths()) nodes[i++] = (HierarchicalData) p.getLastPathComponent();
 		}
 		return nodes;
 	}
@@ -198,95 +208,99 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 	public void keyReleased(KeyEvent arg0) {}
 	public void keyTyped(KeyEvent arg0) {}
 	
-	public void applyEditVisitor(EditVisitor visitor, boolean selectionOnly, boolean structureChanges) {
-		if(selectionOnly) {
-			TreePath treePaths[] = animationTree.getSelectionPaths();
-			if(treePaths == null) return;
-			for(TreePath p: treePaths) {
-				DefaultMutableTreeNode node = (DefaultMutableTreeNode) p.getLastPathComponent();
-				DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node.getParent();
-				if(node instanceof Frame) {
-					visitor.edit((Frame) node);
-				}
-				else if(node instanceof Animation) {
-					visitor.edit((Animation) node);
-				}
-				if(structureChanges) reload(parent);
+	public void applyEditVisitor(EditVisitor visitor) {
+		for(HierarchicalData obj: getSelectedObjects()) {
+			if(obj instanceof Frame) {
+				visitor.edit((Frame) obj);
 			}
-		} else {
-			for(int ai=0; ai<editor.data.animationTree.getChildCount(); ai++) {
-				Animation animation = (Animation) editor.data.animationTree.getChildAt(ai);
-				visitor.edit(animation);
-				
-				for(int fi=0; fi<animation.getChildCount(); fi++) {
-					Frame frame = (Frame) animation.getChildAt(fi);
-					visitor.edit(frame);
-				}
+			else if(obj instanceof Animation) {
+				visitor.edit((Animation) obj);
 			}
-			if(structureChanges) reload();
-		}
-	}
-	
-	void removeNodeFromParent(DefaultMutableTreeNode node) {
-		((DefaultTreeModel) animationTree.getModel()).removeNodeFromParent(node);
-	}
-	
-	class DeleteVisitor implements EditVisitor {
-		public void edit(Animation animation) {
-			removeNodeFromParent(animation);
-		}
-		public void edit(Frame frame) {
-			removeNodeFromParent(frame);
 		}
 	}
 
 	@Override
 	public void valueChanged(TreeSelectionEvent e) {
-		if(!e.isAddedPath()) {
-			selectedAnimation = null;
-			selectedFrame = null;
+		selectedNode = e.getPath().getLastPathComponent();	
+	}
+
+
+
+	
+	public HierarchicalData[] getSelectedObjects() {
+		TreePath[] selectionPaths = animationTree.getSelectionPaths();
+		HierarchicalData[] result;
+		if(selectionPaths!=null) {
+			result = new HierarchicalData[selectionPaths.length];
+			int index = 0;
+			for(TreePath p: selectionPaths) {
+				Object selectedObject = p.getLastPathComponent();
+				if(selectedObject instanceof HierarchicalData)
+					result[index] = (HierarchicalData) selectedObject;
+				else throw new RuntimeException("Something strange is selected");
+				index++;
+			}
 		} else {
-			Object selected = e.getPath().getLastPathComponent();
-			if(selected instanceof Frame) {
-				selectedFrame = (Frame) selected;
-				selectedAnimation = null;
-			}
-			else if(selected instanceof Animation) {
-				selectedFrame = null;
-				selectedAnimation = (Animation) selected;
-			}
-			else {
-				selectedFrame = null;
-				selectedAnimation = null;
-			}
+			result = new HierarchicalData[0];
 		}
-		animationTree.repaint(10);
-		
+		return result;
+	}
+
+	public Object getSelectedNode() {
+		return selectedNode;
 	}
 
 
 	@Override
-	public void treeNodesChanged(TreeModelEvent e) {
-		editor.fireEdit();
+	public void dataLoaded() {
+		animationTreeModel.fireTreeStructureChanged(new TreeModelEvent(this, new Object[]{editor.data}));
 	}
 
 
 	@Override
-	public void treeNodesInserted(TreeModelEvent e) {
+	public void frameAdded(Animation parent, Frame frame) {
+		animationTreeModel.fireTreeNodesInserted(new TreeModelEvent(this, 
+				new Object[]{editor.data,parent,frame}));
 	}
 
 
 	@Override
-	public void treeNodesRemoved(TreeModelEvent e) {
-		for(Object removedObject: e.getChildren())
-			if(removedObject instanceof Animation) 
-				editor.data.removeAnimation((Animation) removedObject);
-		editor.poke();
+	public void frameRemoved(Animation parent, Frame frame) {
+		animationTreeModel.fireTreeNodesRemoved(new TreeModelEvent(this, 
+				new Object[]{editor.data,parent,frame}));		
 	}
 
 
 	@Override
-	public void treeStructureChanged(TreeModelEvent e) {
+	public void frameEdited(Frame frame) {
+		Animation parent = frame.getParent();
+		animationTreeModel.fireTreeNodesChanged(new TreeModelEvent(this, 
+				new Object[]{editor.data,parent},
+				new int[]{animationTreeModel.getIndexOfChild(parent, frame)},
+				new Object[]{frame}));
+	}
+
+
+	@Override
+	public void animationAdded(Animation animation) {
+		animationTreeModel.fireTreeNodesInserted(new TreeModelEvent(this, 
+				new Object[]{editor.data,animation}));
+	}
+
+
+	@Override
+	public void animationRemoved(Animation animation) {
+		animationTreeModel.fireTreeNodesRemoved(new TreeModelEvent(this, 
+				new Object[]{editor.data,animation}));		
+	}
+
+
+	@Override
+	public void animationEdited(Animation animation) {
+		animationTreeModel.fireTreeNodesChanged(new TreeModelEvent(this, 
+				new Object[]{editor.data},
+				new int[]{animationTreeModel.getIndexOfChild(editor.data, animation)},
+				new Object[]{animation}));
 	}
 	
 }

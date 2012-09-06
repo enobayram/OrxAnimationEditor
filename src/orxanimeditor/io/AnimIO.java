@@ -82,12 +82,10 @@ public class AnimIO {
 		for(AnimationSet set: data.animationSets) {
 			exportAnimationSet(p,set);
 		}
-		for(int ai=0; ai<data.animationTree.getChildCount(); ai++) {
-			Animation animation = (Animation) data.animationTree.getChildAt(ai);
+		for(Animation animation: data.getAnimations()) {
 			exportAnimation(p,animation);
-			for(int fi = 0; fi<animation.getChildCount(); fi++) {
-				Frame f = (Frame) animation.getChildAt(fi);
-				exportFrame(p,f,data.project.getTargetFolder());
+			for(Frame frame:animation.getFrames()) {
+				exportFrame(p,frame,data.project.getTargetFolder());
 			}
 		}
 	}
@@ -155,8 +153,9 @@ public class AnimIO {
 			Animation animation) {
 		p.println('['+animation.getName()+']');
 		p.println("DefaultKeyDuration   = "+animation.getDefaultKeyDuration());
-		for(int fi = 0; fi<animation.getChildCount(); fi++) {
-			Frame f = (Frame) animation.getChildAt(fi);
+		Frame[] frames = animation.getFrames();
+		for(int fi=0; fi<frames.length; fi++) {
+			Frame f = frames[fi];
 			p.println("KeyData"+(fi+1)+"    = "+ f.getName());
 		}
 	}
