@@ -2,6 +2,10 @@
 # Associate labels original text with physical files.
 
 
+$key = q/sec:AnimationManager/;
+$external_labels{$key} = "$URL/" . q|help.html|; 
+$noresave{$key} = "$nosave";
+
 1;
 
 

@@ -95,6 +95,7 @@ public class AnimationTreeTransferHandler extends TransferHandler {
 	
 	@Override
 	public boolean importData(TransferSupport support) {
+		if(!support.isDrop()) return false;
 		JTree.DropLocation loc = (JTree.DropLocation) support.getDropLocation();
 		Object parent = loc.getPath().getLastPathComponent();
 		int index = loc.getChildIndex();

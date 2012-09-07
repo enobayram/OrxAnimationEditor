@@ -13,6 +13,7 @@ public class Frame implements HierarchicalData, Serializable, Cloneable{
 	private boolean flipX = false;
 	boolean flipY = false;
 	private Point pivot = null;
+	private Point offset = null;
 	private double keyDuration = -1;
 	private String name;
 	private Animation parent = null;
@@ -69,9 +70,21 @@ public class Frame implements HierarchicalData, Serializable, Cloneable{
 		if(pivot==null) return new Point(rect.x+rect.width/2, rect.y+rect.height/2);
 		else return (Point) pivot.clone();
 	}
+	
+	public Point getOffset() {
+		if(offset!=null) return (Point) offset.clone();
+		else return new Point(0,0);
+	}
+	
+	public void setOffset(Point offset) {
+		if(offset==null) this.offset = null;
+		else this.offset = (Point) offset.clone();
+		fireEdit();
+	}
 
 	public void setPivot(Point pivot) {
-		this.pivot = pivot;
+		if(pivot == null) this.pivot = null;
+		else this.pivot = (Point) pivot.clone();
 		fireEdit();
 	}
 
@@ -122,6 +135,11 @@ public class Frame implements HierarchicalData, Serializable, Cloneable{
 		} catch (CloneNotSupportedException e) {
 			throw new AssertionError();
 		}
+	}
+	
+	public double getFinalFrameDuration() {
+		if(getKeyDuration()>0) return getKeyDuration();
+		else return parent.getDefaultKeyDuration();
 	}
 	
 }

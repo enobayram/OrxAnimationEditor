@@ -33,6 +33,7 @@ public class FrameEditor extends JPanel implements TreeSelectionListener, Change
 	JSlider SnapSlider;
 	int snapSize = 5;
 	JToggleButton useLastRectButton;
+	JToggleButton editOffsetButton;
 
 
 	Map<File, JScrollPane> openedFiles = new HashMap<File, JScrollPane>();
@@ -61,14 +62,19 @@ public class FrameEditor extends JPanel implements TreeSelectionListener, Change
 		SnapSlider.setPaintTicks(true);
 		SnapSlider.setPaintLabels(true);
 		
-		ImageIcon useLastRectIcon = editor.getImageIcon("icons/oldRec.png");	
-		toolbar.add(useLastRectButton = new JToggleButton(useLastRectIcon));	
+		ImageIcon useLastRectIcon = editor.getImageIcon("icons/oldRec.png");
+		useLastRectButton = new JToggleButton(useLastRectIcon);
+		toolbar.add(useLastRectButton);	
 		useLastRectButton.setToolTipText("Use your last rectangle");		
 
-
+		ImageIcon editOffsetIcon = editor.getImageIcon("icons/OffsetIcon.png");
+		editOffsetButton = new JToggleButton(editOffsetIcon);
+		toolbar.add(editOffsetButton);
+		editOffsetButton.setToolTipText("Edit the frame offset vector");
 	}
 
 	boolean isUsingLastRect() {return useLastRectButton.isSelected();}
+	boolean isEditingOffset() {return editOffsetButton.isSelected();}
 
 	public void openImage(File file) {
 		if(file==null) return;
