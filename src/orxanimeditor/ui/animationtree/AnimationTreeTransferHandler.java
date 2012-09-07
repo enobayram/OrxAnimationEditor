@@ -17,8 +17,6 @@ import javax.swing.JComponent;
 import javax.swing.JTree;
 import javax.swing.TransferHandler;
 
-import external.PatchedTransferHandler;
-
 import orxanimeditor.animation.Animation;
 import orxanimeditor.animation.EditorData;
 import orxanimeditor.animation.Frame;
@@ -38,19 +36,19 @@ public class AnimationTreeTransferHandler extends TransferHandler {
 			AnimationTree tree = (AnimationTree) c;
 			TransferableHierarchicalData transferable = new TransferableHierarchicalData(tree.getSelectedObjects());
 			if(transferable.isPureAnimations())
-				setDragImage(AnimationManager.animationIcon.getImage());
+				setDragImageIfSupported(AnimationManager.animationIcon.getImage());
 			else if(transferable.isPureFrames())
-				setDragImage(AnimationManager.frameIcon.getImage());
+				setDragImageIfSupported(AnimationManager.frameIcon.getImage());
 			else
-				setDragImage(null);
+				setDragImageIfSupported(null);
 			return transferable;
 		} else
 			return null;
 	}
 	
-	private void setDragImage(Image image) {
+	public void setDragImageIfSupported(Image image) {
 		try {
-			Method m = super.getClass().getMethod("setDragImage", Image.class);
+			Method m = getClass().getMethod("setDragImage", Image.class);
 			m.invoke(this, image);
 		} catch (Exception e) {
 			return; // setDragImage is not available
