@@ -58,9 +58,13 @@ public class Animation implements HierarchicalData, Serializable, Cloneable{
 	}
 	
 	public void addFrame(Frame frame, int index) {
-		frame.setParent(this);
-		frames.add(index,frame);
+		addFrameSilent(frame, index);
 		parent.fireFrameAdded(this, frame);
+	}
+	
+	private void addFrameSilent(Frame frame, int index) {
+		frame.setParent(this);
+		frames.add(index,frame);		
 	}
 
 	public void removeFrame(Frame frame) {
@@ -84,7 +88,7 @@ public class Animation implements HierarchicalData, Serializable, Cloneable{
 		try {
 			Animation clone = (Animation) super.clone();
 			clone.frames = new LinkedList<Frame>();
-			for(Frame frame: frames) clone.addFrame(frame.clone());
+			for(Frame frame: frames) clone.addFrameSilent(frame.clone(), clone.frames.size());
 			return clone;
 		} catch (CloneNotSupportedException e) {
 			throw new AssertionError();

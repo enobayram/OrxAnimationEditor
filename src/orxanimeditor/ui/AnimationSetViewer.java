@@ -40,6 +40,7 @@ public class AnimationSetViewer extends JScrollPane implements MouseListener, Mo
 		display.setBackground(Color.WHITE);
 		display.addMouseListener(this);
 		display.addMouseMotionListener(this);
+		display.setFocusable(true);
 	}
 	public void addAnimation(Animation chosen) {
 		if(set.animations.contains(chosen)) return;
@@ -143,6 +144,7 @@ public class AnimationSetViewer extends JScrollPane implements MouseListener, Mo
 	}
 	@Override
 	public void mousePressed(MouseEvent e) {
+		display.requestFocusInWindow();
 		if(e.getButton() == MouseEvent.BUTTON1) {
 			if(selectedAnimation == null) {
 				selectedAnimation = pickAnimation(e.getPoint());

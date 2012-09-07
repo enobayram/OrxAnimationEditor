@@ -1,18 +1,23 @@
 package orxanimeditor.ui.animationtree;
 
+import java.awt.Image;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.LinkedList;
 
 import javax.activation.DataHandler;
+import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JTree;
 import javax.swing.TransferHandler;
+
+import external.PatchedTransferHandler;
 
 import orxanimeditor.animation.Animation;
 import orxanimeditor.animation.EditorData;
@@ -41,6 +46,29 @@ public class AnimationTreeTransferHandler extends TransferHandler {
 			return transferable;
 		} else
 			return null;
+	}
+	
+	private void setDragImage(Image image) {
+		try {
+			Method m = super.getClass().getMethod("setDragImage", Image.class);
+			m.invoke(this, image);
+		} catch (Exception e) {
+			return; // setDragImage is not available
+		}
+	}
+
+	@Override
+	public Icon getVisualRepresentation(Transferable t) {
+		System.out.println("called");
+		if(t instanceof TransferableHierarchicalData) {
+			TransferableHierarchicalData thd = (TransferableHierarchicalData) t;
+			if(thd.isPureAnimations()) {
+				return AnimationManager.animationIcon;
+			} else if (thd.isPureFrames()) {
+				return AnimationManager.frameIcon;
+			}
+		}
+		return super.getVisualRepresentation(t);
 	}
 	
 	@Override

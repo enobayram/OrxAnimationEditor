@@ -32,6 +32,7 @@ public class AnimationTree extends JTree implements TreeWillExpandListener{
 		setDragEnabled(true);
 		setDropMode(DropMode.ON_OR_INSERT);
 		setRootVisible(false);
+		setScrollsOnExpand(false);
 	}
 
 	@Override 
