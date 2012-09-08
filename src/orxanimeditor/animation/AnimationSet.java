@@ -70,6 +70,9 @@ public class AnimationSet implements Serializable{
 		public void setDestination(Animation destination) {
 			this.destination = destination;
 		}
+		public boolean isConnectedTo(Animation animation) {
+			return (animation==source || animation==destination);
+		}
 	}
 	
 	public static class SetSpecificAnimationData implements Serializable {

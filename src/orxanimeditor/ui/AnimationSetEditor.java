@@ -28,8 +28,6 @@ public class AnimationSetEditor extends JPanel implements ActionListener, DataLo
 	JButton		newAnimationSetButton;
 	JButton		deleteAnimationSetButton;
 	JButton		addAnimationButton;
-	JButton		deleteAnimButton;
-	JButton		deleteLinkButton;
 	
 	HashMap<AnimationSet, AnimationSetViewer> setsTable = new HashMap<AnimationSet,AnimationSetViewer>();
 	
@@ -64,20 +62,10 @@ public class AnimationSetEditor extends JPanel implements ActionListener, DataLo
 		addAnimationButton    = new JButton(editor.getImageIcon("icons/NewAnimation.png"));
 		addAnimationButton.setToolTipText("Add an animation to the current animation set");
 		addAnimationButton.addActionListener(this);
-		
-		deleteAnimButton = new JButton(editor.getImageIcon("icons/deleteAnimation.png"));
-		deleteAnimButton.setToolTipText("Remove the currently selected animation from this set");
-		deleteAnimButton.addActionListener(this);
-		
-		deleteLinkButton = new JButton(editor.getImageIcon("icons/deleteLink.png"));
-		deleteLinkButton.setToolTipText("Delete the currently selected link");
-		deleteLinkButton.addActionListener(this);
-		
+				
 		toolbar.add(newAnimationSetButton);
 		toolbar.add(deleteAnimationSetButton);
 		toolbar.add(addAnimationButton);
-		toolbar.add(deleteAnimButton);
-		toolbar.add(deleteLinkButton);
 	}
 	
 	public void dataLoaded() {
@@ -108,10 +96,6 @@ public class AnimationSetEditor extends JPanel implements ActionListener, DataLo
 						editor.data.getAnimations(), null);
 				if(chosen == null) return;
 				view.addAnimation(chosen);
-			} else if(e.getSource() == deleteAnimButton) {
-				view.deleteAnimation();
-			} else if(e.getSource() == deleteLinkButton) {
-				view.deleteLink();
 			}
 		}
 	}

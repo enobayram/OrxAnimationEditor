@@ -4,14 +4,17 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
+import javax.swing.AbstractAction;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
 
 import orxanimeditor.animation.Animation;
 import orxanimeditor.animation.AnimationSet;
@@ -41,6 +44,13 @@ public class AnimationSetViewer extends JScrollPane implements MouseListener, Mo
 		display.addMouseListener(this);
 		display.addMouseMotionListener(this);
 		display.setFocusable(true);
+		display.getInputMap().put(KeyStroke.getKeyStroke("DELETE"), "DeleteSelected");
+		display.getActionMap().put("DeleteSelected", new AbstractAction() {
+			public void actionPerformed(ActionEvent arg0) {
+				deleteAnimation(selectedAnimation);
+				deleteLink(selectedLink);
+			}
+		});
 	}
 	public void addAnimation(Animation chosen) {
 		if(set.animations.contains(chosen)) return;
@@ -199,15 +209,18 @@ public class AnimationSetViewer extends JScrollPane implements MouseListener, Mo
 	}
 	@Override public void mouseMoved(MouseEvent e) {}
 
-	public void deleteAnimation() {
-		if(selectedAnimation!=null) {
-			set.removeAnimation(selectedAnimation);
+	public void deleteAnimation(Animation animation) {
+		if(animation!=null) {
+			set.removeAnimation(animation);
+			if(animation==selectedAnimation) selectedAnimation = null;
+			if(selectedLink!=null && selectedLink.isConnectedTo(animation)) selectedLink = null; 
 			editor.poke();
 		}
 	}
-	public void deleteLink() {
-		if(selectedLink!=null) {
-			set.links.remove(selectedLink);
+	public void deleteLink(Link link) {
+		if(link!=null) {
+			set.links.remove(link);
+			if(link==selectedLink) selectedLink=null;
 			editor.poke();
 		}
 	}
