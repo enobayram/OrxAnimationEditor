@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -14,6 +15,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
+import javax.swing.KeyStroke;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeSelectionEvent;
@@ -111,7 +113,14 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 		animationTreeModel = new AnimationTreeModel(editor.data);
 		animationTree.setModel(animationTreeModel);
 		animationTree.addKeyListener(this);
-
+		animationTree.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "EditSelected");
+		animationTree.getActionMap().put("EditSelected", new AbstractAction() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				HierarchicalData selected = getSelectedNode();
+				if(selected!=null) animationTree.startEditingAtPath(new TreePath(selected.getPath()));
+			}
+		});
 	}
 	
 
@@ -149,7 +158,7 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 	}
 
 
-	public Object getSelectedNode() {
+	public HierarchicalData getSelectedNode() {
 		return animationTree.getSelectedNode();
 	}
 
@@ -225,8 +234,8 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 
 	@Override
 	public void frameAdded(Animation parent, Frame frame) {
-		animationTreeModel.fireTreeNodesInserted(new TreeModelEvent(this, 
-				new Object[]{editor.data,parent,frame}));
+		animationTreeModel.fireTreeNodesInserted(new TreeModelEvent(this, frame.getPath()));
+		animationTree.focusOnData(frame);
 	}
 
 
@@ -249,8 +258,8 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 
 	@Override
 	public void animationAdded(Animation animation) {
-		animationTreeModel.fireTreeNodesInserted(new TreeModelEvent(this, 
-				new Object[]{editor.data,animation}));
+		animationTreeModel.fireTreeNodesInserted(new TreeModelEvent(this, animation.getPath()));
+		animationTree.focusOnData(animation);
 	}
 
 

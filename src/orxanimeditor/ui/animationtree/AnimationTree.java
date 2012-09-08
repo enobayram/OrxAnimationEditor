@@ -14,7 +14,7 @@ import orxanimeditor.animation.HierarchicalData;
 
 public class AnimationTree extends JTree implements TreeWillExpandListener{
 	
-	Object selectedNode = null;
+	HierarchicalData selectedNode = null;
 
 	
 	
@@ -64,7 +64,14 @@ public class AnimationTree extends JTree implements TreeWillExpandListener{
 		return result;
 	}
 	
-	public Object getSelectedNode() {
+	public HierarchicalData getSelectedNode() {
 		return selectedNode;
+	}
+	
+	public void focusOnData(HierarchicalData data) {
+		TreePath treePath = new TreePath(data.getPath());
+		makeVisible(treePath);
+		setSelectionPath(treePath);
+		requestFocusInWindow();
 	}
 }

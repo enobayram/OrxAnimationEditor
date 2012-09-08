@@ -95,6 +95,10 @@ public class Animation implements HierarchicalData, Serializable, Cloneable{
 		}
 	}
 	
+	@Override
+	public Object[] getPath() {
+		return new Object[]{parent,this};
+	}
 //	public Frame getNextFrame(Frame frame) {
 //		return frames.
 //	}

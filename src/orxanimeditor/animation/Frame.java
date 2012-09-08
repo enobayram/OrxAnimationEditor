@@ -3,6 +3,8 @@ package orxanimeditor.animation;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import orxanimeditor.animation.Project.RelativeFile;
 
@@ -142,4 +144,12 @@ public class Frame implements HierarchicalData, Serializable, Cloneable{
 		else return parent.getDefaultKeyDuration();
 	}
 	
+	@Override
+	public Object[] getPath() {
+		Object[] parentPath = parent.getPath();
+		Object[] result= new Object[parentPath.length+1];
+		System.arraycopy(parentPath, 0, result, 0, parentPath.length);
+		result[result.length-1] = this;
+		return result;
+	}
 }

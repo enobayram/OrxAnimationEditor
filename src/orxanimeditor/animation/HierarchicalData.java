@@ -5,4 +5,5 @@ public interface HierarchicalData {
 	public String getName();
 	public void setName(String name);
 	public Object getParent();
+	public Object[] getPath();
 }

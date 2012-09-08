@@ -61,6 +61,8 @@ public class AnimationTreeEditor extends DefaultTreeCellEditor {
             TreePath path = tree.getPathForLocation(mouseEvent.getX(), mouseEvent.getY());
             return path.getLastPathComponent() instanceof HierarchicalData; // root and direct children are not editable
         }
+        if (event == null)
+        	return true;
         return false;
 	}
 	

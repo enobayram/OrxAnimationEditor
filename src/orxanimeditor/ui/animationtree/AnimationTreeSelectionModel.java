@@ -46,7 +46,7 @@ public class AnimationTreeSelectionModel extends DefaultTreeSelectionModel {
 	
 	@Override
 	protected void fireValueChanged(TreeSelectionEvent e) {
-		tree.selectedNode = e.getPath().getLastPathComponent();
+		tree.selectedNode = (HierarchicalData) e.getPath().getLastPathComponent();
 		super.fireValueChanged(e);
 	}
 }
