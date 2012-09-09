@@ -298,5 +298,10 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 	public void frameEdited(Frame frame) {
 		repaint(10);
 	}
+
+	@Override
+	public void frameMoved(Animation oldParent, Frame frame) {
+		// ignore
+	}
 }
 

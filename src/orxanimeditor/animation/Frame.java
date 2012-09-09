@@ -152,4 +152,10 @@ public class Frame implements HierarchicalData, Serializable, Cloneable{
 		result[result.length-1] = this;
 		return result;
 	}
+
+	@Override
+	public int move(Object newParent_, int currentIndexOfPreviousItem) {
+		Animation newParent = (Animation) newParent_;
+		return newParent.moveFrame(this, currentIndexOfPreviousItem);
+	}
 }

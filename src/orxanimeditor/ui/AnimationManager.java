@@ -128,9 +128,15 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource()==newFrameButton) {
 			Animation selectedAnimation = getSelectedAnimation();
-			if(selectedAnimation == null) return;
-			Frame newFrame = new Frame("NewFrame" + newFrameSuffix++);
-			selectedAnimation.addFrame(newFrame);			
+			Frame     selectedFrame = getSelectedFrame();
+			if(selectedAnimation != null) {
+				Frame newFrame = new Frame("NewFrame" + newFrameSuffix++);
+				selectedAnimation.addFrame(newFrame);
+			} else if(selectedFrame != null) {
+				Frame newFrame = new Frame("NewFrame" + newFrameSuffix++);
+				Animation parent = selectedFrame.getParent();
+				parent.addFrame(newFrame, parent.getFrameIndex(selectedFrame)+1);
+			} else return;
 		}
 		if(e.getSource()==newAnimationButton) {
 			Animation newAnimation = new Animation("NewAnimation" + newAnimationSuffix++);
@@ -281,6 +287,20 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 
 	public HierarchicalData[] getSelectedObjects() {
 		return animationTree.getSelectedObjects();
+	}
+
+
+	@Override
+	public void frameMoved(Animation oldParent, Frame frame) {
+		animationTreeModel.fireTreeNodesRemoved(new TreeModelEvent(this, 
+				new Object[]{editor.data,oldParent,frame}));
+		animationTreeModel.fireTreeNodesInserted(new TreeModelEvent(this, frame.getPath()));
+	}
+
+
+	@Override
+	public void animationMoved(Animation animation) {
+		animationTreeModel.fireTreeStructureChanged(new TreeModelEvent(this, new Object[]{editor.data}));
 	}
 	
 }

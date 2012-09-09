@@ -6,4 +6,5 @@ public interface HierarchicalData {
 	public void setName(String name);
 	public Object getParent();
 	public Object[] getPath();
+	public int move(Object newParent, int currentIndexOfPreviousItem);
 }

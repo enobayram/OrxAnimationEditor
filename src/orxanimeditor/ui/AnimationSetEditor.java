@@ -126,5 +126,10 @@ public class AnimationSetEditor extends JPanel implements ActionListener, DataLo
 	public void animationEdited(Animation animation) {
 		repaint(10);
 	}
+
+	@Override
+	public void animationMoved(Animation animation) {
+		// ignore
+	}
 	
 }

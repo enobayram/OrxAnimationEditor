@@ -27,7 +27,7 @@ public class AnimationTreeTransferHandler extends TransferHandler {
 	
 	@Override
 	public int getSourceActions(JComponent c) {
-		return COPY_OR_MOVE;
+		return COPY | MOVE | LINK;
 	}
 
 	@Override
@@ -71,20 +71,22 @@ public class AnimationTreeTransferHandler extends TransferHandler {
 	
 	@Override
 	protected void exportDone(JComponent source, Transferable data, int action) {
-		if(action == MOVE) {
+/*		if(action  == MOVE) {
 			try {
 				HierarchicalData[] toRemove = (HierarchicalData[]) data.getTransferData(ORXflavor);
 				for(HierarchicalData datum: toRemove) datum.remove();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
+		}*/
 	}
 
 	@Override
 	public boolean canImport(TransferSupport support) {
 		JTree.DropLocation loc = (JTree.DropLocation) support.getDropLocation();
 		Object parent = loc.getPath().getLastPathComponent();
+		if(support.getUserDropAction() == LINK)
+			support.setDropAction(COPY);
 		if(parent instanceof HierarchicalData)
 			return support.getTransferable().isDataFlavorSupported(FrameFlavor);
 		else if(parent instanceof EditorData)
@@ -111,7 +113,12 @@ public class AnimationTreeTransferHandler extends TransferHandler {
 		if(parent instanceof Animation) {
 			try {
 				Frame[] frames = (Frame[]) support.getTransferable().getTransferData(FrameFlavor);
-				for(Frame frame:frames) ((Animation) parent).addFrame(frame.clone(),index++);
+				if(support.getDropAction() == COPY)
+					for(Frame frame:frames) ((Animation) parent).addFrame(frame.clone(),index++);
+				else if (support.getDropAction() == MOVE) {
+					index--;
+					for(Frame frame:frames) index = frame.move(parent,index);										
+				}
 				return true;
 			} catch (Exception e) {
 					e.printStackTrace();
@@ -121,7 +128,12 @@ public class AnimationTreeTransferHandler extends TransferHandler {
 		else if(parent instanceof EditorData) {
 			try {
 				Animation[] animations = (Animation[]) support.getTransferable().getTransferData(AnimationFlavor);
-				for(Animation animation: animations) ((EditorData) parent).addAnimation(animation.clone(),index);
+				if(support.getDropAction() == COPY)
+					for(Animation animation: animations) ((EditorData) parent).addAnimation(animation.clone(),index);
+				else if (support.getDropAction() == MOVE) {
+					index--;
+					for(Animation animation: animations) index = animation.move(null,index);
+				}
 				return true;
 			} catch (Exception e) {
 			e.printStackTrace();
@@ -131,9 +143,13 @@ public class AnimationTreeTransferHandler extends TransferHandler {
 		else return false;
 	}
 
-	DataFlavor ORXflavor = new DataFlavor(TransferableHierarchicalData.class, "ORX Animation Editor data");
-	DataFlavor FrameFlavor = new DataFlavor(Frame[].class, "Collection of frames");
-	DataFlavor AnimationFlavor = new DataFlavor(Animation[].class, "Collection of animations");
+	public static String getLocalMimeType(Class cl) {
+		return DataFlavor.javaJVMLocalObjectMimeType+"; class=\"" + cl.getName()+"\"";
+	}
+	
+	public static final DataFlavor ORXflavor = new DataFlavor(getLocalMimeType(HierarchicalData[].class), "ORX Animation Editor data");
+	public static final DataFlavor FrameFlavor = new DataFlavor(getLocalMimeType(Frame[].class), "Collection of frames");
+	public static final DataFlavor AnimationFlavor = new DataFlavor(getLocalMimeType(Animation[].class), "Collection of animations");
 	
 	class TransferableHierarchicalData implements Transferable {
 		HierarchicalData[] data;

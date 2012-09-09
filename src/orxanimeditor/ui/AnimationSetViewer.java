@@ -4,22 +4,27 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.io.IOException;
 
 import javax.swing.AbstractAction;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
+import javax.swing.TransferHandler;
 
 import orxanimeditor.animation.Animation;
 import orxanimeditor.animation.AnimationSet;
 import orxanimeditor.animation.AnimationSet.Link;
 import orxanimeditor.animation.AnimationSet.SetSpecificAnimationData;
+import orxanimeditor.ui.animationtree.AnimationTreeTransferHandler;
 
 public class AnimationSetViewer extends JScrollPane implements MouseListener, MouseMotionListener {
 	
@@ -51,6 +56,8 @@ public class AnimationSetViewer extends JScrollPane implements MouseListener, Mo
 				deleteLink(selectedLink);
 			}
 		});
+		
+		display.setTransferHandler(new AnimationSetViewerTransferHandler());
 	}
 	public void addAnimation(Animation chosen) {
 		if(set.animations.contains(chosen)) return;
@@ -60,7 +67,7 @@ public class AnimationSetViewer extends JScrollPane implements MouseListener, Mo
 		}
 	}
 	
-	class DisplayPanel extends JPanel {
+	class DisplayPanel extends JPanel implements AnimationReceiver{
 		@Override
 		public void paint(Graphics g) {
 			super.paint(g);
@@ -76,6 +83,7 @@ public class AnimationSetViewer extends JScrollPane implements MouseListener, Mo
 				else 	g.setColor(Color.BLACK);
 				drawLink(g, link);
 			}
+			
 		}
 		
 		void drawLink(Graphics g, Link link) {
@@ -117,6 +125,11 @@ public class AnimationSetViewer extends JScrollPane implements MouseListener, Mo
 		@Override
 		public Dimension getPreferredSize() {
 			return getMinimumSize();
+		}
+
+		@Override
+		public void receiveAnimation(Animation animation) {
+			addAnimation(animation);		
 		}
 
 	}
@@ -222,6 +235,34 @@ public class AnimationSetViewer extends JScrollPane implements MouseListener, Mo
 			set.links.remove(link);
 			if(link==selectedLink) selectedLink=null;
 			editor.poke();
+		}
+	}
+}
+
+class AnimationSetViewerTransferHandler extends TransferHandler {
+	@Override
+	public boolean canImport(TransferSupport support) {
+		Transferable t = support.getTransferable();
+		if(!support.isDrop())
+			return false;
+		if(support.isDataFlavorSupported(AnimationTreeTransferHandler.AnimationFlavor)) {
+			support.setDropAction(LINK);
+			return true;
+		} else
+			return false;
+	}
+	@Override
+	public boolean importData(TransferSupport support) {
+		Transferable t = support.getTransferable();
+		try {
+			Animation[] animations = (Animation[]) t.getTransferData(AnimationTreeTransferHandler.AnimationFlavor);
+			AnimationReceiver rec = (AnimationReceiver) support.getComponent();
+			for(Animation animation: animations)
+				rec.receiveAnimation(animation);
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
 		}
 	}
 }

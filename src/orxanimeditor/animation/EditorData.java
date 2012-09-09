@@ -82,5 +82,31 @@ public class EditorData implements Serializable{
 	protected void fireDataLoaded() {
 		for(DataLoadListener dll: dataLoadListeners) dll.dataLoaded();
 	}
+	protected void fireAnimationMoved(Animation animation) {
+		for(AnimationListener al: animationListeners) al.animationMoved(animation);
+	}
+	
+	
+	public int moveAnimation(Animation animation, int currentIndexOfPreviousAnimation) {
+		if(currentIndexOfPreviousAnimation==-1) {
+			animations.remove(animation);
+			animations.add(0, animation);
+			fireAnimationMoved(animation);
+			return 0;			
+		}
+		Animation prevAnimation = getAnimation(currentIndexOfPreviousAnimation);
+		if(prevAnimation == animation) {
+			return currentIndexOfPreviousAnimation;
+		} else {
+			animations.remove(animation);
+			int newIndexOfPreviousAnimation = getAnimationIndex(prevAnimation);
+			animations.add(newIndexOfPreviousAnimation+1, animation);
+			fireAnimationMoved(animation);
+			return newIndexOfPreviousAnimation+1;
+		}
+	}
 
+	protected void fireFrameMoved(Animation oldParent, Frame frame) {
+		for(FrameListener fl: frameListeners) fl.frameMoved(oldParent,frame);		
+	}
 }

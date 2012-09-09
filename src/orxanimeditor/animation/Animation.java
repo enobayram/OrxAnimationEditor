@@ -66,6 +66,11 @@ public class Animation implements HierarchicalData, Serializable, Cloneable{
 		frame.setParent(this);
 		frames.add(index,frame);		
 	}
+	
+	public int move(Object newParent, int currentIndexOfPreviousAnimation) {
+		// newParent is ignored, since Animation is the child of the only EditorData right now
+		return parent.moveAnimation(this, currentIndexOfPreviousAnimation);
+	}
 
 	public void removeFrame(Frame frame) {
 		frames.remove(frame);
@@ -99,7 +104,23 @@ public class Animation implements HierarchicalData, Serializable, Cloneable{
 	public Object[] getPath() {
 		return new Object[]{parent,this};
 	}
-//	public Frame getNextFrame(Frame frame) {
-//		return frames.
-//	}
+
+	public int moveFrame(Frame frame, int currentIndexOfPreviousItem) {
+		Animation oldParent = frame.getParent();
+		if(currentIndexOfPreviousItem == -1) { //insert to the beginning
+			oldParent.frames.remove(frame);
+			frames.add(0, frame);
+			parent.fireFrameMoved(oldParent,frame);
+			return 0;			
+		}
+		Frame previousFrame = getFrame(currentIndexOfPreviousItem);
+		if(previousFrame == frame) return currentIndexOfPreviousItem;
+		else {
+			oldParent.frames.remove(frame);
+			int newIndexOfPreviousItem = getFrameIndex(previousFrame);
+			frames.add(newIndexOfPreviousItem+1, frame);
+			parent.fireFrameMoved(oldParent,frame);
+			return newIndexOfPreviousItem+1;
+		}
+	}
 }

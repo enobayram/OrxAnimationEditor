@@ -163,4 +163,16 @@ public class AnimationViewer extends JPanel implements TreeSelectionListener, Da
 		selectedFrame = null;
 		restart();
 	}
+
+	@Override
+	public void frameMoved(Animation oldParent, Frame frame) {
+		Animation newParent = frame.getParent();
+		if(newParent == selectedAnimation || oldParent == selectedAnimation)
+			restart();
+	}
+
+	@Override
+	public void animationMoved(Animation animation) {
+		// ignore
+	}
 }
