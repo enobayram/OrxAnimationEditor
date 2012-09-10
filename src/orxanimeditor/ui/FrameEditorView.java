@@ -275,13 +275,13 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		if(e.getWheelRotation()>0) zoom*=2;
+		if(e.getWheelRotation()<=0) zoom*=2;
 		else zoom = Math.max(1, zoom/2);		
 		setPreferredSize(new Dimension(image.getWidth()*zoom, image.getHeight()*zoom));
 		setSize(getPreferredSize());
-		editorFrame.getContentPane().repaint();
+		editorFrame.getContentPane().repaint(20);
 		editorFrame.doLayout();
-		repaint();
+		repaint(20);
 	}
 
 	@Override

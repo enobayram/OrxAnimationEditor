@@ -2,6 +2,7 @@ package orxanimeditor.ui;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -20,7 +21,7 @@ import orxanimeditor.animation.DataLoadListener;
 import orxanimeditor.animation.Frame;
 import orxanimeditor.animation.FrameListener;
 
-public class AnimationViewer extends JPanel implements TreeSelectionListener, DataLoadListener, AnimationListener, FrameListener{
+public class AnimationViewerDisplay extends SlidingView implements TreeSelectionListener, DataLoadListener, AnimationListener, FrameListener{
 
 	EditorMainWindow editor;
 	
@@ -31,7 +32,7 @@ public class AnimationViewer extends JPanel implements TreeSelectionListener, Da
 	Timer		timer = new Timer();
 	Point		accumulatedOffset = new Point(0, 0);
 	
-	public AnimationViewer(EditorMainWindow editor) {
+	public AnimationViewerDisplay(EditorMainWindow editor) {
 		setMinimumSize(new Dimension(100,100));
 		this.editor = editor;
 		editor.data.addAnimationListener(this);
@@ -40,13 +41,11 @@ public class AnimationViewer extends JPanel implements TreeSelectionListener, Da
 	}
 	
 	@Override
-	public void paint(Graphics g) {
-		super.paint(g);
+	public void paintContent(Graphics2D g) {
 		if(selectedFrame!=null) drawFrame(g,selectedFrame);
 		if(selectedAnimation!=null && nextFrameIndex<selectedAnimation.getFrameCount()) {
 			drawFrame(g,selectedAnimation.getFrame(nextFrameIndex));
 		}
-
 	}
 	
 	private void setupNextFrame() {

@@ -56,7 +56,7 @@ import orxanimeditor.ui.animationtree.AnimationTreeTransferHandler;
 public class EditorMainWindow extends JFrame {
 	AnimationManager 	animationManager;
 	FrameEditor 	 	frameEditor;
-	AnimationViewer  	animationViewer;
+	AnimationViewerDisplay  	animationViewer;
 	AnimationSetEditor 	animationSetEditor;
 
 	JMenuBar 		 	menuBar;
@@ -108,7 +108,7 @@ public class EditorMainWindow extends JFrame {
 		setLayout(new BorderLayout());
 		animationManager 	= new AnimationManager(this);
 		frameEditor      	= new FrameEditor(this);
-		animationViewer  	= new AnimationViewer(this);
+		animationViewer  	= new AnimationViewerDisplay(this);
 		animationSetEditor	= new AnimationSetEditor(this);
 		helpViewer 			= new HelpViewer(this);
 		
