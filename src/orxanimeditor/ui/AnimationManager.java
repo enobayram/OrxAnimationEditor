@@ -302,5 +302,4 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 	public void animationMoved(Animation animation) {
 		animationTreeModel.fireTreeStructureChanged(new TreeModelEvent(this, new Object[]{editor.data}));
 	}
-	
 }
