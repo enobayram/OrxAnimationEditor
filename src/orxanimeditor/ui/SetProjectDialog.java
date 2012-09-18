@@ -72,7 +72,7 @@ public class SetProjectDialog extends JDialog implements WindowListener, ActionL
 	
 	@Override	
 	public void windowClosing(WindowEvent arg0) {
-		if(editor.data.project.projectFile == null) System.exit(0);
+		if(editor.getData().project.projectFile == null) System.exit(0);
 	}
 
 	@Override	public void windowActivated(WindowEvent arg0) {}
@@ -94,7 +94,7 @@ public class SetProjectDialog extends JDialog implements WindowListener, ActionL
 				} else {
 					editor.openProjectAction();
 				}
-				if(editor.data.project.projectFile == null)
+				if(editor.getData().project.projectFile == null)
 					JOptionPane.showMessageDialog(this, "Please set a valid project...", "Error", JOptionPane.ERROR_MESSAGE);				
 				else
 					setVisible(false);

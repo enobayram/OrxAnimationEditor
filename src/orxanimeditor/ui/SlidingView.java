@@ -22,7 +22,6 @@ public abstract class SlidingView extends JPanel implements MouseWheelListener, 
 	protected abstract void paintContent(Graphics2D g);
 	
 	public SlidingView() {
-		setBackground(Color.WHITE);
 		addMouseWheelListener(this);
 		addMouseMotionListener(this);
 		addMouseListener(new MouseAdapter() {
@@ -34,8 +33,8 @@ public abstract class SlidingView extends JPanel implements MouseWheelListener, 
 
 	@Override
 	public void paint(Graphics g_) {
-		super.paint(g_);
 		Graphics2D g = (Graphics2D) g_;
+		Utilities.drawCheckerPattern(g, 20);
 		g.scale(viewScale, viewScale);
 		g.translate(viewOffsetX, viewOffsetY);
 		paintContent(g);

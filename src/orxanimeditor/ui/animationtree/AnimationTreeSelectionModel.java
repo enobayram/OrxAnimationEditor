@@ -1,5 +1,6 @@
 package orxanimeditor.ui.animationtree;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import javax.swing.event.TreeSelectionEvent;
@@ -8,6 +9,7 @@ import javax.swing.tree.DefaultTreeSelectionModel;
 import javax.swing.tree.TreePath;
 
 import orxanimeditor.animation.HierarchicalData;
+import orxanimeditor.ui.SelectionListener;
 
 public class AnimationTreeSelectionModel extends DefaultTreeSelectionModel {
 	AnimationTree tree;
@@ -46,7 +48,8 @@ public class AnimationTreeSelectionModel extends DefaultTreeSelectionModel {
 	
 	@Override
 	protected void fireValueChanged(TreeSelectionEvent e) {
-		tree.selectedNode = (HierarchicalData) e.getPath().getLastPathComponent();
+		HierarchicalData selectedObject = (HierarchicalData) e.getPath().getLastPathComponent(); 
+		tree.setSelectedNode(selectedObject);
 		super.fireValueChanged(e);
-	}
+	}	
 }

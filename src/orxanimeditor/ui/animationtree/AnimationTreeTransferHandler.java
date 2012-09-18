@@ -147,7 +147,7 @@ public class AnimationTreeTransferHandler extends TransferHandler {
 		return DataFlavor.javaJVMLocalObjectMimeType+"; class=\"" + cl.getName()+"\"";
 	}
 	
-	public static final DataFlavor ORXflavor = new DataFlavor(getLocalMimeType(HierarchicalData[].class), "ORX Animation Editor data");
+	public static final DataFlavor HierarchicalDataFlavor = new DataFlavor(getLocalMimeType(HierarchicalData[].class), "ORX Animation Editor data");
 	public static final DataFlavor FrameFlavor = new DataFlavor(getLocalMimeType(Frame[].class), "Collection of frames");
 	public static final DataFlavor AnimationFlavor = new DataFlavor(getLocalMimeType(Animation[].class), "Collection of animations");
 	
@@ -175,7 +175,7 @@ public class AnimationTreeTransferHandler extends TransferHandler {
 				String result = "";
 				for(HierarchicalData datum:data) result+=datum.toString() + " ";
 				return result;
-			} else if (flavor.equals(ORXflavor)) {
+			} else if (flavor.equals(HierarchicalDataFlavor)) {
 				return data;
 			} else if (flavor.equals(AnimationFlavor)) {
 				if(!isPureAnimations()) throw new UnsupportedFlavorException(flavor);
@@ -189,12 +189,12 @@ public class AnimationTreeTransferHandler extends TransferHandler {
 
 		@Override
 		public DataFlavor[] getTransferDataFlavors() {
-			return new DataFlavor[] {AnimationFlavor, FrameFlavor, ORXflavor};
+			return new DataFlavor[] {AnimationFlavor, FrameFlavor, HierarchicalDataFlavor};
 		}
 
 		@Override
 		public boolean isDataFlavorSupported(DataFlavor flavor) {
-			if(flavor.equals(ORXflavor) || flavor.equals(DataFlavor.stringFlavor))
+			if(flavor.equals(HierarchicalDataFlavor) || flavor.equals(DataFlavor.stringFlavor))
 				return true;
 			else if(flavor.equals(AnimationFlavor) && isPureAnimations())
 				return true;

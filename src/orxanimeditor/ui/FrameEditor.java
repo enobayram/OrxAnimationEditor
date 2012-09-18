@@ -25,7 +25,7 @@ import javax.swing.event.TreeSelectionListener;
 
 import orxanimeditor.animation.Frame;
 
-public class FrameEditor extends JPanel implements TreeSelectionListener, ChangeListener, EditListener{
+public class FrameEditor extends JPanel implements SelectionListener, ChangeListener {
 	EditorMainWindow editor;
 	Frame selectedFrame = null;
 	JTabbedPane views;
@@ -97,13 +97,8 @@ public class FrameEditor extends JPanel implements TreeSelectionListener, Change
     }
 
 	@Override
-	public void valueChanged(TreeSelectionEvent e) {
+	public void selectionChanged(Object selectedObject) {
 		repaint();
 	}
 
-
-	@Override
-	public void edited() {
-		repaint();
-	}
 }

@@ -10,6 +10,7 @@ public class Project implements Serializable{
 	private static final long serialVersionUID = -896630792781084533L;
 	public File			 projectFile = null;
 	public RelativeFile			 targetIni = null;
+	public RelativeFile			 targetFolder = null;
 
 	
 	public class RelativeFile implements Serializable{
@@ -43,7 +44,8 @@ public class Project implements Serializable{
 	}
 	
 	public File getTargetFolder() {
-		return new File(targetIni.getAbsoluteFile().getParent());
+		if(targetFolder!=null) return targetFolder.getAbsoluteFile();
+		else return new File(targetIni.getAbsoluteFile().getParent());
 	}
 
 }

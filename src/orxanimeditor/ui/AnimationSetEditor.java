@@ -45,8 +45,8 @@ public class AnimationSetEditor extends JPanel implements ActionListener, DataLo
 		add(toolbar, BorderLayout.NORTH);
 		add(animationSets, BorderLayout.CENTER);
 
-		editor.data.addDataLoadListener(this);
-		editor.data.addAnimationListener(this);
+		editor.getData().addDataLoadListener(this);
+		editor.getData().addAnimationListener(this);
 	}
 
 	private void prepareToolbar() {
@@ -71,7 +71,7 @@ public class AnimationSetEditor extends JPanel implements ActionListener, DataLo
 	public void dataLoaded() {
 		setsTable.clear();
 		animationSets.removeAll();
-		for(AnimationSet set: editor.data.animationSets) createNewViewer(set);
+		for(AnimationSet set: editor.getData().animationSets) createNewViewer(set);
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public class AnimationSetEditor extends JPanel implements ActionListener, DataLo
 			String newSetName = JOptionPane.showInputDialog("New Animation Set Name:");
 			if(newSetName==null || newSetName.isEmpty()) return;
 			AnimationSet newSet = new AnimationSet(newSetName);
-			editor.data.animationSets.add(newSet);
+			editor.getData().animationSets.add(newSet);
 			createNewViewer(newSet);
 		} else  { // The rest of the buttons are related to a view
 			if(view==null) { // So if no view is selected, an error is shown
@@ -93,7 +93,7 @@ public class AnimationSetEditor extends JPanel implements ActionListener, DataLo
 			} else if(e.getSource() == addAnimationButton) {
 				Animation chosen = (Animation) JOptionPane.showInputDialog(editor, "Choose the animation to add to the current set", "Add Animation", 
 					    JOptionPane.QUESTION_MESSAGE, editor.animationManager.animationIcon, 
-						editor.data.getAnimations(), null);
+						editor.getData().getAnimations(), null);
 				if(chosen == null) return;
 				view.addAnimation(chosen);
 			}
@@ -108,7 +108,7 @@ public class AnimationSetEditor extends JPanel implements ActionListener, DataLo
 
 	private void deleteViewer(AnimationSetViewer view) {
 		setsTable.remove(view.set);
-		editor.data.animationSets.remove(view.set);
+		editor.getData().animationSets.remove(view.set);
 		animationSets.remove(view);
 	}
 

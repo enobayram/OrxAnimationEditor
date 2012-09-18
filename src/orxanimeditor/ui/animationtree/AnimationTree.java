@@ -1,5 +1,7 @@
 package orxanimeditor.ui.animationtree;
 
+import java.util.ArrayList;
+
 import javax.swing.DropMode;
 import javax.swing.JTree;
 import javax.swing.event.TreeExpansionEvent;
@@ -11,10 +13,11 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import orxanimeditor.animation.HierarchicalData;
+import orxanimeditor.ui.SelectionListener;
 
 public class AnimationTree extends JTree implements TreeWillExpandListener{
 	
-	HierarchicalData selectedNode = null;
+	private HierarchicalData selectedNode = null;
 
 	
 	
@@ -68,10 +71,19 @@ public class AnimationTree extends JTree implements TreeWillExpandListener{
 		return selectedNode;
 	}
 	
+	void setSelectedNode(HierarchicalData node) {
+		selectedNode = node;
+		fireSelectionChanged(node);
+	}
+	
 	public void focusOnData(HierarchicalData data) {
 		TreePath treePath = new TreePath(data.getPath());
 		makeVisible(treePath);
 		setSelectionPath(treePath);
 		requestFocusInWindow();
 	}
+	
+	private ArrayList<SelectionListener> selectionListeners = new ArrayList<SelectionListener>();
+	public void addSelectionListener(SelectionListener l) {selectionListeners.add(l);}
+	void fireSelectionChanged(Object o) {for(SelectionListener l: selectionListeners) l.selectionChanged(o);}
 }

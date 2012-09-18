@@ -52,17 +52,14 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		addMouseWheelListener(this);
-		editorFrame.data.addFrameListener(this);
+		editorFrame.getData().addFrameListener(this);
 	}
-	
-	LinkedList<EditListener> editListeners = new LinkedList<EditListener>();
-
 
 	public void paint(java.awt.Graphics g_) {
 		Graphics2D g = (Graphics2D) g_;
 		g.setColor(Color.LIGHT_GRAY);
 		g.fillRect(0, 0, getWidth(), getHeight());
-		drawCheckerPattern(g.create(0, 0, getViewWidth(), getViewHeight()));
+		Utilities.drawCheckerPattern(g.create(0, 0, getViewWidth(), getViewHeight()),checkerSize);
 		g.drawImage(image,0,0, image.getWidth()*zoom, image.getHeight()*zoom,0,0,image.getWidth(),image.getHeight(),null);
 		for(Object selected: editorFrame.animationManager.getSelectedObjects()) {
 			if(selected instanceof Animation) {
@@ -134,17 +131,6 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 	private Point toScreen(Point in) {
 		return new Point(toScreen(in.x), toScreen(in.y));
 	}
-
-	private void drawCheckerPattern(Graphics g) {
-		g.setColor(new Color(150,150,200));
-		g.fillRect(0, 0, getViewWidth(), getViewHeight());
-		
-		g.setColor(Color.GRAY);
-		for(int i = 0; i<getViewWidth(); i+=checkerSize)
-			for(int j=0; j<getViewHeight(); j+=checkerSize) 
-				if(((i+j)/checkerSize)%2==0)
-				g.fillRect(i, j, checkerSize, checkerSize);
-	}
 	
 	private int snap(int snapMe){
 		return java.lang.Math.round( snapMe/parent.snapSize )*parent.snapSize;
@@ -169,7 +155,7 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 				int x = snap(getViewX(e)), y = snap(getViewY(e));	
 
 				selected.setRectangle(new Rectangle(x,y,lastRect.width,lastRect.height));
-				selected.setImageFile(editorFrame.data.project.getRelativeFile(imageFile));
+				selected.setImageFile(editorFrame.getData().project.getRelativeFile(imageFile));
 
 				int PivotDX = lastPivot.x - lastRect.x;
 				int PivotDY = lastPivot.y - lastRect.y;
@@ -182,7 +168,7 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 				int dx = snap(getViewX(e)-x), dy = snap(getViewY(e)-y);
 				Rectangle newRectangle = new Rectangle(x,y,dx,dy);
 				selected.setRectangle(newRectangle);
-				selected.setImageFile(editorFrame.data.project.getRelativeFile(imageFile));
+				selected.setImageFile(editorFrame.getData().project.getRelativeFile(imageFile));
 				lastRect = (Rectangle) newRectangle.clone();
 				lastPivot = selected.getPivot();
 
@@ -234,14 +220,14 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 		if(e.getButton() == MouseEvent.BUTTON1) {
 			if (parent.isUsingLastRect()) {
 				selected.setRectangle(new Rectangle(getViewX(e),getViewY(e),lastRect.width,lastRect.height));
-				selected.setImageFile(editorFrame.data.project.getRelativeFile(imageFile));
+				selected.setImageFile(editorFrame.getData().project.getRelativeFile(imageFile));
 				int PivotDX = lastPivot.x - lastRect.x;
 				int PivotDY = lastPivot.y - lastRect.y;
 				selected.setPivot(new Point(getViewX(e)+PivotDX,getViewY(e)+PivotDY));					
 			}
 			else {
 				selected.setRectangle(new Rectangle(getViewX(e),getViewY(e),0,0));
-				selected.setImageFile(editorFrame.data.project.getRelativeFile(imageFile));
+				selected.setImageFile(editorFrame.getData().project.getRelativeFile(imageFile));
 				lastPivot = selected.getPivot();
 				selected.setPivot(null);
 			}

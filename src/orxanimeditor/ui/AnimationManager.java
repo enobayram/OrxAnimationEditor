@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
@@ -42,7 +43,7 @@ import orxanimeditor.ui.animationtree.AnimationTreeSelectionModel;
 public class AnimationManager extends JPanel implements ActionListener, KeyListener,  AnimationListener, FrameListener, DataLoadListener {
 	EditorMainWindow editor;
 	JToolBar  toolbar;
-	public AnimationTree	  animationTree;
+	private AnimationTree	  animationTree;
 	public AnimationTreeModel animationTreeModel;
 		
 	//ImageIcon image = (new ImageIcon(getClass().getResource("yourpackage/mypackage/image.gif")));
@@ -61,8 +62,10 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 
 	//Animation selectedAnimation = null;
 	//Frame selectedFrame = null;
-
+	
 	Object[] clipboard = new Object[0];
+	
+	public void addSelectionListener(SelectionListener l) {animationTree.addSelectionListener(l);}
 	
 	public AnimationManager(EditorMainWindow editorFrame) {
 		editor = editorFrame;
@@ -77,9 +80,9 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 		setMinimumSize(new Dimension(300, 200));
 		setPreferredSize(getMinimumSize());
 		
-		editor.data.addAnimationListener(this);
-		editor.data.addFrameListener(this);
-		editor.data.addDataLoadListener(this);
+		editor.getData().addAnimationListener(this);
+		editor.getData().addFrameListener(this);
+		editor.getData().addDataLoadListener(this);
 	}
 	
 
@@ -110,7 +113,7 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 	
 	private void prepareTree() {
 		animationTree = new AnimationTree();
-		animationTreeModel = new AnimationTreeModel(editor.data);
+		animationTreeModel = new AnimationTreeModel(editor.getData());
 		animationTree.setModel(animationTreeModel);
 		animationTree.addKeyListener(this);
 		animationTree.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "EditSelected");
@@ -140,7 +143,7 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 		}
 		if(e.getSource()==newAnimationButton) {
 			Animation newAnimation = new Animation("NewAnimation" + newAnimationSuffix++);
-			editor.data.addAnimation(newAnimation);
+			editor.getData().addAnimation(newAnimation);
 		}
 	}
 	
@@ -194,7 +197,7 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 						selectedAnimation.addFrame(((Frame)nodeObject).clone());
 					}
 					if(nodeObject instanceof Animation) {
-						editor.data.addAnimation(((Animation)nodeObject).clone());
+						editor.getData().addAnimation(((Animation)nodeObject).clone());
 					}
 				}
 				break;				
@@ -234,7 +237,7 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 	
 	@Override
 	public void dataLoaded() {
-		animationTreeModel.fireTreeStructureChanged(new TreeModelEvent(this, new Object[]{editor.data}));
+		animationTreeModel.fireTreeStructureChanged(new TreeModelEvent(this, new Object[]{editor.getData()}));
 	}
 
 
@@ -248,7 +251,7 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 	@Override
 	public void frameRemoved(Animation parent, Frame frame) {
 		animationTreeModel.fireTreeNodesRemoved(new TreeModelEvent(this, 
-				new Object[]{editor.data,parent,frame}));		
+				new Object[]{editor.getData(),parent,frame}));		
 	}
 
 
@@ -256,7 +259,7 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 	public void frameEdited(Frame frame) {
 		Animation parent = frame.getParent();
 		animationTreeModel.fireTreeNodesChanged(new TreeModelEvent(this, 
-				new Object[]{editor.data,parent},
+				new Object[]{editor.getData(),parent},
 				new int[]{animationTreeModel.getIndexOfChild(parent, frame)},
 				new Object[]{frame}));
 	}
@@ -272,15 +275,15 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 	@Override
 	public void animationRemoved(Animation animation) {
 		animationTreeModel.fireTreeNodesRemoved(new TreeModelEvent(this, 
-				new Object[]{editor.data,animation}));		
+				new Object[]{editor.getData(),animation}));		
 	}
 
 
 	@Override
 	public void animationEdited(Animation animation) {
 		animationTreeModel.fireTreeNodesChanged(new TreeModelEvent(this, 
-				new Object[]{editor.data},
-				new int[]{animationTreeModel.getIndexOfChild(editor.data, animation)},
+				new Object[]{editor.getData()},
+				new int[]{animationTreeModel.getIndexOfChild(editor.getData(), animation)},
 				new Object[]{animation}));
 	}
 
@@ -293,13 +296,13 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 	@Override
 	public void frameMoved(Animation oldParent, Frame frame) {
 		animationTreeModel.fireTreeNodesRemoved(new TreeModelEvent(this, 
-				new Object[]{editor.data,oldParent,frame}));
+				new Object[]{editor.getData(),oldParent,frame}));
 		animationTreeModel.fireTreeNodesInserted(new TreeModelEvent(this, frame.getPath()));
 	}
 
 
 	@Override
 	public void animationMoved(Animation animation) {
-		animationTreeModel.fireTreeStructureChanged(new TreeModelEvent(this, new Object[]{editor.data}));
+		animationTreeModel.fireTreeStructureChanged(new TreeModelEvent(this, new Object[]{editor.getData()}));
 	}
 }
