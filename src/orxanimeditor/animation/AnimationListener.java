@@ -1,6 +1,6 @@
 package orxanimeditor.animation;
 
-public interface AnimationListener {
+public interface AnimationListener extends DataLoadListener{
 	public void animationAdded(Animation animation);
 	public void animationRemoved(Animation animation);
 	public void animationEdited(Animation animation);

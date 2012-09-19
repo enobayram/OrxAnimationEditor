@@ -2,24 +2,31 @@ package orxanimeditor.ui.animationviewer;
 
 import java.awt.Dimension;
 import java.awt.datatransfer.Transferable;
+import java.awt.event.ActionEvent;
 
+import javax.swing.AbstractAction;
 import javax.swing.DefaultListModel;
+import javax.swing.DropMode;
 import javax.swing.JList;
 import javax.swing.JTree;
+import javax.swing.KeyStroke;
 import javax.swing.ListModel;
 import javax.swing.TransferHandler;
 import javax.swing.TransferHandler.TransferSupport;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
+import javax.swing.tree.TreePath;
 
 import orxanimeditor.animation.Animation;
+import orxanimeditor.animation.AnimationListener;
 import orxanimeditor.animation.Frame;
+import orxanimeditor.animation.FrameListener;
 import orxanimeditor.animation.HierarchicalData;
 import orxanimeditor.ui.AnimationReceiver;
 import orxanimeditor.ui.AnimationViewer;
 import orxanimeditor.ui.animationtree.AnimationTreeTransferHandler;
 
-public class AnimationQueue extends JList implements FrameSequence{
+public class AnimationQueue extends JList implements FrameSequence, AnimationListener, FrameListener{
 	DefaultListModel model;
 	ContentProvider provider;
 	AnimationViewer viewer;
@@ -28,7 +35,10 @@ public class AnimationQueue extends JList implements FrameSequence{
 		this.viewer = viewer;
 		model = (DefaultListModel) getModel();
 		setMinimumSize(new Dimension(100, 100));
+		
 		setTransferHandler(new AnimationQueueTransferHandler());
+		setDropMode(DropMode.INSERT);
+		
 		model.addListDataListener(new ListDataListener() {
 			
 			@Override
@@ -46,6 +56,13 @@ public class AnimationQueue extends JList implements FrameSequence{
 				queueModified();
 			}
 		});
+		getInputMap().put(KeyStroke.getKeyStroke("DELETE"), "RemoveSelected");
+		getActionMap().put("RemoveSelected", new AbstractAction() {			
+			public void actionPerformed(ActionEvent e) {
+				for(Object obj: getSelectedValues())
+						model.removeElement(obj);
+			}
+		});
 	}
 
 	private void queueModified() {
@@ -53,8 +70,8 @@ public class AnimationQueue extends JList implements FrameSequence{
 		provider.restart();	
 	}
 
-	public void receiveObj(Object obj) {
-		model.addElement(obj);
+	public void receiveObj(Object obj, int dropIndex) {
+		model.add(dropIndex, obj);
 	}
 
 	@Override
@@ -103,6 +120,61 @@ public class AnimationQueue extends JList implements FrameSequence{
 		return (long) (frame.getFinalFrameDuration()*1000);
 	}
 
+	@Override
+	public void dataLoaded() {
+		model.clear();
+		queueModified();
+	}
+
+	@Override
+	public void frameAdded(Animation parent, Frame frame) {
+		if(model.contains(parent)) provider.restart();
+	}
+
+	@Override
+	public void frameRemoved(Animation parent, Frame frame) {
+		if(model.contains(parent)) provider.restart();
+		if(model.contains(frame)) {
+			removeAll(frame);
+			queueModified();
+		}
+	}
+
+	@Override
+	public void frameEdited(Frame frame) {
+		if(model.contains(frame)) updateUI();
+	}
+
+	@Override
+	public void frameMoved(Animation oldParent, Frame frame) {
+		if(model.contains(oldParent)||model.contains(frame.getParent())) provider.restart();
+	}
+
+	@Override
+	public void animationAdded(Animation animation) {
+	}
+
+	@Override
+	public void animationRemoved(Animation animation) {
+		if(model.contains(animation)) {
+			removeAll(animation);
+			queueModified();
+		}
+	}
+	
+	private void removeAll(Object obj) {
+		while(model.contains(obj)) model.removeElement(obj);
+	}
+
+	@Override
+	public void animationEdited(Animation animation) {
+		if(model.contains(animation)) updateUI();
+	}
+
+	@Override
+	public void animationMoved(Animation animation) {
+	}
+
 }
 
 class AnimationQueueTransferHandler extends TransferHandler {
@@ -123,8 +195,10 @@ class AnimationQueueTransferHandler extends TransferHandler {
 		try {
 			HierarchicalData[] data = (HierarchicalData[]) t.getTransferData(AnimationTreeTransferHandler.HierarchicalDataFlavor);
 			AnimationQueue rec = (AnimationQueue) support.getComponent();
+			JList.DropLocation loc = (JList.DropLocation) support.getDropLocation();
+			int dropIndex = loc.getIndex();
 			for(Object obj:data)
-				rec.receiveObj(obj);
+				rec.receiveObj(obj,dropIndex++);
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();

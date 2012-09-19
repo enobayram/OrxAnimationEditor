@@ -18,10 +18,13 @@ public abstract class SlidingView extends JPanel implements MouseWheelListener, 
 	protected double viewOffsetY = 0;
 	protected double viewScale = 1;
 	private Point lastMousePoint;
+	protected boolean drawCheckerboard = true;
 	
 	protected abstract void paintContent(Graphics2D g);
 	
-	public SlidingView() {
+	public SlidingView(boolean drawCheckerboard) {
+		this.drawCheckerboard = drawCheckerboard;
+		setBackground(Color.WHITE);
 		addMouseWheelListener(this);
 		addMouseMotionListener(this);
 		addMouseListener(new MouseAdapter() {
@@ -29,32 +32,36 @@ public abstract class SlidingView extends JPanel implements MouseWheelListener, 
 				lastMousePoint = e.getPoint();
 			}
 		});
+		setFocusable(true);
 	}
 
 	@Override
-	public void paint(Graphics g_) {
+	public final void paint(Graphics g_) {
 		Graphics2D g = (Graphics2D) g_;
-		Utilities.drawCheckerPattern(g, 20);
+		if(drawCheckerboard) Utilities.drawCheckerPattern(g, 20);
+		else super.paint(g);
+		g.translate(getWidth()/2, getHeight()/2);
 		g.scale(viewScale, viewScale);
 		g.translate(viewOffsetX, viewOffsetY);
 		paintContent(g);
 	}
 
 	@Override
-	public void mouseWheelMoved(MouseWheelEvent e) {
+	public final void mouseWheelMoved(MouseWheelEvent e) {
 		if(e.getWheelRotation()<=0) viewScale*=1.2;
 		else viewScale = Math.max(1, viewScale/1.2);
 		repaint(20);
 	}
 
 	@Override
-	public void mouseDragged(MouseEvent e) {
+	public final void mouseDragged(MouseEvent e) {
 		if((e.getModifiersEx()&MouseEvent.BUTTON1_DOWN_MASK) == MouseEvent.BUTTON1_DOWN_MASK) {
 			Point newPoint = e.getPoint();
 			double mouseOffsetX = newPoint.x-lastMousePoint.x, mouseOffsetY = newPoint.y-lastMousePoint.y;
 			viewOffsetX += mouseOffsetX/viewScale;
 			viewOffsetY += mouseOffsetY/viewScale;
 			lastMousePoint = newPoint;
+			requestFocus();
 			repaint(20);
 		}
 	}
@@ -64,4 +71,13 @@ public abstract class SlidingView extends JPanel implements MouseWheelListener, 
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public Point screenToWorld(Point point_) {
+		Point point = (Point)point_.clone();
+		point.x-=viewOffsetX; point.y-=viewOffsetY;
+		point.x/=viewScale; point.y/=viewScale;
+		point.x-=getWidth()/2; point.y-=getHeight()/2; // Remove screen center
+		return point;
+	}
+	
 }

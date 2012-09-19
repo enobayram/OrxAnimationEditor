@@ -12,7 +12,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.io.PrintStream;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 import java.net.URI;
 import java.util.regex.Pattern;
 
@@ -25,6 +26,7 @@ import orxanimeditor.animation.AnimationSet;
 import orxanimeditor.animation.AnimationSet.Link;
 import orxanimeditor.animation.EditorData;
 import orxanimeditor.animation.Frame;
+import orxanimeditor.animation.Project.RelativeFile;
 import orxanimeditor.ui.EditorMainWindow;
 
 public class AnimIO {
@@ -69,7 +71,10 @@ public class AnimIO {
 		}
         try {
 			FileOutputStream fileOut = new FileOutputStream(data.project.targetIni.getAbsoluteFile(), append);
-			streamData(data, fileOut);
+			ExportDiagnoser diagnoser = new ExportDiagnoser(fileOut);
+			streamData(data, diagnoser);
+			if(!diagnoser.isSuccessful())
+				JOptionPane.showMessageDialog(editor, diagnoser.getDiagnosis(),"Export Problems",JOptionPane.WARNING_MESSAGE);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -77,88 +82,99 @@ public class AnimIO {
 
 	}
 		
-	private static void streamData(EditorData data, OutputStream os) {
-		PrintStream p = new PrintStream(os);
+	private static void streamData(EditorData data, ExportDiagnoser d) {
 		for(AnimationSet set: data.animationSets) {
-			exportAnimationSet(p,set);
+			exportAnimationSet(d,set);
 		}
 		for(Animation animation: data.getAnimations()) {
-			exportAnimation(p,animation);
+			exportAnimation(d,animation);
 			for(Frame frame:animation.getFrames()) {
-				exportFrame(p,frame,data.project.getTargetFolder());
+				exportFrame(d,frame,data.project.getTargetFolder());
 			}
 		}
 	}
 
-	private static void exportAnimationSet(PrintStream p, AnimationSet set) {
-		p.println("["+set.name+"]");
+	private static void exportAnimationSet(ExportDiagnoser d, AnimationSet set) {
+		d.printSection(set.name);
 		if(set.animations.size()>0) {
-			p.print("AnimationList = ");
+			String key = "AnimationList";
+			String value = "";
 			for(int ai=0; ai<set.animations.size(); ai++) {
 				Animation animation = set.animations.get(ai);
-				p.print(animation.getName());
-				if(ai!=set.animations.size()-1) p.print("#");
+				value+=animation.getName();
+				if(ai!=set.animations.size()-1) value+="#";
 			}
+			d.printKeyValue(key, value);
 		}
-		p.println();
+		d.printEmptyLine();
 		if(set.links.size()>0) {
-			p.print("LinkList =");
+			String key = "LinkList";
+			String value = "";
 			for(int li = 0; li<set.links.size(); li++) {
 				Link link = set.links.get(li);
-				p.print(link.getName());
-				if(li!=set.links.size()-1) p.print("#");
+				value+=link.getName();
+				if(li!=set.links.size()-1) value+="#";
 			}
+			d.printKeyValue(key, value);
 		}
-		p.println();
-		for(Link link: set.links) exportLink(p,link);
+		d.printEmptyLine();
+		for(Link link: set.links) exportLink(d,link);
 		
 	}
 
-	private static void exportLink(PrintStream p, Link link) {
+	private static void exportLink(ExportDiagnoser d, Link link) {
 		//Change -]
-		p.println("["+link.getName()+"]");
-		p.println("Source      = " + link.getSource().getName());
-		p.println("Destination = " + link.getDestination().getName());
+		d.printSection(link.getName());
+		d.printKeyValue("Source",link.getSource().getName());
+		d.printKeyValue("Destination",link.getDestination().getName());
 	}
 
-	private static void exportFrame(PrintStream p, Frame f, File baseDirectory) {
+	private static void exportFrame(ExportDiagnoser d, Frame f, File baseDirectory) {
 		Rectangle rect = f.properRectangle();
-		Point     pivot = (Point) f.getPivot().clone();
-		pivot.x -= rect.x;
-		pivot.y -= rect.y;
-		File imageFile = f.getImageFile().getAbsoluteFile();
-		File imagePath = new File("");
-		try {
-			imagePath = getRelativeFile(imageFile, baseDirectory);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-			p.println('['+f.getName()+']');
-			p.println("Texture           = " + imagePath);
-			p.println("TextureCorner     = ("+rect.x+    ", "+rect.y+     ", 0)");
-			p.println("TextureSize       = ("+rect.width+", "+rect.height+", 0)");
-			p.println("Pivot             = ("+pivot.x+   ", "+pivot.y+    ", 0)");
+		Point     pivot = f.getPivot();
+		d.printSection(f.getName());
+		RelativeFile relativeImageFile = f.getImageFile();
+		if(relativeImageFile!=null) {
+			File imageFile = relativeImageFile.getAbsoluteFile();
+			File imagePath = new File("");
+			try {
+				imagePath = getRelativeFile(imageFile, baseDirectory);
+				d.printKeyValue("Texture", imagePath.toString());
+			} catch (IOException e) {
+				d.reportExternalError("There was a problem while exporting the texture of "+f.getName());
+				e.printStackTrace();
+			}
+		} else d.reportExternalError(f.getName() + " has no texture");
+		if(rect!=null) {
+			d.printKeyValue("TextureCorner","("+rect.x+    ", "+rect.y+     ", 0)");
+			d.printKeyValue("TextureSize","("+rect.width+", "+rect.height+", 0)");
+		} else d.reportExternalError(f.getName() + " does not have a rectangle defined");
+		if(pivot!=null) {
+			pivot.x -= rect.x;
+			pivot.y -= rect.y;
+			d.printKeyValue("Pivot","("+pivot.x+   ", "+pivot.y+    ", 0)");
+		} else  d.reportExternalError(f.getName() + " does not have a pivot defined");
+		
 		if(f.getFlipX() || f.getFlipY()) {
 			String flip = "";
 			if(f.getFlipX()) flip+="x";
 			if(f.getFlipY()) flip+="y";
-			p.println("Flip              = "+flip);
+			d.printKeyValue("Flip",flip);
 		}
 			
 
 	}
 
-	private static void exportAnimation(PrintStream p,
+	private static void exportAnimation(ExportDiagnoser d,
 			Animation animation) {
-		p.println('['+animation.getName()+']');
-		p.println("DefaultKeyDuration   = "+animation.getDefaultKeyDuration());
+		d.printSection(animation.getName());
+		d.printKeyValue("DefaultKeyDuration",""+animation.getDefaultKeyDuration());
 		Frame[] frames = animation.getFrames();
 		for(int fi=0; fi<frames.length; fi++) {
 			Frame f = frames[fi];
-			p.println("KeyData"+(fi+1)+"    = "+ f.getName());
+			d.printKeyValue("KeyData"+(fi+1),f.getName());
 			if(f.getKeyDuration()>0)
-				p.println("KeyDuration"+(fi+1)+"= "+ f.getKeyDuration());
+				d.printKeyValue("KeyDuration"+(fi+1),""+f.getKeyDuration());
 		}
 		double accummulatedTime = 0;
 		int accumulatedEventCount = 1;
@@ -166,14 +182,14 @@ public class AnimIO {
 			Frame f = frames[fi];
 			Point offset = f.getOffset();
 			if(offset.x!=0) {
-				p.println("KeyEventName"+accumulatedEventCount+"    = AR1");
-				p.println("KeyEventTime"+accumulatedEventCount+"    = " + accummulatedTime);
-				p.println("KeyEventValue"+accumulatedEventCount+"    = " + offset.x);
+				d.printKeyValue("KeyEventName"+accumulatedEventCount,"AR1");
+				d.printKeyValue("KeyEventTime"+accumulatedEventCount,""+accummulatedTime);
+				d.printKeyValue("KeyEventValue"+accumulatedEventCount,""+offset.x);
 				accumulatedEventCount++; }
 			if(offset.y!=0) {
-				p.println("KeyEventName"+accumulatedEventCount+"    = AR2");
-				p.println("KeyEventTime"+accumulatedEventCount+"    = " + accummulatedTime);
-				p.println("KeyEventValue"+accumulatedEventCount+"    = " + offset.y);
+				d.printKeyValue("KeyEventName"+accumulatedEventCount,"AR2");
+				d.printKeyValue("KeyEventTime"+accumulatedEventCount,""+accummulatedTime);
+				d.printKeyValue("KeyEventValue"+accumulatedEventCount,""+offset.y);
 				accumulatedEventCount++;
 			}
 			accummulatedTime += f.getFinalFrameDuration();

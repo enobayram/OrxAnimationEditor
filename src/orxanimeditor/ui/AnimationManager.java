@@ -82,7 +82,6 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 		
 		editor.getData().addAnimationListener(this);
 		editor.getData().addFrameListener(this);
-		editor.getData().addDataLoadListener(this);
 	}
 	
 

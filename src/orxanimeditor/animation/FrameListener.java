@@ -1,6 +1,6 @@
 package orxanimeditor.animation;
 
-public interface FrameListener {
+public interface FrameListener extends DataLoadListener{
 	public void frameAdded(Animation parent, Frame frame);
 	public void frameRemoved(Animation parent, Frame frame);
 	public void frameEdited(Frame frame);

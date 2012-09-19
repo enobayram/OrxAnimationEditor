@@ -28,6 +28,7 @@ public class AnimationViewerDisplay extends SlidingView implements FrameDisplay 
 	Point currentOffset;
 		
 	public AnimationViewerDisplay() {
+		super(true);
 		setMinimumSize(new Dimension(160,100));
 	}
 	
@@ -41,8 +42,8 @@ public class AnimationViewerDisplay extends SlidingView implements FrameDisplay 
 			BufferedImage image = EditorMainWindow.imageManager.openImage(frame.getImageFile().getAbsoluteFile());
 			Rectangle rect = frame.properRectangle();
 			Point pivot = frame.getPivot();
-			int offsetX = getWidth()/2-pivot.x+offset.x;
-			int offsetY = getHeight()/2-pivot.y+offset.y;
+			int offsetX = -pivot.x+offset.x;
+			int offsetY = -pivot.y+offset.y;
 			int dx1 = offsetX+rect.x, dy1 = offsetY+rect.y;
 			int dx2 = offsetX+rect.x+rect.width, dy2 = offsetY+rect.y+rect.height;
 			if(frame.getFlipX()) {int tmp = dx1; dx1=dx2; dx2=tmp;}
@@ -55,9 +56,14 @@ public class AnimationViewerDisplay extends SlidingView implements FrameDisplay 
 	}
 
 	@Override
-	public void Display(Frame frame, Point offset) {
+	public void display(Frame frame, Point offset) {
 		currentFrame = frame;
 		currentOffset = offset;
 		repaint(20);
+	}
+
+	@Override
+	public void clear() {
+		display(null,null);
 	}	
 }

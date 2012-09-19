@@ -55,7 +55,7 @@ public class ContentProvider {
 						Frame frame = sequence.getFrame(nextFrameIndex);
 						Point offset = frame.getOffset();
 						accumulatedOffset.x += offset.x; accumulatedOffset.y += offset.y;
-						display.Display(frame, accumulatedOffset);
+						display.display(frame, accumulatedOffset);
 						setupNextFrame();
 					}
 			}});
@@ -77,6 +77,9 @@ public class ContentProvider {
 	}
 	
 	public void pushFrame() {
-		display.Display(sequence.getFrame(nextFrameIndex), accumulatedOffset);
+		if(sequence.getFrameCount()>0)
+			display.display(sequence.getFrame(nextFrameIndex), accumulatedOffset);
+		else
+			display.clear();
 	}
 }

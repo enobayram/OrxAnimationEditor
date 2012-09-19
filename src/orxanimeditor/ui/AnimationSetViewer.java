@@ -3,6 +3,7 @@ package orxanimeditor.ui;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -11,6 +12,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 import java.io.IOException;
 
@@ -26,38 +28,34 @@ import orxanimeditor.animation.AnimationSet.Link;
 import orxanimeditor.animation.AnimationSet.SetSpecificAnimationData;
 import orxanimeditor.ui.animationtree.AnimationTreeTransferHandler;
 
-public class AnimationSetViewer extends JScrollPane implements MouseListener, MouseMotionListener {
+public class AnimationSetViewer extends SlidingView implements MouseListener, AnimationReceiver {
 	
 	final int ANIMATIONRADIUS = 30;
 	final int CONNECTIONDOTRADIUS = 3;
 
 	AnimationSet set;
-	DisplayPanel display;
 	EditorMainWindow editor;
 	
 	Animation selectedAnimation = null;
 	Link 	  selectedLink		= null;
 	
 	public AnimationSetViewer(EditorMainWindow editor, AnimationSet set) {
-		super();
+		super(false);
 		this.editor = editor;
-		display = new DisplayPanel();
-		setViewportView(display);
-		//getViewport().setView(display);
 		this.set = set;
-		display.setBackground(Color.WHITE);
-		display.addMouseListener(this);
-		display.addMouseMotionListener(this);
-		display.setFocusable(true);
-		display.getInputMap().put(KeyStroke.getKeyStroke("DELETE"), "DeleteSelected");
-		display.getActionMap().put("DeleteSelected", new AbstractAction() {
+		setBackground(Color.WHITE);
+		addMouseListener(this);
+		addMouseMotionListener(moveAnimationListener);
+		setFocusable(true);
+		getInputMap().put(KeyStroke.getKeyStroke("DELETE"), "DeleteSelected");
+		getActionMap().put("DeleteSelected", new AbstractAction() {
 			public void actionPerformed(ActionEvent arg0) {
 				deleteAnimation(selectedAnimation);
 				deleteLink(selectedLink);
 			}
 		});
 		
-		display.setTransferHandler(new AnimationSetViewerTransferHandler());
+		setTransferHandler(new AnimationSetViewerTransferHandler());
 	}
 	public void addAnimation(Animation chosen) {
 		if(set.animations.contains(chosen)) return;
@@ -66,73 +64,69 @@ public class AnimationSetViewer extends JScrollPane implements MouseListener, Mo
 			editor.poke();
 		}
 	}
-	
-	class DisplayPanel extends JPanel implements AnimationReceiver{
 		@Override
-		public void paint(Graphics g) {
-			super.paint(g);
-			for(Animation animation: set.animations) {
-				if(animation==selectedAnimation) g.setColor(Color.BLUE);
-				else g.setColor(Color.BLACK);
-				Point center = getCenter(animation);
-				g.drawOval(center.x-ANIMATIONRADIUS, center.y-ANIMATIONRADIUS, 2*ANIMATIONRADIUS, 2*ANIMATIONRADIUS);
-				g.drawString(animation.getName(), center.x-ANIMATIONRADIUS, center.y-5);
-			}
-			for(Link link: set.links) {
-				if(link == selectedLink) g.setColor(Color.BLUE);
-				else 	g.setColor(Color.BLACK);
-				drawLink(g, link);
-			}
-			
+	public void paintContent(Graphics2D g) {
+		for(Animation animation: set.animations) {
+			if(animation==selectedAnimation) g.setColor(Color.BLUE);
+			else g.setColor(Color.BLACK);
+			Point center = getCenter(animation);
+			g.drawOval(center.x-ANIMATIONRADIUS, center.y-ANIMATIONRADIUS, 2*ANIMATIONRADIUS, 2*ANIMATIONRADIUS);
+			g.drawString(animation.getName(), center.x-ANIMATIONRADIUS, center.y-5);
+		}
+		for(Link link: set.links) {
+			if(link == selectedLink) g.setColor(Color.BLUE);
+			else 	g.setColor(Color.BLACK);
+			drawLink(g, link);
 		}
 		
-		void drawLink(Graphics g, Link link) {
-			if(link.getSource()!= link.getDestination()) {
-				Point sourceCenter = getCenter(link.getSource());
-				Point destinationCenter = getCenter(link.getDestination());
-				Point bias = biasVector(sourceCenter, destinationCenter);
-				int sx = sourceCenter.x+bias.x, sy = sourceCenter.y+bias.y;
-				int dx = destinationCenter.x-bias.x, dy = destinationCenter.y-bias.y;
-				g.drawLine(sx,sy ,dx ,dy );
-				g.fillOval(dx-CONNECTIONDOTRADIUS, dy-CONNECTIONDOTRADIUS, 2*CONNECTIONDOTRADIUS, 2*CONNECTIONDOTRADIUS); 
-			} else {
-				Point center = getCenter(link.getSource());
-				double theta = Math.atan2(center.y-getHeight()/2, center.x-getWidth()/2);
-				Point start = circumferenceOnAngle(center, theta-0.3);
-				Point end = circumferenceOnAngle(center, theta+0.3);
-				Point arcCenter = new Point((start.x+end.x)/2, (start.y+end.y)/2);
-				int arcRadius = (int) arcCenter.distance(end);
-				int thetaDeg = (int) (-theta*180/Math.PI);
-				g.drawArc(arcCenter.x-arcRadius, arcCenter.y-arcRadius, 2*arcRadius, 2*arcRadius, thetaDeg-90, 180);
-				g.fillOval(end.x-CONNECTIONDOTRADIUS, end.y-CONNECTIONDOTRADIUS, 2*CONNECTIONDOTRADIUS, 2*CONNECTIONDOTRADIUS);
-			}
-		}		
-		Point biasVector(Point source, Point dest) {
-			Point result = new Point();
-			int dx = dest.x - source.x, dy = dest.y - source.y;
-			double r = source.distance(dest);
-			result.x = (int) (ANIMATIONRADIUS*dx/r);
-			result.y = (int) (ANIMATIONRADIUS*dy/r);
-			return result;
-		}
-		
-		@Override
-		public Dimension getMinimumSize() {
-			int displayRadius = (int) getScatterRadius() + ANIMATIONRADIUS;
-			return new Dimension(2*displayRadius, 2*displayRadius);
-		}
-		
-		@Override
-		public Dimension getPreferredSize() {
-			return getMinimumSize();
-		}
-
-		@Override
-		public void receiveAnimation(Animation animation) {
-			addAnimation(animation);		
-		}
-
 	}
+	
+	void drawLink(Graphics g, Link link) {
+		if(link.getSource()!= link.getDestination()) {
+			Point sourceCenter = getCenter(link.getSource());
+			Point destinationCenter = getCenter(link.getDestination());
+			Point bias = biasVector(sourceCenter, destinationCenter);
+			int sx = sourceCenter.x+bias.x, sy = sourceCenter.y+bias.y;
+			int dx = destinationCenter.x-bias.x, dy = destinationCenter.y-bias.y;
+			g.drawLine(sx,sy ,dx ,dy );
+			g.fillOval(dx-CONNECTIONDOTRADIUS, dy-CONNECTIONDOTRADIUS, 2*CONNECTIONDOTRADIUS, 2*CONNECTIONDOTRADIUS); 
+		} else {
+			Point center = getCenter(link.getSource());
+			double theta = Math.atan2(center.y-getHeight()/2, center.x-getWidth()/2);
+			Point start = circumferenceOnAngle(center, theta-0.3);
+			Point end = circumferenceOnAngle(center, theta+0.3);
+			Point arcCenter = new Point((start.x+end.x)/2, (start.y+end.y)/2);
+			int arcRadius = (int) arcCenter.distance(end);
+			int thetaDeg = (int) (-theta*180/Math.PI);
+			g.drawArc(arcCenter.x-arcRadius, arcCenter.y-arcRadius, 2*arcRadius, 2*arcRadius, thetaDeg-90, 180);
+			g.fillOval(end.x-CONNECTIONDOTRADIUS, end.y-CONNECTIONDOTRADIUS, 2*CONNECTIONDOTRADIUS, 2*CONNECTIONDOTRADIUS);
+		}
+	}		
+	Point biasVector(Point source, Point dest) {
+		Point result = new Point();
+		int dx = dest.x - source.x, dy = dest.y - source.y;
+		double r = source.distance(dest);
+		result.x = (int) (ANIMATIONRADIUS*dx/r);
+		result.y = (int) (ANIMATIONRADIUS*dy/r);
+		return result;
+	}
+	
+	@Override
+	public Dimension getMinimumSize() {
+		int displayRadius = (int) getScatterRadius() + ANIMATIONRADIUS;
+		return new Dimension(2*displayRadius, 2*displayRadius);
+	}
+	
+	@Override
+	public Dimension getPreferredSize() {
+		return getMinimumSize();
+	}
+
+	@Override
+	public void receiveAnimation(Animation animation) {
+		addAnimation(animation);		
+	}
+
 	
 	private Point getCenter(Animation animation) {
 		if(set.setSpecificAnimationData.containsKey(animation)) {
@@ -157,7 +151,7 @@ public class AnimationSetViewer extends JScrollPane implements MouseListener, Mo
 		double r = getScatterRadius();
 		double theta = 2*Math.PI*index/set.animations.size();
 		Point relativeCenter = new Point((int)(r*Math.cos(theta)), (int) (r*Math.sin(theta)));
-		Point center = new Point(relativeCenter.x+getWidth()/2, relativeCenter.y+getHeight()/2);
+		Point center = new Point(relativeCenter.x, relativeCenter.y);
 		return center;
 	}
 	
@@ -167,13 +161,13 @@ public class AnimationSetViewer extends JScrollPane implements MouseListener, Mo
 	}
 	@Override
 	public void mousePressed(MouseEvent e) {
-		display.requestFocusInWindow();
+		requestFocusInWindow();
 		if(e.getButton() == MouseEvent.BUTTON1) {
 			if(selectedAnimation == null) {
-				selectedAnimation = pickAnimation(e.getPoint());
+				selectedAnimation = pickAnimation(screenToWorld(e.getPoint()));
 				selectedLink      = null;
 			} else {
-				Animation otherAnimation = pickAnimation(e.getPoint());
+				Animation otherAnimation = pickAnimation(screenToWorld(e.getPoint()));
 				if(otherAnimation!=null) {
 					selectedLink = set.getOrCreateLink(selectedAnimation,otherAnimation);
 					selectedAnimation = null;
@@ -186,7 +180,7 @@ public class AnimationSetViewer extends JScrollPane implements MouseListener, Mo
 			selectedAnimation = null;
 			selectedLink      = null;
 		}
-		display.repaint();
+		repaint(20);
 	}
 	private Animation pickAnimation(Point point) {
 		for(int ai=0; ai<set.animations.size(); ai++) {
@@ -202,25 +196,26 @@ public class AnimationSetViewer extends JScrollPane implements MouseListener, Mo
 	@Override public void mouseClicked(MouseEvent e) {}
 	@Override public void mouseReleased(MouseEvent e) {}
 
-	@Override
-	public void mouseDragged(MouseEvent e) {
-		if((e.getModifiersEx() & MouseEvent.BUTTON3_DOWN_MASK) == MouseEvent.BUTTON3_DOWN_MASK) {
-			Animation draggingAnimation = pickAnimation(e.getPoint());
-			if ( draggingAnimation != null ){
-				SetSpecificAnimationData selectedData;
-				if(!set.setSpecificAnimationData.containsKey(draggingAnimation)) {
-					selectedData = new SetSpecificAnimationData();
-					set.setSpecificAnimationData.put(draggingAnimation, selectedData);
-				} else {
-					selectedData = set.setSpecificAnimationData.get(draggingAnimation);
+	MouseMotionAdapter moveAnimationListener = new MouseMotionAdapter() {
+		@Override
+		public void mouseDragged(MouseEvent e) {
+			if((e.getModifiersEx() & MouseEvent.BUTTON3_DOWN_MASK) == MouseEvent.BUTTON3_DOWN_MASK) {
+				Animation draggingAnimation = pickAnimation(screenToWorld(e.getPoint()));
+				if ( draggingAnimation != null ){
+					SetSpecificAnimationData selectedData;
+					if(!set.setSpecificAnimationData.containsKey(draggingAnimation)) {
+						selectedData = new SetSpecificAnimationData();
+						set.setSpecificAnimationData.put(draggingAnimation, selectedData);
+					} else {
+						selectedData = set.setSpecificAnimationData.get(draggingAnimation);
+					}
+					selectedData.center = screenToWorld(e.getPoint());
+					repaint(20);
+				
 				}
-				selectedData.center = e.getPoint();
-				display.repaint();
-			
 			}
 		}
-	}
-	@Override public void mouseMoved(MouseEvent e) {}
+	};
 
 	public void deleteAnimation(Animation animation) {
 		if(animation!=null) {

@@ -39,6 +39,7 @@ public class Frame implements HierarchicalData, Serializable, Cloneable{
 		fireEdit();
 	}
 	public Rectangle getRectangle() {
+		if(rect==null) return null;
 		return (Rectangle)rect.clone();
 	}
 
@@ -69,8 +70,13 @@ public class Frame implements HierarchicalData, Serializable, Cloneable{
 	}
 
 	public Point getPivot() {
-		if(pivot==null) return new Point(rect.x+rect.width/2, rect.y+rect.height/2);
+		if(pivot==null) return getDefaultPivot();
 		else return (Point) pivot.clone();
+	}
+	
+	private Point getDefaultPivot() {
+		if(rect == null) return null;
+		return new Point(rect.x+rect.width/2, rect.y+rect.height/2);
 	}
 	
 	public Point getOffset() {

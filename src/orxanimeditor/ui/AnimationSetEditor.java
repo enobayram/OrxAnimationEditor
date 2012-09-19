@@ -45,7 +45,6 @@ public class AnimationSetEditor extends JPanel implements ActionListener, DataLo
 		add(toolbar, BorderLayout.NORTH);
 		add(animationSets, BorderLayout.CENTER);
 
-		editor.getData().addDataLoadListener(this);
 		editor.getData().addAnimationListener(this);
 	}
 

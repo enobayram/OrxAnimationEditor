@@ -9,6 +9,7 @@ public class EditorData implements Serializable{
 	private LinkedList<Animation> animations = new LinkedList<Animation>();
 	public Project				project	= new Project();
 	public LinkedList<AnimationSet> animationSets = new LinkedList<AnimationSet>();
+	
 	private transient LinkedList<FrameListener> frameListeners = new LinkedList<FrameListener>();
 	private transient LinkedList<AnimationListener> animationListeners = new LinkedList<AnimationListener>();
 	private transient LinkedList<DataLoadListener> dataLoadListeners = new LinkedList<DataLoadListener>();
@@ -54,9 +55,12 @@ public class EditorData implements Serializable{
 		fireAnimationRemoved(animation);
 	}
 	
-	public void addFrameListener(FrameListener fl) {frameListeners.add(fl);}
-	public void addAnimationListener(AnimationListener al) {animationListeners.add(al);}
-	public void addDataLoadListener(DataLoadListener dll) {dataLoadListeners.add(dll);}
+	public void addFrameListener(FrameListener fl) {frameListeners.add(fl); addDataLoadListener(fl);}
+	public void addAnimationListener(AnimationListener al) {animationListeners.add(al);addDataLoadListener(al);}
+	public void addDataLoadListener(DataLoadListener dll) {
+		if(!dataLoadListeners.contains(dll))
+			dataLoadListeners.add(dll);
+	}
 	
 	protected void fireFrameAdded(Animation parent, Frame frame) {
 		for(FrameListener fl: frameListeners) fl.frameAdded(parent,frame);

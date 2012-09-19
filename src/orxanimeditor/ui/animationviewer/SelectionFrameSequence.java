@@ -26,7 +26,6 @@ public class SelectionFrameSequence implements FrameSequence, SelectionListener,
 		this.editor = editor;
 		editor.getData().addAnimationListener(this);
 		editor.getData().addFrameListener(this);
-		editor.getData().addDataLoadListener(this);
 	}
 
 	@Override

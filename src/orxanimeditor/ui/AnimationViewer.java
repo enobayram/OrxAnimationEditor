@@ -38,6 +38,8 @@ public class AnimationViewer extends JPanel {
 		
 		queueProvider = new ContentProvider(animationQueue, display);
 		animationQueue.setContentProvider(queueProvider);
+		editor.getData().addAnimationListener(animationQueue);
+		editor.getData().addFrameListener(animationQueue);
 	}
 	
 	@Override

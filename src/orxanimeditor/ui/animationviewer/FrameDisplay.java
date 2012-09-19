@@ -5,5 +5,6 @@ import java.awt.Point;
 import orxanimeditor.animation.Frame;
 
 public interface FrameDisplay {
-	void Display(Frame frame, Point offset);
+	void display(Frame frame, Point offset);
+	void clear();
 }
