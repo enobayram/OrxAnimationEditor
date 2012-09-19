@@ -1,4 +1,4 @@
-package orxanimeditor.ui;
+package orxanimeditor.ui.animationseteditor;
 
 import java.awt.BorderLayout;
 import java.awt.Button;
@@ -21,6 +21,7 @@ import orxanimeditor.animation.Animation;
 import orxanimeditor.animation.AnimationListener;
 import orxanimeditor.animation.AnimationSet;
 import orxanimeditor.animation.DataLoadListener;
+import orxanimeditor.ui.mainwindow.EditorMainWindow;
 
 public class AnimationSetEditor extends JPanel implements ActionListener, DataLoadListener, AnimationListener{
 	JTabbedPane animationSets;

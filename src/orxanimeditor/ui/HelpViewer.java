@@ -18,6 +18,8 @@ import javax.swing.event.HyperlinkListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 
+import orxanimeditor.ui.mainwindow.EditorMainWindow;
+
 public class HelpViewer extends JDialog implements HyperlinkListener {
 	EditorMainWindow editor;
 	JEditorPane		helpContents;

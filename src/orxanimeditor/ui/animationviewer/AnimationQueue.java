@@ -23,7 +23,6 @@ import orxanimeditor.animation.Frame;
 import orxanimeditor.animation.FrameListener;
 import orxanimeditor.animation.HierarchicalData;
 import orxanimeditor.ui.AnimationReceiver;
-import orxanimeditor.ui.AnimationViewer;
 import orxanimeditor.ui.animationtree.AnimationTreeTransferHandler;
 
 public class AnimationQueue extends JList implements FrameSequence, AnimationListener, FrameListener{

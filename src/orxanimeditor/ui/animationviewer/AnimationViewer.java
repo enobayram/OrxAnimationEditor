@@ -1,14 +1,11 @@
-package orxanimeditor.ui;
+package orxanimeditor.ui.animationviewer;
 
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 
-import orxanimeditor.ui.animationviewer.AnimationQueue;
-import orxanimeditor.ui.animationviewer.AnimationViewerDisplay;
-import orxanimeditor.ui.animationviewer.ContentProvider;
-import orxanimeditor.ui.animationviewer.SelectionFrameSequence;
+import orxanimeditor.ui.mainwindow.EditorMainWindow;
 
 public class AnimationViewer extends JPanel {
 	JSplitPane mainPane;

@@ -39,6 +39,7 @@ import orxanimeditor.ui.animationtree.AnimationTreeEditor;
 import orxanimeditor.ui.animationtree.AnimationTreeModel;
 import orxanimeditor.ui.animationtree.AnimationTreeRenderer;
 import orxanimeditor.ui.animationtree.AnimationTreeSelectionModel;
+import orxanimeditor.ui.mainwindow.EditorMainWindow;
 
 public class AnimationManager extends JPanel implements ActionListener, KeyListener,  AnimationListener, FrameListener, DataLoadListener {
 	EditorMainWindow editor;

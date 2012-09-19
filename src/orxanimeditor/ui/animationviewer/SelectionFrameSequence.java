@@ -10,8 +10,8 @@ import orxanimeditor.animation.AnimationListener;
 import orxanimeditor.animation.DataLoadListener;
 import orxanimeditor.animation.Frame;
 import orxanimeditor.animation.FrameListener;
-import orxanimeditor.ui.EditorMainWindow;
 import orxanimeditor.ui.SelectionListener;
+import orxanimeditor.ui.mainwindow.EditorMainWindow;
 
 public class SelectionFrameSequence implements FrameSequence, SelectionListener, DataLoadListener, AnimationListener, FrameListener {
 

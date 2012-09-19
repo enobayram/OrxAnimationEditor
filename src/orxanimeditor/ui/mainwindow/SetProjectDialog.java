@@ -1,4 +1,4 @@
-package orxanimeditor.ui;
+package orxanimeditor.ui.mainwindow;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -22,6 +22,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+
 
 public class SetProjectDialog extends JDialog implements WindowListener, ActionListener{
 	EditorMainWindow editor;

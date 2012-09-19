@@ -1,4 +1,4 @@
-package orxanimeditor.ui;
+package orxanimeditor.ui.animationtree;
 
 import javax.swing.JPanel;
 

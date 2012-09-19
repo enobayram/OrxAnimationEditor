@@ -1,4 +1,4 @@
-package orxanimeditor.ui;
+package orxanimeditor.ui.frameeditor;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -28,6 +28,8 @@ import com.sun.corba.se.impl.interceptors.PICurrent;
 import orxanimeditor.animation.Animation;
 import orxanimeditor.animation.Frame;
 import orxanimeditor.animation.FrameListener;
+import orxanimeditor.ui.Utilities;
+import orxanimeditor.ui.mainwindow.EditorMainWindow;
 
 public class FrameEditorView extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener, FrameListener{
 	BufferedImage 		image;

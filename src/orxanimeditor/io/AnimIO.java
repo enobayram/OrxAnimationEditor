@@ -27,7 +27,7 @@ import orxanimeditor.animation.AnimationSet.Link;
 import orxanimeditor.animation.EditorData;
 import orxanimeditor.animation.Frame;
 import orxanimeditor.animation.Project.RelativeFile;
-import orxanimeditor.ui.EditorMainWindow;
+import orxanimeditor.ui.mainwindow.EditorMainWindow;
 
 public class AnimIO {
 	public static void writeEditorData(EditorData data, File file) {

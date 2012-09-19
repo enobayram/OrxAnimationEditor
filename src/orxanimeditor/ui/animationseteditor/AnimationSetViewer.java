@@ -1,4 +1,4 @@
-package orxanimeditor.ui;
+package orxanimeditor.ui.animationseteditor;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -26,7 +26,10 @@ import orxanimeditor.animation.Animation;
 import orxanimeditor.animation.AnimationSet;
 import orxanimeditor.animation.AnimationSet.Link;
 import orxanimeditor.animation.AnimationSet.SetSpecificAnimationData;
+import orxanimeditor.ui.AnimationReceiver;
+import orxanimeditor.ui.SlidingView;
 import orxanimeditor.ui.animationtree.AnimationTreeTransferHandler;
+import orxanimeditor.ui.mainwindow.EditorMainWindow;
 
 public class AnimationSetViewer extends SlidingView implements MouseListener, AnimationReceiver {
 	

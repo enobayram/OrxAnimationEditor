@@ -20,8 +20,8 @@ import orxanimeditor.animation.AnimationListener;
 import orxanimeditor.animation.DataLoadListener;
 import orxanimeditor.animation.Frame;
 import orxanimeditor.animation.FrameListener;
-import orxanimeditor.ui.EditorMainWindow;
 import orxanimeditor.ui.SlidingView;
+import orxanimeditor.ui.mainwindow.EditorMainWindow;
 
 public class AnimationViewerDisplay extends SlidingView implements FrameDisplay {
 	Frame currentFrame;

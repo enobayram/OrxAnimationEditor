@@ -10,7 +10,7 @@
  * */
 
 
-package orxanimeditor.ui;
+package orxanimeditor.ui.mainwindow;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -33,6 +33,7 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -42,6 +43,7 @@ import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
+import javax.swing.border.BevelBorder;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -51,13 +53,19 @@ import orxanimeditor.animation.EditorData;
 import orxanimeditor.animation.Frame;
 import orxanimeditor.io.AnimIO;
 import orxanimeditor.io.ImageManager;
+import orxanimeditor.ui.AnimationManager;
+import orxanimeditor.ui.EditVisitor;
+import orxanimeditor.ui.HelpViewer;
+import orxanimeditor.ui.animationseteditor.AnimationSetEditor;
 import orxanimeditor.ui.animationtree.AnimationTreeTransferHandler;
+import orxanimeditor.ui.animationviewer.AnimationViewer;
 import orxanimeditor.ui.animationviewer.SelectionFrameSequence;
+import orxanimeditor.ui.frameeditor.FrameEditor;
 
 @SuppressWarnings("serial")
 public class EditorMainWindow extends JFrame {
-	AnimationManager 	animationManager;
-	FrameEditor 	 	frameEditor;
+	public AnimationManager 	animationManager;
+	public FrameEditor 	 	frameEditor;
 	AnimationViewer  	animationViewer;
 	AnimationSetEditor 	animationSetEditor;
 
@@ -91,6 +99,8 @@ public class EditorMainWindow extends JFrame {
 	
 	SelectionFrameSequence selectionSequence;
 	
+	JLabel				infoLabel;
+	
 	private EditorData 	data;	
 	public static final ImageManager	 	imageManager = new ImageManager();
 		
@@ -112,6 +122,10 @@ public class EditorMainWindow extends JFrame {
 		setData(new EditorData());
 		prepareTree();
 		setLayout(new BorderLayout());
+		
+		infoLabel		    = new JLabel();
+		infoLabel.setBorder(new BevelBorder(BevelBorder.LOWERED));
+		
 		animationManager 	= new AnimationManager(this);
 		frameEditor      	= new FrameEditor(this);
 		animationSetEditor	= new AnimationSetEditor(this);
@@ -130,6 +144,7 @@ public class EditorMainWindow extends JFrame {
 		prepareMenuBar();
 		getContentPane().add(mainSplitPane, BorderLayout.CENTER);
 		getContentPane().add(menuBar, BorderLayout.NORTH);
+		getContentPane().add(infoLabel, BorderLayout.SOUTH);
 		pack();
 		setMinimumSize(getSize());
 		setSize(new Dimension(1000, 700));
@@ -145,6 +160,13 @@ public class EditorMainWindow extends JFrame {
 		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		addWindowListener(windowAdapter);
 		
+	}
+	
+	public InfoProxy getInfoProxy() {
+		return new InfoProxy(this);
+	}
+	public void setInfoText(String text) {
+		infoLabel.setText(text);
 	}
 	
 	WindowAdapter windowAdapter = new WindowAdapter() {
@@ -272,7 +294,7 @@ public class EditorMainWindow extends JFrame {
 		
 	}
 	
-	void poke() {
+	public void poke() {
 		doLayout();
 		repaint();		
 	}
@@ -414,7 +436,7 @@ public class EditorMainWindow extends JFrame {
 		}	
 	}
 
-	ImageIcon getImageIcon(String path) {
+	public ImageIcon getImageIcon(String path) {
 		try {
 			InputStream in = ClassLoader.getSystemResourceAsStream(path);
 			return new ImageIcon(ImageIO.read(in));
