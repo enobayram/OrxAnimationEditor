@@ -23,7 +23,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 
-import orxanimeditor.animation.Frame;
+import orxanimeditor.data.Frame;
 import orxanimeditor.ui.SelectionListener;
 import orxanimeditor.ui.mainwindow.EditorMainWindow;
 import orxanimeditor.ui.mainwindow.AreaInfoProxy;

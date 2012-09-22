@@ -1,7 +1,7 @@
 package orxanimeditor.ui;
 
-import orxanimeditor.animation.Animation;
-import orxanimeditor.animation.Frame;
+import orxanimeditor.data.Animation;
+import orxanimeditor.data.Frame;
 
 public interface EditVisitor {
 	void edit(Animation animation);

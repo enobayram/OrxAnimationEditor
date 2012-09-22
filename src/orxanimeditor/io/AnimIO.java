@@ -21,12 +21,12 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.tree.MutableTreeNode;
 
-import orxanimeditor.animation.Animation;
-import orxanimeditor.animation.AnimationSet;
-import orxanimeditor.animation.AnimationSet.Link;
-import orxanimeditor.animation.EditorData;
-import orxanimeditor.animation.Frame;
-import orxanimeditor.animation.Project.RelativeFile;
+import orxanimeditor.data.Animation;
+import orxanimeditor.data.AnimationSet;
+import orxanimeditor.data.EditorData;
+import orxanimeditor.data.Frame;
+import orxanimeditor.data.AnimationSet.Link;
+import orxanimeditor.data.Project.RelativeFile;
 import orxanimeditor.ui.mainwindow.EditorMainWindow;
 
 public class AnimIO {

@@ -48,9 +48,9 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import orxanimeditor.animation.Animation;
-import orxanimeditor.animation.EditorData;
-import orxanimeditor.animation.Frame;
+import orxanimeditor.data.Animation;
+import orxanimeditor.data.EditorData;
+import orxanimeditor.data.Frame;
 import orxanimeditor.io.AnimIO;
 import orxanimeditor.io.ImageManager;
 import orxanimeditor.ui.EditVisitor;

@@ -28,12 +28,12 @@ import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import orxanimeditor.animation.Animation;
-import orxanimeditor.animation.AnimationListener;
-import orxanimeditor.animation.DataLoadListener;
-import orxanimeditor.animation.Frame;
-import orxanimeditor.animation.FrameListener;
-import orxanimeditor.animation.HierarchicalData;
+import orxanimeditor.data.Animation;
+import orxanimeditor.data.AnimationListener;
+import orxanimeditor.data.DataLoadListener;
+import orxanimeditor.data.Frame;
+import orxanimeditor.data.FrameListener;
+import orxanimeditor.data.HierarchicalData;
 import orxanimeditor.ui.EditVisitor;
 import orxanimeditor.ui.SelectionListener;
 import orxanimeditor.ui.mainwindow.EditorMainWindow;

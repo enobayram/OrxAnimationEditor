@@ -1,4 +1,4 @@
-package orxanimeditor.animation;
+package orxanimeditor.data;
 
 import java.io.File;
 import java.io.IOException;

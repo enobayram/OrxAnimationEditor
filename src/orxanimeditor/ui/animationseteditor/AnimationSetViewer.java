@@ -22,10 +22,10 @@ import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.TransferHandler;
 
-import orxanimeditor.animation.Animation;
-import orxanimeditor.animation.AnimationSet;
-import orxanimeditor.animation.AnimationSet.Link;
-import orxanimeditor.animation.AnimationSet.SetSpecificAnimationData;
+import orxanimeditor.data.Animation;
+import orxanimeditor.data.AnimationSet;
+import orxanimeditor.data.AnimationSet.Link;
+import orxanimeditor.data.AnimationSet.SetSpecificAnimationData;
 import orxanimeditor.ui.AnimationReceiver;
 import orxanimeditor.ui.SlidingView;
 import orxanimeditor.ui.animationmanager.AnimationTreeTransferHandler;

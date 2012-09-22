@@ -7,9 +7,9 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
-import orxanimeditor.animation.Animation;
-import orxanimeditor.animation.EditorData;
-import orxanimeditor.animation.Frame;
+import orxanimeditor.data.Animation;
+import orxanimeditor.data.EditorData;
+import orxanimeditor.data.Frame;
 
 public class AnimationTreeRenderer extends DefaultTreeCellRenderer {
 	AnimationTree animationTree;

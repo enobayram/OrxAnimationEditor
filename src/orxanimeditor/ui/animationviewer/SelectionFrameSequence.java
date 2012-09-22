@@ -5,11 +5,11 @@ import java.awt.Dimension;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 
-import orxanimeditor.animation.Animation;
-import orxanimeditor.animation.AnimationListener;
-import orxanimeditor.animation.DataLoadListener;
-import orxanimeditor.animation.Frame;
-import orxanimeditor.animation.FrameListener;
+import orxanimeditor.data.Animation;
+import orxanimeditor.data.AnimationListener;
+import orxanimeditor.data.DataLoadListener;
+import orxanimeditor.data.Frame;
+import orxanimeditor.data.FrameListener;
 import orxanimeditor.ui.SelectionListener;
 import orxanimeditor.ui.mainwindow.EditorMainWindow;
 

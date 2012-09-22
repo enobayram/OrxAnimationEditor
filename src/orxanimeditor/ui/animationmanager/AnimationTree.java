@@ -12,7 +12,7 @@ import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import orxanimeditor.animation.HierarchicalData;
+import orxanimeditor.data.HierarchicalData;
 import orxanimeditor.ui.SelectionListener;
 
 public class AnimationTree extends JTree implements TreeWillExpandListener{

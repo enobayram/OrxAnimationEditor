@@ -17,10 +17,10 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 
-import orxanimeditor.animation.Animation;
-import orxanimeditor.animation.AnimationListener;
-import orxanimeditor.animation.AnimationSet;
-import orxanimeditor.animation.DataLoadListener;
+import orxanimeditor.data.Animation;
+import orxanimeditor.data.AnimationListener;
+import orxanimeditor.data.AnimationSet;
+import orxanimeditor.data.DataLoadListener;
 import orxanimeditor.ui.mainwindow.EditorMainWindow;
 
 public class AnimationSetEditor extends JPanel implements ActionListener, DataLoadListener, AnimationListener{

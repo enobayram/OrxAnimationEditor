@@ -1,4 +1,4 @@
-package orxanimeditor.animation;
+package orxanimeditor.data;
 
 import java.awt.Point;
 import java.io.Serializable;

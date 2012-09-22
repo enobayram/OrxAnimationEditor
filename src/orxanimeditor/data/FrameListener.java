@@ -1,4 +1,4 @@
-package orxanimeditor.animation;
+package orxanimeditor.data;
 
 public interface FrameListener extends DataLoadListener{
 	public void frameAdded(Animation parent, Frame frame);
