@@ -1,4 +1,4 @@
-package orxanimeditor.ui.animationtree;
+package orxanimeditor.ui.animationmanager;
 
 import java.awt.Image;
 import java.awt.datatransfer.DataFlavor;
@@ -21,7 +21,6 @@ import orxanimeditor.animation.Animation;
 import orxanimeditor.animation.EditorData;
 import orxanimeditor.animation.Frame;
 import orxanimeditor.animation.HierarchicalData;
-import orxanimeditor.ui.AnimationManager;
 
 public class AnimationTreeTransferHandler extends TransferHandler {
 	

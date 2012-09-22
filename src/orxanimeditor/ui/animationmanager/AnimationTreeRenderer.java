@@ -1,4 +1,4 @@
-package orxanimeditor.ui.animationtree;
+package orxanimeditor.ui.animationmanager;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -10,7 +10,6 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import orxanimeditor.animation.Animation;
 import orxanimeditor.animation.EditorData;
 import orxanimeditor.animation.Frame;
-import orxanimeditor.ui.AnimationManager;
 
 public class AnimationTreeRenderer extends DefaultTreeCellRenderer {
 	AnimationTree animationTree;

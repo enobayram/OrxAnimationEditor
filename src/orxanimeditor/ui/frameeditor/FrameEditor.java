@@ -26,7 +26,7 @@ import javax.swing.event.TreeSelectionListener;
 import orxanimeditor.animation.Frame;
 import orxanimeditor.ui.SelectionListener;
 import orxanimeditor.ui.mainwindow.EditorMainWindow;
-import orxanimeditor.ui.mainwindow.InfoProxy;
+import orxanimeditor.ui.mainwindow.AreaInfoProxy;
 
 public class FrameEditor extends JPanel implements SelectionListener, ChangeListener {
 	EditorMainWindow editor;
@@ -37,7 +37,7 @@ public class FrameEditor extends JPanel implements SelectionListener, ChangeList
 	int snapSize = 5;
 	JToggleButton useLastRectButton;
 	JToggleButton editOffsetButton;
-	InfoProxy	infoProxy;
+	AreaInfoProxy	infoProxy;
 
 
 	Map<File, JScrollPane> openedFiles = new HashMap<File, JScrollPane>();
@@ -49,10 +49,10 @@ public class FrameEditor extends JPanel implements SelectionListener, ChangeList
 		setLayout(new BorderLayout());
 		add(toolbar,BorderLayout.NORTH);
 		add(views,BorderLayout.CENTER);
-		views.addMouseListener(infoProxy);
 		setMinimumSize(new Dimension(200, 200));
 		setPreferredSize(getMinimumSize());
 		infoProxy.setInfo("info here");
+		
 	}
 	
 
@@ -92,6 +92,7 @@ public class FrameEditor extends JPanel implements SelectionListener, ChangeList
 			JScrollPane newPanel = new JScrollPane(editorPanel);
 			views.add(newPanel,file.getName());
 			openedFiles.put(file, newPanel);
+			editorPanel.addMouseListener(infoProxy);
 		}
 	}
 

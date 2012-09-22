@@ -28,7 +28,7 @@ import orxanimeditor.animation.AnimationSet.Link;
 import orxanimeditor.animation.AnimationSet.SetSpecificAnimationData;
 import orxanimeditor.ui.AnimationReceiver;
 import orxanimeditor.ui.SlidingView;
-import orxanimeditor.ui.animationtree.AnimationTreeTransferHandler;
+import orxanimeditor.ui.animationmanager.AnimationTreeTransferHandler;
 import orxanimeditor.ui.mainwindow.EditorMainWindow;
 
 public class AnimationSetViewer extends SlidingView implements MouseListener, AnimationReceiver {
@@ -43,7 +43,7 @@ public class AnimationSetViewer extends SlidingView implements MouseListener, An
 	Link 	  selectedLink		= null;
 	
 	public AnimationSetViewer(EditorMainWindow editor, AnimationSet set) {
-		super(false);
+		super(false,0.25);
 		this.editor = editor;
 		this.set = set;
 		setBackground(Color.WHITE);

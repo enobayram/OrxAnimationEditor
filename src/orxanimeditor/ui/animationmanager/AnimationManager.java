@@ -1,4 +1,4 @@
-package orxanimeditor.ui;
+package orxanimeditor.ui.animationmanager;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -34,11 +34,8 @@ import orxanimeditor.animation.DataLoadListener;
 import orxanimeditor.animation.Frame;
 import orxanimeditor.animation.FrameListener;
 import orxanimeditor.animation.HierarchicalData;
-import orxanimeditor.ui.animationtree.AnimationTree;
-import orxanimeditor.ui.animationtree.AnimationTreeEditor;
-import orxanimeditor.ui.animationtree.AnimationTreeModel;
-import orxanimeditor.ui.animationtree.AnimationTreeRenderer;
-import orxanimeditor.ui.animationtree.AnimationTreeSelectionModel;
+import orxanimeditor.ui.EditVisitor;
+import orxanimeditor.ui.SelectionListener;
 import orxanimeditor.ui.mainwindow.EditorMainWindow;
 
 public class AnimationManager extends JPanel implements ActionListener, KeyListener,  AnimationListener, FrameListener, DataLoadListener {

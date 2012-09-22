@@ -28,7 +28,7 @@ public class AnimationViewerDisplay extends SlidingView implements FrameDisplay 
 	Point currentOffset;
 		
 	public AnimationViewerDisplay() {
-		super(true);
+		super(true,1);
 		setMinimumSize(new Dimension(160,100));
 	}
 	

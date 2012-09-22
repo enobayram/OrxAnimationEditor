@@ -19,11 +19,14 @@ public abstract class SlidingView extends JPanel implements MouseWheelListener, 
 	protected double viewScale = 1;
 	private Point lastMousePoint;
 	protected boolean drawCheckerboard = true;
+	private double minScale = 1;
+	private double scaleMultiplier = Math.pow(2, 0.25);
 	
 	protected abstract void paintContent(Graphics2D g);
 	
-	public SlidingView(boolean drawCheckerboard) {
+	public SlidingView(boolean drawCheckerboard, double minScale) {
 		this.drawCheckerboard = drawCheckerboard;
+		this.minScale = minScale;
 		setBackground(Color.WHITE);
 		addMouseWheelListener(this);
 		addMouseMotionListener(this);
@@ -48,8 +51,8 @@ public abstract class SlidingView extends JPanel implements MouseWheelListener, 
 
 	@Override
 	public final void mouseWheelMoved(MouseWheelEvent e) {
-		if(e.getWheelRotation()<=0) viewScale*=1.2;
-		else viewScale = Math.max(1, viewScale/1.2);
+		if(e.getWheelRotation()<=0) viewScale*=scaleMultiplier;
+		else viewScale = Math.max(minScale, viewScale/scaleMultiplier);
 		repaint(20);
 	}
 

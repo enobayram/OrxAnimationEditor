@@ -53,11 +53,11 @@ import orxanimeditor.animation.EditorData;
 import orxanimeditor.animation.Frame;
 import orxanimeditor.io.AnimIO;
 import orxanimeditor.io.ImageManager;
-import orxanimeditor.ui.AnimationManager;
 import orxanimeditor.ui.EditVisitor;
 import orxanimeditor.ui.HelpViewer;
+import orxanimeditor.ui.animationmanager.AnimationManager;
+import orxanimeditor.ui.animationmanager.AnimationTreeTransferHandler;
 import orxanimeditor.ui.animationseteditor.AnimationSetEditor;
-import orxanimeditor.ui.animationtree.AnimationTreeTransferHandler;
 import orxanimeditor.ui.animationviewer.AnimationViewer;
 import orxanimeditor.ui.animationviewer.SelectionFrameSequence;
 import orxanimeditor.ui.frameeditor.FrameEditor;
@@ -99,7 +99,7 @@ public class EditorMainWindow extends JFrame {
 	
 	SelectionFrameSequence selectionSequence;
 	
-	JLabel				infoLabel;
+	InfoBar				infoBar;
 	
 	private EditorData 	data;	
 	public static final ImageManager	 	imageManager = new ImageManager();
@@ -123,8 +123,7 @@ public class EditorMainWindow extends JFrame {
 		prepareTree();
 		setLayout(new BorderLayout());
 		
-		infoLabel		    = new JLabel();
-		infoLabel.setBorder(new BevelBorder(BevelBorder.LOWERED));
+		infoBar		    = new InfoBar();
 		
 		animationManager 	= new AnimationManager(this);
 		frameEditor      	= new FrameEditor(this);
@@ -144,7 +143,7 @@ public class EditorMainWindow extends JFrame {
 		prepareMenuBar();
 		getContentPane().add(mainSplitPane, BorderLayout.CENTER);
 		getContentPane().add(menuBar, BorderLayout.NORTH);
-		getContentPane().add(infoLabel, BorderLayout.SOUTH);
+		getContentPane().add(infoBar, BorderLayout.SOUTH);
 		pack();
 		setMinimumSize(getSize());
 		setSize(new Dimension(1000, 700));
@@ -162,11 +161,8 @@ public class EditorMainWindow extends JFrame {
 		
 	}
 	
-	public InfoProxy getInfoProxy() {
-		return new InfoProxy(this);
-	}
-	public void setInfoText(String text) {
-		infoLabel.setText(text);
+	public AreaInfoProxy getInfoProxy() {
+		return new AreaInfoProxy(infoBar);
 	}
 	
 	WindowAdapter windowAdapter = new WindowAdapter() {

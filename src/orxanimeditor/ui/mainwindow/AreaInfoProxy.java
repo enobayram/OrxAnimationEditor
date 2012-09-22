@@ -4,11 +4,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 
-public class InfoProxy extends MouseAdapter {
-	EditorMainWindow editor;
-	String infoText;
-	public InfoProxy(EditorMainWindow editor) {
-		this.editor = editor;
+public class AreaInfoProxy extends MouseAdapter {
+	InfoBar infoBar;
+	String infoText = "";
+	public AreaInfoProxy(InfoBar infoBar) {
+		this.infoBar = infoBar;
 	}
 	public void setInfo(String text) {
 		infoText = text;
@@ -19,12 +19,9 @@ public class InfoProxy extends MouseAdapter {
 	}
 	@Override
 	public void mouseExited(MouseEvent e) {
-		clearInfoText();
+		infoBar.removeSource(this);
 	}
 	private void pushInfoText() {
-		editor.setInfoText(infoText);
-	}
-	private void clearInfoText() {
-		editor.setInfoText(null);
+		infoBar.setInfoText(infoText,this);
 	}
 }
