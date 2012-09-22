@@ -1,6 +1,6 @@
 package orxanimeditor.ui.animationviewer;
 
-import orxanimeditor.data.Frame;
+import orxanimeditor.animation.Frame;
 
 public interface FrameSequence {
 	void setContentProvider(ContentProvider contentProvider);

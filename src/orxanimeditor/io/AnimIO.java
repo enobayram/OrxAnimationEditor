@@ -21,12 +21,12 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.tree.MutableTreeNode;
 
-import orxanimeditor.data.Animation;
-import orxanimeditor.data.AnimationSet;
-import orxanimeditor.data.EditorData;
-import orxanimeditor.data.Frame;
-import orxanimeditor.data.AnimationSet.Link;
-import orxanimeditor.data.Project.RelativeFile;
+import orxanimeditor.animation.Animation;
+import orxanimeditor.animation.AnimationSet;
+import orxanimeditor.animation.EditorData;
+import orxanimeditor.animation.Frame;
+import orxanimeditor.animation.AnimationSet.Link;
+import orxanimeditor.animation.Project.RelativeFile;
 import orxanimeditor.ui.mainwindow.EditorMainWindow;
 
 public class AnimIO {
@@ -38,7 +38,8 @@ public class AnimIO {
 	         ObjectOutputStream out = new ObjectOutputStream(fileOut);
 	         out.writeObject(data);
 	         out.close();
-	          fileOut.close();
+	         fileOut.close();
+	         data.dataSaved();
 	      }catch(IOException i)
 	      {
 	          i.printStackTrace();
@@ -65,12 +66,12 @@ public class AnimIO {
 	}
 	
 	public static void exportEditorData(EditorMainWindow editor, EditorData data, boolean append) {
-		if(data.project.targetIni==null) {
+		if(data.getProject().targetIni==null) {
 			JOptionPane.showMessageDialog(editor, "Target .ini file is not set");
 			return;
 		}
         try {
-			FileOutputStream fileOut = new FileOutputStream(data.project.targetIni.getAbsoluteFile(), append);
+			FileOutputStream fileOut = new FileOutputStream(data.getProject().targetIni.getAbsoluteFile(), append);
 			ExportDiagnoser diagnoser = new ExportDiagnoser(fileOut);
 			streamData(data, diagnoser);
 			if(!diagnoser.isSuccessful())
@@ -83,42 +84,44 @@ public class AnimIO {
 	}
 		
 	private static void streamData(EditorData data, ExportDiagnoser d) {
-		for(AnimationSet set: data.animationSets) {
+		for(AnimationSet set: data.getAnimationSets()) {
 			exportAnimationSet(d,set);
 		}
 		for(Animation animation: data.getAnimations()) {
 			exportAnimation(d,animation);
 			for(Frame frame:animation.getFrames()) {
-				exportFrame(d,frame,data.project.getTargetFolder());
+				exportFrame(d,frame,data.getProject().getTargetFolder());
 			}
 		}
 	}
 
 	private static void exportAnimationSet(ExportDiagnoser d, AnimationSet set) {
-		d.printSection(set.name);
-		if(set.animations.size()>0) {
+		d.printSection(set.getName());
+		Animation[] animations = set.getAnimations();
+		if(animations.length>0) {
 			String key = "AnimationList";
 			String value = "";
-			for(int ai=0; ai<set.animations.size(); ai++) {
-				Animation animation = set.animations.get(ai);
+			for(int ai=0; ai<animations.length; ai++) {
+				Animation animation = animations[ai];
 				value+=animation.getName();
-				if(ai!=set.animations.size()-1) value+="#";
+				if(ai!=animations.length-1) value+="#";
 			}
 			d.printKeyValue(key, value);
 		}
+		Link[] links = set.getLinks();
 		d.printEmptyLine();
-		if(set.links.size()>0) {
+		if(links.length>0) {
 			String key = "LinkList";
 			String value = "";
-			for(int li = 0; li<set.links.size(); li++) {
-				Link link = set.links.get(li);
+			for(int li = 0; li<links.length; li++) {
+				Link link = links[li];
 				value+=link.getName();
-				if(li!=set.links.size()-1) value+="#";
+				if(li!=links.length-1) value+="#";
 			}
 			d.printKeyValue(key, value);
 		}
 		d.printEmptyLine();
-		for(Link link: set.links) exportLink(d,link);
+		for(Link link: set.getLinks()) exportLink(d,link);
 		
 	}
 

@@ -25,9 +25,9 @@ import javax.swing.tree.TreePath;
 
 import com.sun.corba.se.impl.interceptors.PICurrent;
 
-import orxanimeditor.data.Animation;
-import orxanimeditor.data.Frame;
-import orxanimeditor.data.FrameListener;
+import orxanimeditor.animation.Animation;
+import orxanimeditor.animation.Frame;
+import orxanimeditor.animation.FrameListener;
 import orxanimeditor.ui.Utilities;
 import orxanimeditor.ui.mainwindow.EditorMainWindow;
 
@@ -157,7 +157,7 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 				int x = snap(getViewX(e)), y = snap(getViewY(e));	
 
 				selected.setRectangle(new Rectangle(x,y,lastRect.width,lastRect.height));
-				selected.setImageFile(editorFrame.getData().project.getRelativeFile(imageFile));
+				selected.setImageFile(editorFrame.getData().getProject().getRelativeFile(imageFile));
 
 				int PivotDX = lastPivot.x - lastRect.x;
 				int PivotDY = lastPivot.y - lastRect.y;
@@ -170,7 +170,7 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 				int dx = snap(getViewX(e)-x), dy = snap(getViewY(e)-y);
 				Rectangle newRectangle = new Rectangle(x,y,dx,dy);
 				selected.setRectangle(newRectangle);
-				selected.setImageFile(editorFrame.getData().project.getRelativeFile(imageFile));
+				selected.setImageFile(editorFrame.getData().getProject().getRelativeFile(imageFile));
 				lastRect = (Rectangle) newRectangle.clone();
 				lastPivot = selected.getPivot();
 
@@ -222,14 +222,14 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 		if(e.getButton() == MouseEvent.BUTTON1) {
 			if (parent.isUsingLastRect()) {
 				selected.setRectangle(new Rectangle(getViewX(e),getViewY(e),lastRect.width,lastRect.height));
-				selected.setImageFile(editorFrame.getData().project.getRelativeFile(imageFile));
+				selected.setImageFile(editorFrame.getData().getProject().getRelativeFile(imageFile));
 				int PivotDX = lastPivot.x - lastRect.x;
 				int PivotDY = lastPivot.y - lastRect.y;
 				selected.setPivot(new Point(getViewX(e)+PivotDX,getViewY(e)+PivotDY));					
 			}
 			else {
 				selected.setRectangle(new Rectangle(getViewX(e),getViewY(e),0,0));
-				selected.setImageFile(editorFrame.getData().project.getRelativeFile(imageFile));
+				selected.setImageFile(editorFrame.getData().getProject().getRelativeFile(imageFile));
 				lastPivot = selected.getPivot();
 				selected.setPivot(null);
 			}

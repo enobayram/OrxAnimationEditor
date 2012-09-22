@@ -48,9 +48,9 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import orxanimeditor.data.Animation;
-import orxanimeditor.data.EditorData;
-import orxanimeditor.data.Frame;
+import orxanimeditor.animation.Animation;
+import orxanimeditor.animation.EditorData;
+import orxanimeditor.animation.Frame;
 import orxanimeditor.io.AnimIO;
 import orxanimeditor.io.ImageManager;
 import orxanimeditor.ui.EditVisitor;
@@ -172,25 +172,25 @@ public class EditorMainWindow extends JFrame {
 		}
 	};
 	
-	private void exit() {
+	protected int showSaveChangedProjectDialog() {
 		int choice = JOptionPane.showConfirmDialog(EditorMainWindow.this
-				,"Save the animation project before exiting?\n" +
-				 "(Note that currently this message pops up regardless\n " +
-				 "of any change to the animation project...)"
+				,"Animation project changed, save the changes before exiting?\n"
 				 , "Save Project"
 				 , JOptionPane.YES_NO_CANCEL_OPTION
 				 , JOptionPane.QUESTION_MESSAGE);
-		switch(choice) {
-		case JOptionPane.YES_OPTION:
+		if(choice == JOptionPane.YES_OPTION)
 			saveProject();
-			System.exit(0);
-			break;
-		case JOptionPane.NO_OPTION:
-			System.exit(0);
-			break;
-		case JOptionPane.CANCEL_OPTION:
-			break;
+		return choice;
+	}
+	
+	private void exit() {
+		if(data.isDataChangedSinceLastSave()) {
+			int choice = showSaveChangedProjectDialog();
+			if(choice == JOptionPane.CANCEL_OPTION){
+				return;
+			}
 		}
+		System.exit(0);
 	}
 	
 	private ActionListener exitAction = new ActionListener() {
@@ -305,6 +305,11 @@ public class EditorMainWindow extends JFrame {
 	
 	ActionListener newAnimationProjectListener = new ActionListener() {
 		public void actionPerformed(ActionEvent arg0) {
+			if(data.isDataChangedSinceLastSave()) {
+				int choice = showSaveChangedProjectDialog();
+				if(choice == JOptionPane.CANCEL_OPTION)
+					return;
+			}
 			newProjectAction();
 		}
 	};
@@ -312,7 +317,7 @@ public class EditorMainWindow extends JFrame {
 	private ActionListener setTargetFolderItemActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent arg0) {
 			if(targetFolderChooser.showOpenDialog(EditorMainWindow.this)==JFileChooser.APPROVE_OPTION) {
-				getData().project.targetFolder = getData().project.getRelativeFile(targetFolderChooser.getSelectedFile());
+				getData().getProject().targetFolder = getData().getProject().getRelativeFile(targetFolderChooser.getSelectedFile());
 			}			
 		}
 	};
@@ -329,14 +334,19 @@ public class EditorMainWindow extends JFrame {
 	}
 	
 	private void projectChanged() {
-		imageChooser.setCurrentDirectory(getData().project.projectFile.getParentFile());
-		iniChooser.setCurrentDirectory(getData().project.projectFile.getParentFile());
-		targetFolderChooser.setCurrentDirectory(getData().project.projectFile.getParentFile());
+		imageChooser.setCurrentDirectory(getData().getProject().projectFile.getParentFile());
+		iniChooser.setCurrentDirectory(getData().getProject().projectFile.getParentFile());
+		targetFolderChooser.setCurrentDirectory(getData().getProject().projectFile.getParentFile());
 		repaint();		
 	}
 	
 	ActionListener openAnimationProjectListener = new ActionListener() {
 		public void actionPerformed(ActionEvent arg0) {
+			if(data.isDataChangedSinceLastSave()) {
+				int choice = showSaveChangedProjectDialog();
+				if(choice == JOptionPane.CANCEL_OPTION)
+					return;
+			}
 			openProjectAction();
 		}
 	};
@@ -357,15 +367,15 @@ public class EditorMainWindow extends JFrame {
 	};
 	
 	public void saveProject() {
-		AnimIO.writeEditorData(getData(),getData().project.projectFile);		
+		AnimIO.writeEditorData(getData(),getData().getProject().projectFile);		
 	}
 	
 	ActionListener setTargetItemActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			if(iniChooser.showSaveDialog(EditorMainWindow.this)==JFileChooser.APPROVE_OPTION) {
-				getData().project.targetIni=getData().project.getRelativeFile(iniChooser.getSelectedFile());
-				imageChooser.setCurrentDirectory(getData().project.getTargetFolder());
-				editorDataChooser.setCurrentDirectory(getData().project.getTargetFolder());
+				getData().getProject().targetIni=getData().getProject().getRelativeFile(iniChooser.getSelectedFile());
+				imageChooser.setCurrentDirectory(getData().getProject().getTargetFolder());
+				editorDataChooser.setCurrentDirectory(getData().getProject().getTargetFolder());
 			}						
 		}
 	};

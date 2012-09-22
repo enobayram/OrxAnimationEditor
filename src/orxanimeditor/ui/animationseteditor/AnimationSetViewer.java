@@ -15,6 +15,8 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.Arrays;
 
 import javax.swing.AbstractAction;
 import javax.swing.JPanel;
@@ -22,10 +24,10 @@ import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.TransferHandler;
 
-import orxanimeditor.data.Animation;
-import orxanimeditor.data.AnimationSet;
-import orxanimeditor.data.AnimationSet.Link;
-import orxanimeditor.data.AnimationSet.SetSpecificAnimationData;
+import orxanimeditor.animation.Animation;
+import orxanimeditor.animation.AnimationSet;
+import orxanimeditor.animation.AnimationSet.Link;
+import orxanimeditor.animation.AnimationSet.SetSpecificAnimationData;
 import orxanimeditor.ui.AnimationReceiver;
 import orxanimeditor.ui.SlidingView;
 import orxanimeditor.ui.animationmanager.AnimationTreeTransferHandler;
@@ -60,23 +62,24 @@ public class AnimationSetViewer extends SlidingView implements MouseListener, An
 		
 		setTransferHandler(new AnimationSetViewerTransferHandler());
 	}
+
 	public void addAnimation(Animation chosen) {
-		if(set.animations.contains(chosen)) return;
+		if(set.containsAnimation(chosen)) return;
 		else {
-			set.animations.add(chosen);
+			set.addAnimation(chosen);
 			editor.poke();
 		}
 	}
 		@Override
 	public void paintContent(Graphics2D g) {
-		for(Animation animation: set.animations) {
+		for(Animation animation: set.getAnimations()) {
 			if(animation==selectedAnimation) g.setColor(Color.BLUE);
 			else g.setColor(Color.BLACK);
 			Point center = getCenter(animation);
 			g.drawOval(center.x-ANIMATIONRADIUS, center.y-ANIMATIONRADIUS, 2*ANIMATIONRADIUS, 2*ANIMATIONRADIUS);
 			g.drawString(animation.getName(), center.x-ANIMATIONRADIUS, center.y-5);
 		}
-		for(Link link: set.links) {
+		for(Link link: set.getLinks()) {
 			if(link == selectedLink) g.setColor(Color.BLUE);
 			else 	g.setColor(Color.BLACK);
 			drawLink(g, link);
@@ -132,17 +135,17 @@ public class AnimationSetViewer extends SlidingView implements MouseListener, An
 
 	
 	private Point getCenter(Animation animation) {
-		if(set.setSpecificAnimationData.containsKey(animation)) {
-			SetSpecificAnimationData animationData = set.setSpecificAnimationData.get(animation);
-			if(animationData.center!=null) 
-				return animationData.center;
+		if(set.containsSetSpecificAnimationData(animation)) {
+			SetSpecificAnimationData animationData = set.getSetSpecificAnimationData(animation);
+			if(animationData.getCenter()!=null) 
+				return animationData.getCenter();
 		}
 		
 		return getDefaultCenter(animation);
 	}
 	
 	private Point getDefaultCenter(Animation animation) {
-		return centerOfCircle(set.animations.indexOf(animation));
+		return centerOfCircle(set.indexOfAnimation(animation));
 	}
 
 
@@ -152,15 +155,15 @@ public class AnimationSetViewer extends SlidingView implements MouseListener, An
 	
 	Point centerOfCircle(int index) {
 		double r = getScatterRadius();
-		double theta = 2*Math.PI*index/set.animations.size();
+		double theta = 2*Math.PI*index/set.getAnimationCount();
 		Point relativeCenter = new Point((int)(r*Math.cos(theta)), (int) (r*Math.sin(theta)));
 		Point center = new Point(relativeCenter.x, relativeCenter.y);
 		return center;
 	}
 	
 	double getScatterRadius() {
-		if(set.animations.size()<2) return 0;
-		return 2*ANIMATIONRADIUS/Math.sin(2*Math.PI/(2*set.animations.size()));
+		if(set.getAnimationCount()<2) return 0;
+		return 2*ANIMATIONRADIUS/Math.sin(2*Math.PI/(2*set.getAnimationCount()));
 	}
 	@Override
 	public void mousePressed(MouseEvent e) {
@@ -186,8 +189,9 @@ public class AnimationSetViewer extends SlidingView implements MouseListener, An
 		repaint(20);
 	}
 	private Animation pickAnimation(Point point) {
-		for(int ai=0; ai<set.animations.size(); ai++) {
-			Animation animation = set.animations.get(ai);
+		Animation[] animations = set.getAnimations();
+		for(int ai=0; ai<animations.length; ai++) {
+			Animation animation = animations[ai];
 			if(getCenter(animation).distance(point)<ANIMATIONRADIUS) {
 				return animation;
 			}
@@ -206,15 +210,13 @@ public class AnimationSetViewer extends SlidingView implements MouseListener, An
 				Animation draggingAnimation = pickAnimation(screenToWorld(e.getPoint()));
 				if ( draggingAnimation != null ){
 					SetSpecificAnimationData selectedData;
-					if(!set.setSpecificAnimationData.containsKey(draggingAnimation)) {
-						selectedData = new SetSpecificAnimationData();
-						set.setSpecificAnimationData.put(draggingAnimation, selectedData);
+					if(!set.containsSetSpecificAnimationData(draggingAnimation)) {
+						selectedData = set.createSetSpecificAnimationData(draggingAnimation);
 					} else {
-						selectedData = set.setSpecificAnimationData.get(draggingAnimation);
+						selectedData = set.getSetSpecificAnimationData(draggingAnimation);
 					}
-					selectedData.center = screenToWorld(e.getPoint());
+					selectedData.setCenter(screenToWorld(e.getPoint()));
 					repaint(20);
-				
 				}
 			}
 		}
@@ -230,7 +232,7 @@ public class AnimationSetViewer extends SlidingView implements MouseListener, An
 	}
 	public void deleteLink(Link link) {
 		if(link!=null) {
-			set.links.remove(link);
+			set.removeLink(link);
 			if(link==selectedLink) selectedLink=null;
 			editor.poke();
 		}

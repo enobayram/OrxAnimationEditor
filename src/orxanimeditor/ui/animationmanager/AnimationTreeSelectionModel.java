@@ -8,7 +8,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeSelectionModel;
 import javax.swing.tree.TreePath;
 
-import orxanimeditor.data.HierarchicalData;
+import orxanimeditor.animation.HierarchicalData;
 import orxanimeditor.ui.SelectionListener;
 
 public class AnimationTreeSelectionModel extends DefaultTreeSelectionModel {

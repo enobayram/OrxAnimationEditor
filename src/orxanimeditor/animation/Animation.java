@@ -1,4 +1,4 @@
-package orxanimeditor.data;
+package orxanimeditor.animation;
 
 import java.io.Serializable;
 import java.util.LinkedList;

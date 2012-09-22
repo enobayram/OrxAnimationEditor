@@ -17,10 +17,10 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 
-import orxanimeditor.data.Animation;
-import orxanimeditor.data.AnimationListener;
-import orxanimeditor.data.AnimationSet;
-import orxanimeditor.data.DataLoadListener;
+import orxanimeditor.animation.Animation;
+import orxanimeditor.animation.AnimationListener;
+import orxanimeditor.animation.AnimationSet;
+import orxanimeditor.animation.DataLoadListener;
 import orxanimeditor.ui.mainwindow.EditorMainWindow;
 
 public class AnimationSetEditor extends JPanel implements ActionListener, DataLoadListener, AnimationListener{
@@ -71,7 +71,7 @@ public class AnimationSetEditor extends JPanel implements ActionListener, DataLo
 	public void dataLoaded() {
 		setsTable.clear();
 		animationSets.removeAll();
-		for(AnimationSet set: editor.getData().animationSets) createNewViewer(set);
+		for(AnimationSet set: editor.getData().getAnimationSets()) createNewViewer(set);
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public class AnimationSetEditor extends JPanel implements ActionListener, DataLo
 			String newSetName = JOptionPane.showInputDialog("New Animation Set Name:");
 			if(newSetName==null || newSetName.isEmpty()) return;
 			AnimationSet newSet = new AnimationSet(newSetName);
-			editor.getData().animationSets.add(newSet);
+			editor.getData().addAnimationSet(newSet);
 			createNewViewer(newSet);
 		} else  { // The rest of the buttons are related to a view
 			if(view==null) { // So if no view is selected, an error is shown
@@ -102,13 +102,13 @@ public class AnimationSetEditor extends JPanel implements ActionListener, DataLo
 
 	private void createNewViewer(AnimationSet newSet) {
 		AnimationSetViewer newViewer = new AnimationSetViewer(editor, newSet);
-		animationSets.add(newViewer,newSet.name);
+		animationSets.add(newViewer,newSet.getName());
 		setsTable.put(newSet, newViewer);
 	}
 
 	private void deleteViewer(AnimationSetViewer view) {
 		setsTable.remove(view.set);
-		editor.getData().animationSets.remove(view.set);
+		editor.getData().removeAnimationSet(view.set);
 		animationSets.remove(view);
 	}
 

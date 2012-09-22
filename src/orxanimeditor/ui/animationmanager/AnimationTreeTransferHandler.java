@@ -17,10 +17,10 @@ import javax.swing.JComponent;
 import javax.swing.JTree;
 import javax.swing.TransferHandler;
 
-import orxanimeditor.data.Animation;
-import orxanimeditor.data.EditorData;
-import orxanimeditor.data.Frame;
-import orxanimeditor.data.HierarchicalData;
+import orxanimeditor.animation.Animation;
+import orxanimeditor.animation.EditorData;
+import orxanimeditor.animation.Frame;
+import orxanimeditor.animation.HierarchicalData;
 
 public class AnimationTreeTransferHandler extends TransferHandler {
 	

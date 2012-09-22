@@ -1,4 +1,4 @@
-package orxanimeditor.data;
+package orxanimeditor.animation;
 
 public interface HierarchicalData {
 	public void remove();

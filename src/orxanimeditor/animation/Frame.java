@@ -1,4 +1,4 @@
-package orxanimeditor.data;
+package orxanimeditor.animation;
 
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -6,14 +6,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import orxanimeditor.data.Project.RelativeFile;
+import orxanimeditor.animation.Project.RelativeFile;
 
 public class Frame implements HierarchicalData, Serializable, Cloneable{
 	private static final long serialVersionUID = -2408945560259717838L;
-	RelativeFile imageFile;
-	Rectangle rect;
+	private RelativeFile imageFile;
+	private Rectangle rect;
 	private boolean flipX = false;
-	boolean flipY = false;
+	private boolean flipY = false;
 	private Point pivot = null;
 	private Point offset = null;
 	private double keyDuration = -1;

@@ -1,4 +1,4 @@
-package orxanimeditor.data;
+package orxanimeditor.animation;
 
 public interface AnimationListener extends DataLoadListener{
 	public void animationAdded(Animation animation);
