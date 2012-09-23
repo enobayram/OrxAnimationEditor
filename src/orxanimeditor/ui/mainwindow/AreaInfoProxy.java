@@ -12,6 +12,7 @@ public class AreaInfoProxy extends MouseAdapter {
 	}
 	public void setInfo(String text) {
 		infoText = text;
+		infoBar.injectText(text,this);
 	}
 	@Override
 	public void mouseEntered(MouseEvent e) {

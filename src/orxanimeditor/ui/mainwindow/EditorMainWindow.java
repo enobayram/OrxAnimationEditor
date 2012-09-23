@@ -51,6 +51,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import orxanimeditor.data.v1.Animation;
 import orxanimeditor.data.v1.EditorData;
 import orxanimeditor.data.v1.Frame;
+import orxanimeditor.data.v1.HierarchicalData;
 import orxanimeditor.io.AnimIO;
 import orxanimeditor.io.ImageManager;
 import orxanimeditor.ui.EditVisitor;
@@ -114,6 +115,10 @@ public class EditorMainWindow extends JFrame {
 				new EditorMainWindow();
 			}
 		});
+	}
+	
+	public HierarchicalData[] getSelectedObjects() {
+		return animationManager.getSelectedObjects();
 	}
 	
 	public EditorMainWindow() {

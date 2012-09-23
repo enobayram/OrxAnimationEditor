@@ -79,6 +79,22 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 			g.setColor(Color.RED);
 			drawArrow(g, vector, base);
 		}
+		if(parent.isSettingOffsetWithTemporaryPivot()) {
+			Point pivot1 = parent.temporaryPivotOffsetButton.getPivot1();
+			Point pivot2 = parent.temporaryPivotOffsetButton.getPivot2();
+			if(pivot1!=null) {
+				g.setColor(Color.GREEN);
+				Point framePivot = parent.temporaryPivotOffsetButton.getPrevFramePivot();
+				Point vector = new Point(pivot1.x-framePivot.x, pivot1.y-framePivot.y);
+				drawArrow(g, toScreen(vector), toScreen(framePivot));
+			}
+			if(pivot2!=null) {
+				g.setColor(Color.GREEN);
+				Point framePivot = parent.temporaryPivotOffsetButton.getCurFramePivot();
+				Point vector = new Point(pivot2.x-framePivot.x, pivot2.y-framePivot.y);
+				drawArrow(g, toScreen(vector), toScreen(framePivot));
+			}
+		}
 	}
 	
 	private int getViewWidth() {return image.getWidth()*zoom;}
@@ -133,24 +149,20 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 	}
 	
 	private int snap(int snapMe){
-		return java.lang.Math.round( snapMe/parent.snapSize )*parent.snapSize;
+		return java.lang.Math.round( snapMe/parent.SnapSlider.getValue() )*parent.SnapSlider.getValue();
 	}
 	
 	@Override public void mouseDragged(MouseEvent e) {
 		Frame selected = getSelectedFrame();
 		if(selected==null) return;
 		if((e.getModifiersEx() & MouseEvent.BUTTON3_DOWN_MASK) == MouseEvent.BUTTON3_DOWN_MASK) {
-			if(parent.isEditingOffset()) {
-				if(freeOffsetStart!=null)
-					freeOffsetEnd = getViewPoint(e);
-				 else
-					handleEditOffset(selected,e);			
-			} else {
+			if(parent.isSettingOffsetDirectly()) 
+				handleEditOffset(selected,e);			
+			if(parent.isSettingOffsetWithRelativePos())
+				freeOffsetEnd = getViewPoint(e);
+			if(parent.isSettingPivot())	
 				selected.setPivot(new Point(getViewX(e),getViewY(e)));
-			}
-		}
-		if((e.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) == MouseEvent.BUTTON1_DOWN_MASK) {
-			if(parent.isUsingLastRect()) {
+			if(parent.isRectangleLocked()) {
 				int x = snap(getViewX(e)), y = snap(getViewY(e));	
 
 				selected.setRectangle(new Rectangle(x,y,parent.lockRectButton.lastRect.width,parent.lockRectButton.lastRect.height));
@@ -159,8 +171,8 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 				int PivotDX = parent.lockRectButton.lastPivot.x - parent.lockRectButton.lastRect.x;
 				int PivotDY = parent.lockRectButton.lastPivot.y - parent.lockRectButton.lastRect.y;
 				selected.setPivot(new Point(x+PivotDX,y+PivotDY));
-
-			} else {
+			}
+			if(parent.isEditingRectangle()){
 				
 				Rectangle rect = selected.getRectangle();
 				int x = snap(rect.x), y = snap(rect.y);
@@ -168,6 +180,53 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 				Rectangle newRectangle = new Rectangle(x,y,dx,dy);
 				selected.setRectangle(newRectangle);
 				selected.setImageFile(editorFrame.getData().getProject().getRelativeFile(imageFile));
+			}
+			if(parent.isSettingOffsetWithTemporaryPivot()) {
+				if(parent.temporaryPivotOffsetButton.getPivot2()!=null) {
+					parent.temporaryPivotOffsetButton.setPivot2(getViewPoint(e));
+					selected.setOffset(parent.temporaryPivotOffsetButton.getOffset());
+				}
+				else
+					parent.temporaryPivotOffsetButton.setPivot1(getViewPoint(e));
+			}
+		}
+		repaint(20);
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		Frame selected  = getSelectedFrame();
+		if(selected==null) return;
+	
+		if(e.getButton() == MouseEvent.BUTTON3) {
+			if(parent.isSettingOffsetDirectly()) {
+			    	handleEditOffset(selected, e);
+			}
+		    if (parent.isSettingOffsetWithRelativePos()) {
+		    	freeOffsetStart = getViewPoint(e);
+		    }
+			if(parent.isSettingPivot()) {
+				selected.setPivot(new Point(getViewX(e),getViewY(e)));
+			}		
+			if (parent.isRectangleLocked()) {
+				selected.setRectangle(new Rectangle(getViewX(e),getViewY(e),parent.lockRectButton.lastRect.width,parent.lockRectButton.lastRect.height));
+				selected.setImageFile(editorFrame.getData().getProject().getRelativeFile(imageFile));
+				int PivotDX = parent.lockRectButton.lastPivot.x - parent.lockRectButton.lastRect.x;
+				int PivotDY = parent.lockRectButton.lastPivot.y - parent.lockRectButton.lastRect.y;
+				selected.setPivot(new Point(getViewX(e)+PivotDX,getViewY(e)+PivotDY));					
+			}
+			if(parent.isEditingRectangle()) {
+				selected.setRectangle(new Rectangle(getViewX(e),getViewY(e),0,0));
+				selected.setImageFile(editorFrame.getData().getProject().getRelativeFile(imageFile));
+				selected.setPivot(null);
+			}
+			if(parent.isSettingOffsetWithTemporaryPivot()) {
+				if(parent.temporaryPivotOffsetButton.getPivot1()==null) {
+					parent.temporaryPivotOffsetButton.setPivot1(getViewPoint(e));
+				} else {
+					parent.temporaryPivotOffsetButton.setPivot2(getViewPoint(e));
+					selected.setOffset(parent.temporaryPivotOffsetButton.getOffset());
+				}
 			}
 		}
 		repaint(20);
@@ -196,38 +255,6 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 		return new Point(getViewX(e),getViewY(e));
 	}
 	
-	@Override
-	public void mousePressed(MouseEvent e) {
-		Frame selected  = getSelectedFrame();
-		if(selected==null) return;
-
-		if(e.getButton() == MouseEvent.BUTTON3) {
-			if(parent.isEditingOffset()) {
-			    if (e.isShiftDown()) {
-			    	freeOffsetStart = getViewPoint(e);
-			    } else
-			    	handleEditOffset(selected, e);
-			} else {
-				selected.setPivot(new Point(getViewX(e),getViewY(e)));
-			}
-		}
-		
-		if(e.getButton() == MouseEvent.BUTTON1) {
-			if (parent.isUsingLastRect()) {
-				selected.setRectangle(new Rectangle(getViewX(e),getViewY(e),parent.lockRectButton.lastRect.width,parent.lockRectButton.lastRect.height));
-				selected.setImageFile(editorFrame.getData().getProject().getRelativeFile(imageFile));
-				int PivotDX = parent.lockRectButton.lastPivot.x - parent.lockRectButton.lastRect.x;
-				int PivotDY = parent.lockRectButton.lastPivot.y - parent.lockRectButton.lastRect.y;
-				selected.setPivot(new Point(getViewX(e)+PivotDX,getViewY(e)+PivotDY));					
-			}
-			else {
-				selected.setRectangle(new Rectangle(getViewX(e),getViewY(e),0,0));
-				selected.setImageFile(editorFrame.getData().getProject().getRelativeFile(imageFile));
-				selected.setPivot(null);
-			}
-		}
-	}
-
 	private int getViewX(MouseEvent e) {
 		return e.getX()/zoom;
 	}
@@ -239,13 +266,19 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		Frame frame = getSelectedFrame();
-		if(e.getButton() == MouseEvent.BUTTON3 && freeOffsetEnd!=null) {
+		if(parent.isSettingOffsetWithRelativePos()) {
 			if(frame!=null) {
 				frame.setOffset(new Point(freeOffsetEnd.x-freeOffsetStart.x, freeOffsetEnd.y-freeOffsetStart.y));
 			}
 			freeOffsetEnd = null;
 			freeOffsetStart = null;
 			repaint(20);
+		}
+		if(parent.isSettingOffsetWithTemporaryPivot()) {
+			if(parent.temporaryPivotOffsetButton.getPivot2()!=null) {
+				parent.temporaryPivotOffsetButton.restart();
+				repaint(20);
+			}
 		}
 	}
 	

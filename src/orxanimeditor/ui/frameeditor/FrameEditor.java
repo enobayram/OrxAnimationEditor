@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -33,20 +35,19 @@ import orxanimeditor.ui.ToolBar;
 import orxanimeditor.ui.mainwindow.EditorMainWindow;
 import orxanimeditor.ui.mainwindow.AreaInfoProxy;
 
-public class FrameEditor extends JPanel implements SelectionListener, ChangeListener {
+public class FrameEditor extends JPanel implements SelectionListener, ActionListener {
 	EditorMainWindow editor;
-	Frame selectedFrame = null;
 	JTabbedPane views;
 	ToolBar toolbar;
 	JSlider SnapSlider;
-	int snapSize = 5;
 	LockRectangleButton lockRectButton;
 	JToggleButton editRectButton;
 	JToggleButton setPivotButton;
 	JToggleButton setOffsetButton;
 	JToggleButton relativeOffsetButton;
-	JToggleButton temporaryPivotOffsetButton;
+	TemporaryPivotButton temporaryPivotOffsetButton;
 	AreaInfoProxy	infoProxy;
+	ButtonGroup group;
 
 
 	Map<File, JScrollPane> openedFiles = new HashMap<File, JScrollPane>();
@@ -60,52 +61,73 @@ public class FrameEditor extends JPanel implements SelectionListener, ChangeList
 		add(views,BorderLayout.CENTER);
 		setMinimumSize(new Dimension(200, 200));
 		setPreferredSize(getMinimumSize());
-		infoProxy.setInfo("info here");
 		editor.addSelectionListener(this);
+		setInfo();
 		
 	}
-	
+
+	private void setInfo() {
+		if(editor.animationManager.getSelectedFrame()==null)
+			infoProxy.setInfo("Select a frame to edit");
+		else if(isEditingRectangle())
+			infoProxy.setInfo("Right click & drag: Draw the rectangle for the selected frame");
+		else if(isRectangleLocked()) 
+			infoProxy.setInfo("Right click: Set the rectangle for the selected frame to the saved rectangle");
+		else if(isSettingPivot())
+			infoProxy.setInfo("Right click: Set the pivot of the selected frame");
+		else if(isSettingOffsetDirectly())
+			infoProxy.setInfo("Right click: Set the offset for this frame from a point");
+		else if(isSettingOffsetWithRelativePos())
+			infoProxy.setInfo("Right click & drag: Set the offset for this frame as the vector between two arbitrary points");
+		else if(isSettingOffsetWithTemporaryPivot())
+			{} //The relevant button handles the info message
+		else
+			infoProxy.setInfo("Choose an editing mode from the frame editor toolbar");
+		
+	}
+
 
 	private void prepareToolbar() {
 		toolbar = new ToolBar();
 
-		SnapSlider = new JSlider(JSlider.HORIZONTAL, 1, 36, 5);
+		SnapSlider = new JSlider(JSlider.HORIZONTAL, 1, 36, 1);
 		SnapSlider.setOpaque(false);
-		toolbar.add(SnapSlider);
-		
-		ButtonGroup group = new ButtonGroup();
-
-		toolbar.addSeparator();
-
-		SnapSlider.setToolTipText("Change the snap size");
-	
-		SnapSlider.addChangeListener(this);
-		
 		SnapSlider.setMajorTickSpacing(5);
 		SnapSlider.setMinorTickSpacing(1);
 		SnapSlider.setPaintTicks(true);
 		SnapSlider.setPaintLabels(true);
-		SnapSlider.setSnapToTicks(true);
-		
-		lockRectButton = new LockRectangleButton(editor.getImageIcon("icons/LockRectangle.png"),
-										         editor.getImageIcon("icons/UnlockRectangle.png"));
+		SnapSlider.setSnapToTicks(true);		
 
-		toolbar.add(lockRectButton);
-		group.add(lockRectButton);
-		editor.addSelectionListener(lockRectButton);
-		
-		
+		SnapSlider.setToolTipText("<html>Change the snap size:<br>" +
+				"The snap size is used while modifying <br>" +
+				"the rectangle for a frame, if the snap <br>" +
+				"size is n, the editing will snap to the nth pixel.</html>");		
+		toolbar.add(SnapSlider);
+
+		toolbar.addSeparator();
+				
+		group = new ButtonGroup();
+
 		editRectButton = new JToggleButton(editor.getImageIcon("icons/EditRectangle.png"));
 		toolbar.add(editRectButton);
 		editRectButton.setToolTipText("Edit the frame rectangle");
 		group.add(editRectButton);
+		editRectButton.addActionListener(this);
 
+		lockRectButton = new LockRectangleButton(editor.getImageIcon("icons/LockRectangle.png"),
+		         editor.getImageIcon("icons/UnlockRectangle.png"));
+		toolbar.add(lockRectButton);
+		group.add(lockRectButton);
+		editor.addSelectionListener(lockRectButton);
+		lockRectButton.addActionListener(this);
+		
 		toolbar.addSeparator();
 
 		setPivotButton = new JToggleButton(editor.getImageIcon("icons/SetPivot.png"));
 		toolbar.add(setPivotButton);
 		setPivotButton.setToolTipText("Set the frame pivot");
 		group.add(setPivotButton);
+		setPivotButton.addActionListener(this);
 		
 		toolbar.addSeparator();
 
@@ -113,6 +135,7 @@ public class FrameEditor extends JPanel implements SelectionListener, ChangeList
 		toolbar.add(setOffsetButton);
 		setOffsetButton.setToolTipText("Set the frame offset vector");
 		group.add(setOffsetButton);
+		setOffsetButton.addActionListener(this);
 
 		relativeOffsetButton = new JToggleButton(editor.getImageIcon("icons/RelativeOffset.png"));
 		toolbar.add(relativeOffsetButton);
@@ -122,19 +145,23 @@ public class FrameEditor extends JPanel implements SelectionListener, ChangeList
 				"position between two arbitrary points </html>"
 				);
 		group.add(relativeOffsetButton);
+		relativeOffsetButton.addActionListener(this);
 
-		temporaryPivotOffsetButton = new JToggleButton(editor.getImageIcon("icons/TemporaryPivotOffset.png"));
+
+		temporaryPivotOffsetButton = new TemporaryPivotButton(editor,group,infoProxy,editor.getImageIcon("icons/TemporaryPivotOffset.png"));
 		toolbar.add(temporaryPivotOffsetButton);
-		temporaryPivotOffsetButton.setToolTipText("<html> Set the frame offset vector by <br>" +
-				"defining two arbitrary points in two <br> " +
-				"frames as a temporary pivot</html>");
 		group.add(temporaryPivotOffsetButton);
-
+		temporaryPivotOffsetButton.addActionListener(this);
+		editor.addSelectionListener(temporaryPivotOffsetButton);
 		
 	}
 
-	boolean isUsingLastRect() {return lockRectButton.isSelected();}
-	boolean isEditingOffset() {return setOffsetButton.isSelected();}
+	boolean isEditingRectangle() {return editRectButton.isSelected();}
+	boolean isRectangleLocked() {return lockRectButton.isSelected();}
+	boolean isSettingPivot() {return setPivotButton.isSelected();}
+	boolean isSettingOffsetDirectly() {return setOffsetButton.isSelected();}
+	boolean isSettingOffsetWithRelativePos() {return relativeOffsetButton.isSelected();}
+	boolean isSettingOffsetWithTemporaryPivot() {return temporaryPivotOffsetButton.isSelected();}
 
 	public void openImage(File file) {
 		if(file==null) return;
@@ -150,15 +177,16 @@ public class FrameEditor extends JPanel implements SelectionListener, ChangeList
 	}
 
 	@Override
-	public void stateChanged(ChangeEvent e) {
-        JSlider source = (JSlider)e.getSource();
-        source.setValue((int)source.getValue());
-        snapSize = (int)source.getValue();
-        
-    }
+	public void selectionChanged(Object selectedObject) {
+		setInfo();
+		repaint(20);
+	}
+
 
 	@Override
-	public void selectionChanged(Object selectedObject) {
+	public void actionPerformed(ActionEvent e) {
+		// An editing button is pressed
+		setInfo();
 		repaint(20);
 	}
 

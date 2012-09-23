@@ -48,8 +48,14 @@ public class AnimationTreeSelectionModel extends DefaultTreeSelectionModel {
 	
 	@Override
 	protected void fireValueChanged(TreeSelectionEvent e) {
-		HierarchicalData selectedObject = (HierarchicalData) e.getPath().getLastPathComponent(); 
-		tree.setSelectedNode(selectedObject);
+		if(e.isAddedPath()) {
+			HierarchicalData selectedObject = (HierarchicalData) e.getPath().getLastPathComponent(); 
+			tree.setSelectedNode(selectedObject);
+		} else if(getSelectionCount()>0){
+			HierarchicalData selectedObject = (HierarchicalData)getSelectionPaths()[0].getLastPathComponent();
+			tree.setSelectedNode(selectedObject);
+		} else
+			tree.setSelectedNode(null);
 		super.fireValueChanged(e);
 	}	
 }
