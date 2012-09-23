@@ -39,8 +39,6 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 	int					checkerSize = 20;
 	int					zoom = 1;
 
-	Rectangle			lastRect = new Rectangle(-1, -1, -1, -1);
-	Point 				lastPivot = new Point(-1,-1);
 	Point				freeOffsetStart;
 	Point				freeOffsetEnd;
 	
@@ -149,18 +147,17 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 					handleEditOffset(selected,e);			
 			} else {
 				selected.setPivot(new Point(getViewX(e),getViewY(e)));
-				lastPivot.x = getViewX(e); lastPivot.y = getViewY(e);				
 			}
 		}
 		if((e.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) == MouseEvent.BUTTON1_DOWN_MASK) {
 			if(parent.isUsingLastRect()) {
 				int x = snap(getViewX(e)), y = snap(getViewY(e));	
 
-				selected.setRectangle(new Rectangle(x,y,lastRect.width,lastRect.height));
+				selected.setRectangle(new Rectangle(x,y,parent.lockRectButton.lastRect.width,parent.lockRectButton.lastRect.height));
 				selected.setImageFile(editorFrame.getData().getProject().getRelativeFile(imageFile));
 
-				int PivotDX = lastPivot.x - lastRect.x;
-				int PivotDY = lastPivot.y - lastRect.y;
+				int PivotDX = parent.lockRectButton.lastPivot.x - parent.lockRectButton.lastRect.x;
+				int PivotDY = parent.lockRectButton.lastPivot.y - parent.lockRectButton.lastRect.y;
 				selected.setPivot(new Point(x+PivotDX,y+PivotDY));
 
 			} else {
@@ -171,9 +168,6 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 				Rectangle newRectangle = new Rectangle(x,y,dx,dy);
 				selected.setRectangle(newRectangle);
 				selected.setImageFile(editorFrame.getData().getProject().getRelativeFile(imageFile));
-				lastRect = (Rectangle) newRectangle.clone();
-				lastPivot = selected.getPivot();
-
 			}
 		}
 		repaint(20);
@@ -215,22 +209,20 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 			    	handleEditOffset(selected, e);
 			} else {
 				selected.setPivot(new Point(getViewX(e),getViewY(e)));
-				lastPivot.x = getViewX(e); lastPivot.x = getViewY(e);
 			}
 		}
 		
 		if(e.getButton() == MouseEvent.BUTTON1) {
 			if (parent.isUsingLastRect()) {
-				selected.setRectangle(new Rectangle(getViewX(e),getViewY(e),lastRect.width,lastRect.height));
+				selected.setRectangle(new Rectangle(getViewX(e),getViewY(e),parent.lockRectButton.lastRect.width,parent.lockRectButton.lastRect.height));
 				selected.setImageFile(editorFrame.getData().getProject().getRelativeFile(imageFile));
-				int PivotDX = lastPivot.x - lastRect.x;
-				int PivotDY = lastPivot.y - lastRect.y;
+				int PivotDX = parent.lockRectButton.lastPivot.x - parent.lockRectButton.lastRect.x;
+				int PivotDY = parent.lockRectButton.lastPivot.y - parent.lockRectButton.lastRect.y;
 				selected.setPivot(new Point(getViewX(e)+PivotDX,getViewY(e)+PivotDY));					
 			}
 			else {
 				selected.setRectangle(new Rectangle(getViewX(e),getViewY(e),0,0));
 				selected.setImageFile(editorFrame.getData().getProject().getRelativeFile(imageFile));
-				lastPivot = selected.getPivot();
 				selected.setPivot(null);
 			}
 		}

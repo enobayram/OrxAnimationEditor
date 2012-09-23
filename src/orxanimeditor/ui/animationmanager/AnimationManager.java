@@ -248,7 +248,9 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 	@Override
 	public void frameRemoved(Animation parent, Frame frame) {
 		animationTreeModel.fireTreeNodesRemoved(new TreeModelEvent(this, 
-				new Object[]{editor.getData(),parent,frame}));		
+				new Object[]{editor.getData(),parent,frame}));
+		if(frame == getSelectedFrame())
+			animationTree.setSelectedNode(null);
 	}
 
 
@@ -272,7 +274,11 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 	@Override
 	public void animationRemoved(Animation animation) {
 		animationTreeModel.fireTreeNodesRemoved(new TreeModelEvent(this, 
-				new Object[]{editor.getData(),animation}));		
+				new Object[]{editor.getData(),animation}));
+		if(animation == getSelectedAnimation())
+			animationTree.setSelectedNode(null);
+		if(animation == getSelectedFrame().getParent())
+			animationTree.setSelectedNode(null);
 	}
 
 

@@ -55,6 +55,7 @@ import orxanimeditor.io.AnimIO;
 import orxanimeditor.io.ImageManager;
 import orxanimeditor.ui.EditVisitor;
 import orxanimeditor.ui.HelpViewer;
+import orxanimeditor.ui.SelectionListener;
 import orxanimeditor.ui.animationmanager.AnimationManager;
 import orxanimeditor.ui.animationmanager.AnimationTreeTransferHandler;
 import orxanimeditor.ui.animationseteditor.AnimationSetEditor;
@@ -131,12 +132,10 @@ public class EditorMainWindow extends JFrame {
 		helpViewer 			= new HelpViewer(this);
 		
 		selectionSequence   = new SelectionFrameSequence(this);
-		animationManager.addSelectionListener(selectionSequence);
+		addSelectionListener(selectionSequence);
 		animationViewer  	= new AnimationViewer(this, selectionSequence);
 
 		
-		animationManager.addSelectionListener(frameEditor);
-
 		JSplitPane leftLowerSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, animationViewer, animationSetEditor);
 		JSplitPane leftSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, animationManager, leftLowerSplitPane);
 		JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftSplitPane, frameEditor);
@@ -161,6 +160,10 @@ public class EditorMainWindow extends JFrame {
 		
 	}
 	
+	public void addSelectionListener(SelectionListener l) {
+		animationManager.addSelectionListener(l);		
+	}
+
 	public AreaInfoProxy getInfoProxy() {
 		return new AreaInfoProxy(infoBar);
 	}
