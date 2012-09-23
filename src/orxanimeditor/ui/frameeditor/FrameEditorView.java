@@ -45,7 +45,7 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 	public FrameEditorView(File file, EditorMainWindow editorFrame) {
 		this.editorFrame = editorFrame;
 		imageFile = file;
-		image = editorFrame.imageManager.openImage(file);
+		image = EditorMainWindow.imageManager.openImage(file);
 		parent = editorFrame.frameEditor;
 		
 		setPreferredSize(new Dimension(image.getWidth(), image.getHeight()));

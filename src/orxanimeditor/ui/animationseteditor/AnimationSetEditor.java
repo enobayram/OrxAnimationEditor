@@ -21,11 +21,12 @@ import orxanimeditor.animation.Animation;
 import orxanimeditor.animation.AnimationListener;
 import orxanimeditor.animation.AnimationSet;
 import orxanimeditor.animation.DataLoadListener;
+import orxanimeditor.ui.ToolBar;
 import orxanimeditor.ui.mainwindow.EditorMainWindow;
 
 public class AnimationSetEditor extends JPanel implements ActionListener, DataLoadListener, AnimationListener{
 	JTabbedPane animationSets;
-	JToolBar	toolbar;
+	ToolBar	toolbar;
 	JButton		newAnimationSetButton;
 	JButton		deleteAnimationSetButton;
 	JButton		addAnimationButton;
@@ -50,7 +51,7 @@ public class AnimationSetEditor extends JPanel implements ActionListener, DataLo
 	}
 
 	private void prepareToolbar() {
-		toolbar = new JToolBar();
+		toolbar = new ToolBar();
 		newAnimationSetButton = new JButton(editor.getImageIcon("icons/NewAnimationSet.png"));
 		newAnimationSetButton.setToolTipText("Create new animation set");
 		newAnimationSetButton.addActionListener(this);

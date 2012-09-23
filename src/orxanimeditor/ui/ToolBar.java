@@ -8,6 +8,15 @@ import javax.swing.SwingConstants;
 
 public class ToolBar extends JToolBar {
 
+	public ToolBar(String string) {
+		super(string);
+		setFloatable(false);
+	}
+	
+	public ToolBar() {
+		setFloatable(false);
+	}
+	
 	@Override
 	public void addSeparator() {
 		super.addSeparator(new Dimension(5,1));

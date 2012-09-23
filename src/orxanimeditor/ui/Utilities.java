@@ -10,12 +10,16 @@ public class Utilities {
 		Graphics2D g = (Graphics2D) g_;
 		g.setColor(new Color(150,150,200));
 		Rectangle clipBounds = g.getClipBounds();
-		g.fillRect(0, 0, clipBounds.width, clipBounds.height);
+		g.fillRect(clipBounds.x, clipBounds.y, clipBounds.width, clipBounds.height);
 		
 		g.setColor(Color.GRAY);
-		for(int i = 0; i<clipBounds.width; i+=checkerSize)
-			for(int j=0; j<clipBounds.height; j+=checkerSize) 
+		for(int i = floor(clipBounds.x,checkerSize); i<clipBounds.width+clipBounds.x; i+=checkerSize)
+			for(int j= floor(clipBounds.y,checkerSize); j<clipBounds.height + clipBounds.y; j+=checkerSize) 
 				if(((i+j)/checkerSize)%2==0)
 				g.fillRect(i, j, checkerSize, checkerSize);
+	}
+	
+	private static int floor(int val, int base) {
+		return val/base*base;
 	}
 }

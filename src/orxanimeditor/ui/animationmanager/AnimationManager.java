@@ -36,11 +36,12 @@ import orxanimeditor.animation.FrameListener;
 import orxanimeditor.animation.HierarchicalData;
 import orxanimeditor.ui.EditVisitor;
 import orxanimeditor.ui.SelectionListener;
+import orxanimeditor.ui.ToolBar;
 import orxanimeditor.ui.mainwindow.EditorMainWindow;
 
 public class AnimationManager extends JPanel implements ActionListener, KeyListener,  AnimationListener, FrameListener, DataLoadListener {
 	EditorMainWindow editor;
-	JToolBar  toolbar;
+	ToolBar  toolbar;
 	private AnimationTree	  animationTree;
 	public AnimationTreeModel animationTreeModel;
 		
@@ -92,7 +93,7 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 	}
 	
 	private void prepareToolbar() {
-		toolbar = new JToolBar("Animation Manager Tools");
+		toolbar = new ToolBar("Animation Manager Tools");
 		
 		toolbar.add(newFrameButton = new JButton(newFrameIcon));
 		toolbar.add(newAnimationButton = new JButton(newAnimationIcon));

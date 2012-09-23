@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import javax.print.attribute.HashAttributeSet;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -40,7 +41,11 @@ public class FrameEditor extends JPanel implements SelectionListener, ChangeList
 	JSlider SnapSlider;
 	int snapSize = 5;
 	LockRectangleButton lockRectButton;
-	JToggleButton editOffsetButton;
+	JToggleButton editRectButton;
+	JToggleButton setPivotButton;
+	JToggleButton setOffsetButton;
+	JToggleButton relativeOffsetButton;
+	JToggleButton temporaryPivotOffsetButton;
 	AreaInfoProxy	infoProxy;
 
 
@@ -67,6 +72,8 @@ public class FrameEditor extends JPanel implements SelectionListener, ChangeList
 		SnapSlider = new JSlider(JSlider.HORIZONTAL, 1, 36, 5);
 		SnapSlider.setOpaque(false);
 		toolbar.add(SnapSlider);
+		
+		ButtonGroup group = new ButtonGroup();
 
 		toolbar.addSeparator();
 
@@ -78,25 +85,56 @@ public class FrameEditor extends JPanel implements SelectionListener, ChangeList
 		SnapSlider.setMinorTickSpacing(1);
 		SnapSlider.setPaintTicks(true);
 		SnapSlider.setPaintLabels(true);
+		SnapSlider.setSnapToTicks(true);
 		
 		lockRectButton = new LockRectangleButton(editor.getImageIcon("icons/LockRectangle.png"),
 										         editor.getImageIcon("icons/UnlockRectangle.png"));
 
-		toolbar.add(lockRectButton);	
-		lockRectButton.setToolTipText("Lock the selected rectangle");		
+		toolbar.add(lockRectButton);
+		group.add(lockRectButton);
 		editor.addSelectionListener(lockRectButton);
+		
+		
+		editRectButton = new JToggleButton(editor.getImageIcon("icons/EditRectangle.png"));
+		toolbar.add(editRectButton);
+		editRectButton.setToolTipText("Edit the frame rectangle");
+		group.add(editRectButton);
+
+		toolbar.addSeparator();
+
+		setPivotButton = new JToggleButton(editor.getImageIcon("icons/SetPivot.png"));
+		toolbar.add(setPivotButton);
+		setPivotButton.setToolTipText("Set the frame pivot");
+		group.add(setPivotButton);
 		
 		toolbar.addSeparator();
 
-		ImageIcon editOffsetIcon = editor.getImageIcon("icons/OffsetIcon.png");
-		editOffsetButton = new JToggleButton(editOffsetIcon);
-		toolbar.add(editOffsetButton);
-		editOffsetButton.setToolTipText("Edit the frame offset vector");
+		setOffsetButton = new JToggleButton(editor.getImageIcon("icons/SetOffset.png"));
+		toolbar.add(setOffsetButton);
+		setOffsetButton.setToolTipText("Set the frame offset vector");
+		group.add(setOffsetButton);
+
+		relativeOffsetButton = new JToggleButton(editor.getImageIcon("icons/RelativeOffset.png"));
+		toolbar.add(relativeOffsetButton);
+		relativeOffsetButton.setToolTipText(
+				"<html>Set the frame offset vector as a relative" + 
+				"<br>" +
+				"position between two arbitrary points </html>"
+				);
+		group.add(relativeOffsetButton);
+
+		temporaryPivotOffsetButton = new JToggleButton(editor.getImageIcon("icons/TemporaryPivotOffset.png"));
+		toolbar.add(temporaryPivotOffsetButton);
+		temporaryPivotOffsetButton.setToolTipText("<html> Set the frame offset vector by <br>" +
+				"defining two arbitrary points in two <br> " +
+				"frames as a temporary pivot</html>");
+		group.add(temporaryPivotOffsetButton);
+
 		
 	}
 
 	boolean isUsingLastRect() {return lockRectButton.isSelected();}
-	boolean isEditingOffset() {return editOffsetButton.isSelected();}
+	boolean isEditingOffset() {return setOffsetButton.isSelected();}
 
 	public void openImage(File file) {
 		if(file==null) return;
