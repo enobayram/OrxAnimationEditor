@@ -1,4 +1,4 @@
-package orxanimeditor.animation;
+package orxanimeditor.data.v1;
 
 public interface AnimationSetListener extends DataLoadListener{
 	void animationSetAdded(AnimationSet set);

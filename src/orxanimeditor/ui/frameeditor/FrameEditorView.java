@@ -25,9 +25,9 @@ import javax.swing.tree.TreePath;
 
 import com.sun.corba.se.impl.interceptors.PICurrent;
 
-import orxanimeditor.animation.Animation;
-import orxanimeditor.animation.Frame;
-import orxanimeditor.animation.FrameListener;
+import orxanimeditor.data.v1.Animation;
+import orxanimeditor.data.v1.Frame;
+import orxanimeditor.data.v1.FrameListener;
 import orxanimeditor.ui.Utilities;
 import orxanimeditor.ui.mainwindow.EditorMainWindow;
 

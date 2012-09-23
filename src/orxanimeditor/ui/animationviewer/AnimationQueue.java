@@ -17,11 +17,11 @@ import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.tree.TreePath;
 
-import orxanimeditor.animation.Animation;
-import orxanimeditor.animation.AnimationListener;
-import orxanimeditor.animation.Frame;
-import orxanimeditor.animation.FrameListener;
-import orxanimeditor.animation.HierarchicalData;
+import orxanimeditor.data.v1.Animation;
+import orxanimeditor.data.v1.AnimationListener;
+import orxanimeditor.data.v1.Frame;
+import orxanimeditor.data.v1.FrameListener;
+import orxanimeditor.data.v1.HierarchicalData;
 import orxanimeditor.ui.AnimationReceiver;
 import orxanimeditor.ui.animationmanager.AnimationTreeTransferHandler;
 

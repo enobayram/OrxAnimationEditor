@@ -17,10 +17,10 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 
-import orxanimeditor.animation.Animation;
-import orxanimeditor.animation.AnimationListener;
-import orxanimeditor.animation.AnimationSet;
-import orxanimeditor.animation.DataLoadListener;
+import orxanimeditor.data.v1.Animation;
+import orxanimeditor.data.v1.AnimationListener;
+import orxanimeditor.data.v1.AnimationSet;
+import orxanimeditor.data.v1.DataLoadListener;
 import orxanimeditor.ui.ToolBar;
 import orxanimeditor.ui.mainwindow.EditorMainWindow;
 

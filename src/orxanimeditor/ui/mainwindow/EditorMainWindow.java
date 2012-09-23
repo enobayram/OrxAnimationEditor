@@ -48,9 +48,9 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import orxanimeditor.animation.Animation;
-import orxanimeditor.animation.EditorData;
-import orxanimeditor.animation.Frame;
+import orxanimeditor.data.v1.Animation;
+import orxanimeditor.data.v1.EditorData;
+import orxanimeditor.data.v1.Frame;
 import orxanimeditor.io.AnimIO;
 import orxanimeditor.io.ImageManager;
 import orxanimeditor.ui.EditVisitor;
@@ -118,8 +118,6 @@ public class EditorMainWindow extends JFrame {
 	
 	public EditorMainWindow() {
 		super("Orx Animation Editor");
-		System.out.println(DataFlavor.javaJVMLocalObjectMimeType+"; class=" + Animation[].class.getName());
-		System.out.println(AnimationTreeTransferHandler.AnimationFlavor.getMimeType());
 		setData(new EditorData());
 		prepareTree();
 		setLayout(new BorderLayout());

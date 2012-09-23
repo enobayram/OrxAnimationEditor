@@ -8,9 +8,9 @@ import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
 import javax.swing.JToggleButton;
 
-import orxanimeditor.animation.Animation;
-import orxanimeditor.animation.Frame;
-import orxanimeditor.animation.FrameListener;
+import orxanimeditor.data.v1.Animation;
+import orxanimeditor.data.v1.Frame;
+import orxanimeditor.data.v1.FrameListener;
 import orxanimeditor.ui.SelectionListener;
 
 public class LockRectangleButton extends JToggleButton implements ActionListener, SelectionListener, FrameListener {

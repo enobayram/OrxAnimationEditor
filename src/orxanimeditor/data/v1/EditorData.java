@@ -1,4 +1,4 @@
-package orxanimeditor.animation;
+package orxanimeditor.data.v1;
 
 import java.io.File;
 import java.io.Serializable;
@@ -37,6 +37,7 @@ public class EditorData implements Serializable{
 		for(Animation animation:newData.animations) addAnimation(animation);
         setProject(newData.getProject());
         getProject().projectFile = projectFile;
+        animationSets.clear();
         for(AnimationSet set: newData.animationSets) addAnimationSet(set);
         for(AnimationSet set: animationSets) set.init();
         fireDataLoaded();

@@ -1,4 +1,4 @@
-package orxanimeditor.animation;
+package orxanimeditor.data.v1;
 
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import orxanimeditor.animation.Project.RelativeFile;
+import orxanimeditor.data.v1.Project.RelativeFile;
 
 public class Frame implements HierarchicalData, Serializable, Cloneable{
 	private static final long serialVersionUID = -2408945560259717838L;

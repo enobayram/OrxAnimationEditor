@@ -15,11 +15,11 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 
-import orxanimeditor.animation.Animation;
-import orxanimeditor.animation.AnimationListener;
-import orxanimeditor.animation.DataLoadListener;
-import orxanimeditor.animation.Frame;
-import orxanimeditor.animation.FrameListener;
+import orxanimeditor.data.v1.Animation;
+import orxanimeditor.data.v1.AnimationListener;
+import orxanimeditor.data.v1.DataLoadListener;
+import orxanimeditor.data.v1.Frame;
+import orxanimeditor.data.v1.FrameListener;
 import orxanimeditor.ui.SlidingView;
 import orxanimeditor.ui.mainwindow.EditorMainWindow;
 

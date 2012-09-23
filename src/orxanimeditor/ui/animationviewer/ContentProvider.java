@@ -8,7 +8,7 @@ import javax.swing.SwingUtilities;
 
 import com.sun.org.apache.xml.internal.utils.StopParseException;
 
-import orxanimeditor.animation.Frame;
+import orxanimeditor.data.v1.Frame;
 
 public class ContentProvider {
 	FrameSequence sequence;

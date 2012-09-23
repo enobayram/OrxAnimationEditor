@@ -7,9 +7,9 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
-import orxanimeditor.animation.Animation;
-import orxanimeditor.animation.EditorData;
-import orxanimeditor.animation.Frame;
+import orxanimeditor.data.v1.Animation;
+import orxanimeditor.data.v1.EditorData;
+import orxanimeditor.data.v1.Frame;
 
 public class AnimationTreeModel implements TreeModel {
 	LinkedList<TreeModelListener> treeModelListeners = new LinkedList<TreeModelListener>();

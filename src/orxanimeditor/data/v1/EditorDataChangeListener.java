@@ -1,4 +1,4 @@
-package orxanimeditor.animation;
+package orxanimeditor.data.v1;
 
 public class EditorDataChangeListener implements AnimationListener,
 		AnimationSetListener, FrameListener {

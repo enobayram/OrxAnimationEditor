@@ -20,7 +20,7 @@ import javax.swing.tree.DefaultTreeCellEditor;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 
-import orxanimeditor.animation.HierarchicalData;
+import orxanimeditor.data.v1.HierarchicalData;
 
 public class AnimationTreeEditor extends DefaultTreeCellEditor {
 	

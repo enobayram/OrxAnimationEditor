@@ -21,12 +21,12 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.tree.MutableTreeNode;
 
-import orxanimeditor.animation.Animation;
-import orxanimeditor.animation.AnimationSet;
-import orxanimeditor.animation.EditorData;
-import orxanimeditor.animation.Frame;
-import orxanimeditor.animation.AnimationSet.Link;
-import orxanimeditor.animation.Project.RelativeFile;
+import orxanimeditor.data.v1.Animation;
+import orxanimeditor.data.v1.AnimationSet;
+import orxanimeditor.data.v1.EditorData;
+import orxanimeditor.data.v1.Frame;
+import orxanimeditor.data.v1.AnimationSet.Link;
+import orxanimeditor.data.v1.Project.RelativeFile;
 import orxanimeditor.ui.mainwindow.EditorMainWindow;
 
 public class AnimIO {
@@ -50,7 +50,7 @@ public class AnimIO {
         try
         {
            FileInputStream fileIn = new FileInputStream(file);
-           ObjectInputStream in = new ObjectInputStream(fileIn);
+           ObjectInputStream in = new PackageNameModifiedObjectInputStream(fileIn);
            EditorData newData = (EditorData) in.readObject();
            in.close();
            fileIn.close();
