@@ -28,6 +28,7 @@ import orxanimeditor.data.v1.Animation;
 import orxanimeditor.data.v1.AnimationSet;
 import orxanimeditor.data.v1.AnimationSet.Link;
 import orxanimeditor.data.v1.AnimationSet.SetSpecificAnimationData;
+import orxanimeditor.data.v1.AnimationSetListener;
 import orxanimeditor.ui.AnimationReceiver;
 import orxanimeditor.ui.SlidingView;
 import orxanimeditor.ui.animationmanager.AnimationTreeTransferHandler;
@@ -67,7 +68,6 @@ public class AnimationSetViewer extends SlidingView implements MouseListener, An
 		if(set.containsAnimation(chosen)) return;
 		else {
 			set.addAnimation(chosen);
-			editor.poke();
 		}
 	}
 		@Override
@@ -80,14 +80,20 @@ public class AnimationSetViewer extends SlidingView implements MouseListener, An
 			g.drawString(animation.getName(), center.x-ANIMATIONRADIUS, center.y-5);
 		}
 		for(Link link: set.getLinks()) {
-			if(link == selectedLink) g.setColor(Color.BLUE);
-			else 	g.setColor(Color.BLACK);
+			g.setColor(Color.BLACK);
 			drawLink(g, link);
+		}
+		if(selectedLink!=null) {
+			g.setColor(Color.BLUE);
+			drawLink(g, selectedLink);
 		}
 		
 	}
 	
 	void drawLink(Graphics g, Link link) {
+		Color ovalColor = g.getColor();
+		if(link.getProperty()==Link.IMMEDIATE_PROPERTY)
+			ovalColor = Color.RED;
 		if(link.getSource()!= link.getDestination()) {
 			Point sourceCenter = getCenter(link.getSource());
 			Point destinationCenter = getCenter(link.getDestination());
@@ -95,6 +101,7 @@ public class AnimationSetViewer extends SlidingView implements MouseListener, An
 			int sx = sourceCenter.x+bias.x, sy = sourceCenter.y+bias.y;
 			int dx = destinationCenter.x-bias.x, dy = destinationCenter.y-bias.y;
 			g.drawLine(sx,sy ,dx ,dy );
+			g.setColor(ovalColor);
 			g.fillOval(dx-CONNECTIONDOTRADIUS, dy-CONNECTIONDOTRADIUS, 2*CONNECTIONDOTRADIUS, 2*CONNECTIONDOTRADIUS); 
 		} else {
 			Point center = getCenter(link.getSource());
@@ -105,6 +112,7 @@ public class AnimationSetViewer extends SlidingView implements MouseListener, An
 			int arcRadius = (int) arcCenter.distance(end);
 			int thetaDeg = (int) (-theta*180/Math.PI);
 			g.drawArc(arcCenter.x-arcRadius, arcCenter.y-arcRadius, 2*arcRadius, 2*arcRadius, thetaDeg-90, 180);
+			g.setColor(ovalColor);
 			g.fillOval(end.x-CONNECTIONDOTRADIUS, end.y-CONNECTIONDOTRADIUS, 2*CONNECTIONDOTRADIUS, 2*CONNECTIONDOTRADIUS);
 		}
 	}		
@@ -227,14 +235,12 @@ public class AnimationSetViewer extends SlidingView implements MouseListener, An
 			set.removeAnimation(animation);
 			if(animation==selectedAnimation) selectedAnimation = null;
 			if(selectedLink!=null && selectedLink.isConnectedTo(animation)) selectedLink = null; 
-			editor.poke();
 		}
 	}
 	public void deleteLink(Link link) {
 		if(link!=null) {
 			set.removeLink(link);
 			if(link==selectedLink) selectedLink=null;
-			editor.poke();
 		}
 	}
 }

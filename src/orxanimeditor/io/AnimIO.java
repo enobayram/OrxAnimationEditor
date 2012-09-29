@@ -130,6 +130,9 @@ public class AnimIO {
 		d.printSection(link.getName());
 		d.printKeyValue("Source",link.getSource().getName());
 		d.printKeyValue("Destination",link.getDestination().getName());
+		if(link.getProperty()==link.IMMEDIATE_PROPERTY) {
+			d.printKeyValue("Property", "immediate");
+		}
 	}
 
 	private static void exportFrame(ExportDiagnoser d, Frame f, File baseDirectory) {

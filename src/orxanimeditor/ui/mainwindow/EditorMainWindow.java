@@ -296,7 +296,7 @@ public class EditorMainWindow extends JFrame {
 		
 	}
 	
-	public void poke() {
+	public void poke_() {
 		doLayout();
 		repaint();		
 	}

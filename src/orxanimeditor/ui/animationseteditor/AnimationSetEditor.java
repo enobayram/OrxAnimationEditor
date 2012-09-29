@@ -20,16 +20,19 @@ import javax.swing.JToolBar;
 import orxanimeditor.data.v1.Animation;
 import orxanimeditor.data.v1.AnimationListener;
 import orxanimeditor.data.v1.AnimationSet;
+import orxanimeditor.data.v1.AnimationSet.Link;
+import orxanimeditor.data.v1.AnimationSetListener;
 import orxanimeditor.data.v1.DataLoadListener;
 import orxanimeditor.ui.ToolBar;
 import orxanimeditor.ui.mainwindow.EditorMainWindow;
 
-public class AnimationSetEditor extends JPanel implements ActionListener, DataLoadListener, AnimationListener{
+public class AnimationSetEditor extends JPanel implements ActionListener, DataLoadListener, AnimationListener, AnimationSetListener{
 	JTabbedPane animationSets;
 	ToolBar	toolbar;
 	JButton		newAnimationSetButton;
 	JButton		deleteAnimationSetButton;
 	JButton		addAnimationButton;
+	JButton		immediateLinkButton;
 	
 	HashMap<AnimationSet, AnimationSetViewer> setsTable = new HashMap<AnimationSet,AnimationSetViewer>();
 	
@@ -48,6 +51,7 @@ public class AnimationSetEditor extends JPanel implements ActionListener, DataLo
 		add(animationSets, BorderLayout.CENTER);
 
 		editor.getData().addAnimationListener(this);
+		editor.getData().addAnimationSetListener(this);
 	}
 
 	private void prepareToolbar() {
@@ -63,10 +67,15 @@ public class AnimationSetEditor extends JPanel implements ActionListener, DataLo
 		addAnimationButton    = new JButton(editor.getImageIcon("icons/NewAnimation.png"));
 		addAnimationButton.setToolTipText("Add an animation to the current animation set");
 		addAnimationButton.addActionListener(this);
-				
+		
+		immediateLinkButton   = new JButton(editor.getImageIcon("icons/ImmediateLink.png"));
+		immediateLinkButton.setToolTipText("Toggle immediate property for the selected animation link");
+		immediateLinkButton.addActionListener(this);
+		
 		toolbar.add(newAnimationSetButton);
 		toolbar.add(deleteAnimationSetButton);
 		toolbar.add(addAnimationButton);
+		toolbar.add(immediateLinkButton);
 	}
 	
 	public void dataLoaded() {
@@ -83,20 +92,28 @@ public class AnimationSetEditor extends JPanel implements ActionListener, DataLo
 			if(newSetName==null || newSetName.isEmpty()) return;
 			AnimationSet newSet = new AnimationSet(newSetName);
 			editor.getData().addAnimationSet(newSet);
-			createNewViewer(newSet);
 		} else  { // The rest of the buttons are related to a view
 			if(view==null) { // So if no view is selected, an error is shown
 				JOptionPane.showMessageDialog(editor, "No animation set selected!","Error!",JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 			if(e.getSource() == deleteAnimationSetButton) {
-				deleteViewer(view);
+				editor.getData().removeAnimationSet(view.set);
 			} else if(e.getSource() == addAnimationButton) {
 				Animation chosen = (Animation) JOptionPane.showInputDialog(editor, "Choose the animation to add to the current set", "Add Animation", 
 					    JOptionPane.QUESTION_MESSAGE, editor.animationManager.animationIcon, 
 						editor.getData().getAnimations(), null);
 				if(chosen == null) return;
 				view.addAnimation(chosen);
+			} else if(e.getSource() == immediateLinkButton) {
+				Link selectedLink = view.selectedLink;
+				if(selectedLink!=null) {
+					if(selectedLink.getProperty()==Link.IMMEDIATE_PROPERTY)
+						selectedLink.setProperty(Link.NONE_PROPERTY);
+					else
+						selectedLink.setProperty(Link.IMMEDIATE_PROPERTY);
+					
+				}
 			}
 		}
 	}
@@ -109,7 +126,6 @@ public class AnimationSetEditor extends JPanel implements ActionListener, DataLo
 
 	private void deleteViewer(AnimationSetViewer view) {
 		setsTable.remove(view.set);
-		editor.getData().removeAnimationSet(view.set);
 		animationSets.remove(view);
 	}
 
@@ -131,6 +147,23 @@ public class AnimationSetEditor extends JPanel implements ActionListener, DataLo
 	@Override
 	public void animationMoved(Animation animation) {
 		// ignore
+	}
+
+	@Override
+	public void animationSetAdded(AnimationSet set) {
+		createNewViewer(set);
+
+		
+	}
+
+	@Override
+	public void animationSetRemoved(AnimationSet set) {
+		deleteViewer(setsTable.get(set));
+	}
+
+	@Override
+	public void animationSetModified(AnimationSet set) {
+		setsTable.get(set).repaint(20);
 	}
 	
 }

@@ -105,8 +105,12 @@ public class AnimationSet implements Serializable{
 	
 	public class Link implements Serializable {
 		private static final long serialVersionUID = -2250408601770835844L;
+		public static final int NONE_PROPERTY = 0;
+		public static final int IMMEDIATE_PROPERTY = 1;
 		private Animation source;
 		private Animation destination;
+		private int property;
+
 		protected Link(Animation source, Animation destination) {
 			this.setSource(source); 
 			this.setDestination(destination);
@@ -131,6 +135,13 @@ public class AnimationSet implements Serializable{
 		}
 		public boolean isConnectedTo(Animation animation) {
 			return (animation==source || animation==destination);
+		}
+		public int getProperty() {
+			return property;
+		}
+		public void setProperty(int property) {
+			this.property = property;
+			editorData.fireAnimationSetModified(AnimationSet.this);
 		}
 	}
 	

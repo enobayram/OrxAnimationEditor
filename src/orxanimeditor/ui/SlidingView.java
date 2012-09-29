@@ -77,9 +77,9 @@ public abstract class SlidingView extends JPanel implements MouseWheelListener, 
 	
 	public Point screenToWorld(Point point_) {
 		Point point = (Point)point_.clone();
-		point.x-=viewOffsetX; point.y-=viewOffsetY;
-		point.x/=viewScale; point.y/=viewScale;
 		point.x-=getWidth()/2; point.y-=getHeight()/2; // Remove screen center
+		point.x/=viewScale; point.y/=viewScale;
+		point.x-=viewOffsetX; point.y-=viewOffsetY;
 		return point;
 	}
 	
