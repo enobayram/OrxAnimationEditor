@@ -26,6 +26,7 @@ public class AnimationViewer extends JPanel {
 
 		
 		display = new AnimationViewerDisplay();
+		display.setTransferHandler(animationQueue.getTransferHandler());
 		mainPane.add(animationQueueScroller);
 		mainPane.add(display);		
 		

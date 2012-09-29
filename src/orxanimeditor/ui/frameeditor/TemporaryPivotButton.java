@@ -39,12 +39,21 @@ public class TemporaryPivotButton extends JToggleButton implements SelectionList
 		objects = editor.getSelectedObjects();
 		if(objects.length==2 && 
 				selectedFrame != null &&
-				objects[0] instanceof Frame && 
-				objects[1] instanceof Frame)
+				isValidFrame(objects[0]) && 
+				isValidFrame(objects[1]))
 			setEnabled(true);
 		else
 			setEnabled(false);
 		restart();
+	}
+	
+	private boolean isValidFrame(Object object) {
+		if(object instanceof Frame) {
+			Frame frame = (Frame) object;
+			if(frame.getRectangle() == null) return false;
+			else return true;
+		} else
+			return false;
 	}
 	
 	@Override
@@ -54,7 +63,7 @@ public class TemporaryPivotButton extends JToggleButton implements SelectionList
 			setToolTipText("<html>" + tooltipText + "</html>");
 		}
 		else
-			setToolTipText("<html>" + tooltipText+ "<br> (Enabled if and only if two <br> frames are selected)</html>");
+			setToolTipText("<html>" + tooltipText+ "<br> (Enabled if and only if two <br> frames with valid rectangles <br> are selected)</html>");
 		if(isSelected() && !b) {
 			group.clearSelection();
 			doClick();

@@ -35,7 +35,7 @@ public class AnimationQueue extends JList implements FrameSequence, AnimationLis
 		model = (DefaultListModel) getModel();
 		setMinimumSize(new Dimension(100, 100));
 		
-		setTransferHandler(new AnimationQueueTransferHandler());
+		setTransferHandler(new AnimationQueueTransferHandler(this));
 		setDropMode(DropMode.INSERT);
 		
 		model.addListDataListener(new ListDataListener() {
@@ -62,6 +62,10 @@ public class AnimationQueue extends JList implements FrameSequence, AnimationLis
 						model.removeElement(obj);
 			}
 		});
+	}
+		
+	public int getListSize() {
+		return model.getSize();
 	}
 
 	private void queueModified() {
@@ -177,6 +181,13 @@ public class AnimationQueue extends JList implements FrameSequence, AnimationLis
 }
 
 class AnimationQueueTransferHandler extends TransferHandler {
+	
+	AnimationQueue queue;
+	
+	public AnimationQueueTransferHandler(AnimationQueue queue) {
+		this.queue = queue;
+	}
+	
 	@Override
 	public boolean canImport(TransferSupport support) {
 		Transferable t = support.getTransferable();
@@ -193,11 +204,16 @@ class AnimationQueueTransferHandler extends TransferHandler {
 		Transferable t = support.getTransferable();
 		try {
 			HierarchicalData[] data = (HierarchicalData[]) t.getTransferData(AnimationTreeTransferHandler.HierarchicalDataFlavor);
-			AnimationQueue rec = (AnimationQueue) support.getComponent();
-			JList.DropLocation loc = (JList.DropLocation) support.getDropLocation();
-			int dropIndex = loc.getIndex();
-			for(Object obj:data)
-				rec.receiveObj(obj,dropIndex++);
+			if(support.getComponent() == queue) {
+				JList.DropLocation loc = (JList.DropLocation) support.getDropLocation();
+				int dropIndex = loc.getIndex();
+				for(Object obj:data)
+					queue.receiveObj(obj,dropIndex++);
+			}
+			else {
+				for(Object obj:data)
+					queue.receiveObj(obj, queue.getListSize());
+			}
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();

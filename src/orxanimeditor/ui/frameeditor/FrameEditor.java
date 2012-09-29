@@ -63,6 +63,7 @@ public class FrameEditor extends JPanel implements SelectionListener, ActionList
 		setPreferredSize(getMinimumSize());
 		editor.addSelectionListener(this);
 		setInfo();
+		setTransferHandler(new FrameEditorViewTransferHandler());
 		
 	}
 
@@ -163,6 +164,11 @@ public class FrameEditor extends JPanel implements SelectionListener, ActionList
 	boolean isSettingOffsetWithRelativePos() {return relativeOffsetButton.isSelected();}
 	boolean isSettingOffsetWithTemporaryPivot() {return temporaryPivotOffsetButton.isSelected();}
 
+	public void openImage(Frame frame) {
+		if(frame!=null && frame.getImageFile()!=null) 
+			editor.frameEditor.openImage(frame.getImageFile().getAbsoluteFile());
+	}
+	
 	public void openImage(File file) {
 		if(file==null) return;
 		if(openedFiles.containsKey(file)) {
