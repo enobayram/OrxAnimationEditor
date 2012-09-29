@@ -18,7 +18,7 @@ public class TemporaryPivotButton extends JToggleButton implements SelectionList
 	Frame selectedFrame;
 	HierarchicalData[] objects;
 	AreaInfoProxy infoProxy;
-
+         
 	String tooltipText = "Set the frame offset vector by <br>" +
 	"defining two arbitrary points in two <br> " +
 	"frames as a temporary pivot";
@@ -26,8 +26,8 @@ public class TemporaryPivotButton extends JToggleButton implements SelectionList
 	private Point pivot1;
 	private Point pivot2;
 	
-	public TemporaryPivotButton(EditorMainWindow editor, ButtonGroup group, AreaInfoProxy infoProxy, ImageIcon icon) {
-		super(icon);
+    public TemporaryPivotButton(EditorMainWindow editor, ButtonGroup group, AreaInfoProxy infoProxy, ImageIcon icon) {
+        super(icon);
 		this.editor=editor;
 		this.group=group;
 		this.infoProxy = infoProxy;

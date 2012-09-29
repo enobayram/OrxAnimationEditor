@@ -179,23 +179,13 @@ public class AnimIO {
 			if(f.getKeyDuration()>0)
 				d.printKeyValue("KeyDuration"+(fi+1),""+f.getKeyDuration());
 		}
-		double accummulatedTime = 0;
-		int accumulatedEventCount = 1;
 		for(int fi=0; fi<frames.length; fi++) {
 			Frame f = frames[fi];
 			Point offset = f.getOffset();
-			if(offset.x!=0) {
-				d.printKeyValue("KeyEventName"+accumulatedEventCount,"AR1");
-				d.printKeyValue("KeyEventTime"+accumulatedEventCount,""+accummulatedTime);
-				d.printKeyValue("KeyEventValue"+accumulatedEventCount,""+offset.x);
-				accumulatedEventCount++; }
-			if(offset.y!=0) {
-				d.printKeyValue("KeyEventName"+accumulatedEventCount,"AR2");
-				d.printKeyValue("KeyEventTime"+accumulatedEventCount,""+accummulatedTime);
-				d.printKeyValue("KeyEventValue"+accumulatedEventCount,""+offset.y);
-				accumulatedEventCount++;
+			if(offset.x!=0 || offset.y!=0) {
+				d.printKeyValue("KeyEventName"+(fi+1),"__"+fi);
+				d.printKeyValue("__"+fi, "("+offset.x+","+offset.y+",0)");				
 			}
-			accummulatedTime += f.getFinalFrameDuration();
 		}
 	}
 
