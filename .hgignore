@@ -1,0 +1,6 @@
+syntax: glob
+bin/*
+.git*
+.classpath
+.project
+.settings*
