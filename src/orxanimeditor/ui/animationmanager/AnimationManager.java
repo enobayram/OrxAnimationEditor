@@ -76,8 +76,8 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 		add(toolbar, BorderLayout.NORTH);
 		JScrollPane pane = new JScrollPane(animationTree);
 		add(pane, BorderLayout.CENTER);
-		setMinimumSize(new Dimension(300, 200));
-		setPreferredSize(getMinimumSize());
+		setMinimumSize(new Dimension(200, 100));
+		setPreferredSize(new Dimension(300, 400));
 		
 		editor.getData().addAnimationListener(this);
 		editor.getData().addFrameListener(this);

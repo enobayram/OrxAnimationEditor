@@ -60,7 +60,7 @@ public class FrameEditor extends JPanel implements SelectionListener, ActionList
 		add(toolbar,BorderLayout.NORTH);
 		add(views,BorderLayout.CENTER);
 		setMinimumSize(new Dimension(200, 200));
-		setPreferredSize(getMinimumSize());
+		setPreferredSize(new Dimension(400, 500));
 		editor.addSelectionListener(this);
 		setInfo();
 		setTransferHandler(new FrameEditorViewTransferHandler());

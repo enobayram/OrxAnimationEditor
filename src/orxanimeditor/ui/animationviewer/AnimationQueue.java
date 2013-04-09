@@ -8,21 +8,16 @@ import javax.swing.AbstractAction;
 import javax.swing.DefaultListModel;
 import javax.swing.DropMode;
 import javax.swing.JList;
-import javax.swing.JTree;
 import javax.swing.KeyStroke;
-import javax.swing.ListModel;
 import javax.swing.TransferHandler;
-import javax.swing.TransferHandler.TransferSupport;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
-import javax.swing.tree.TreePath;
 
 import orxanimeditor.data.v1.Animation;
 import orxanimeditor.data.v1.AnimationListener;
 import orxanimeditor.data.v1.Frame;
 import orxanimeditor.data.v1.FrameListener;
 import orxanimeditor.data.v1.HierarchicalData;
-import orxanimeditor.ui.AnimationReceiver;
 import orxanimeditor.ui.animationmanager.AnimationTreeTransferHandler;
 
 public class AnimationQueue extends JList implements FrameSequence, AnimationListener, FrameListener{

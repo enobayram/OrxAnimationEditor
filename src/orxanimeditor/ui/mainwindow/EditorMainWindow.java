@@ -73,22 +73,15 @@ public class EditorMainWindow extends JFrame {
 
 	JMenuBar 		 	menuBar;
 
-	JMenu			 	fileMenu;
-	JMenuItem		 	newAnimationProjectItem;
-	JMenuItem		 	openAnimationProjectItem;
-	JMenuItem			saveAnimationProjectItem;
-	JMenuItem		 	setTargetItem;
-	JMenuItem		 	setTargetFolderItem;
-	JMenuItem		 	writeToTargetItem;
-	JMenuItem		 	appendToTargetItem;	
-	JMenuItem		 	openImageItem;
-	JMenuItem			exitItem;
+	FileMenu			fileMenu;
 
 	JMenu			 	editMenu;
 	JMenuItem		 	increaseKeyValueItem;
 	JMenuItem 		 	decreaseKeyValueItem;
 	JMenuItem		 	flipXItem;
 	JMenuItem		 	flipYItem;
+
+	ProjectMenu			projectMenu;
 	
 	JMenu			 	helpMenu;
 	JMenuItem		 	helpMenuItem;
@@ -139,9 +132,9 @@ public class EditorMainWindow extends JFrame {
 		animationViewer  	= new AnimationViewer(this, selectionSequence);
 
 		
-		JSplitPane leftLowerSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, animationViewer, animationSetEditor);
-		JSplitPane leftSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, animationManager, leftLowerSplitPane);
-		JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftSplitPane, frameEditor);
+		JSplitPane leftSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, animationManager, animationSetEditor);
+		JSplitPane mainRightSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, frameEditor, animationViewer);
+		JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftSplitPane, mainRightSplitPane);
 		prepareMenuBar();
 		getContentPane().add(mainSplitPane, BorderLayout.CENTER);
 		getContentPane().add(menuBar, BorderLayout.NORTH);
@@ -189,7 +182,7 @@ public class EditorMainWindow extends JFrame {
 		return choice;
 	}
 	
-	private void exit() {
+	void exit() {
 		if(data.isDataChangedSinceLastSave()) {
 			int choice = showSaveChangedProjectDialog();
 			if(choice == JOptionPane.CANCEL_OPTION){
@@ -198,70 +191,16 @@ public class EditorMainWindow extends JFrame {
 		}
 		System.exit(0);
 	}
-	
-	private ActionListener exitAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent arg0) {
-			exit();
-		}
-	};
-	
+		
 	private void prepareTree() {
 		
 	}
 	
 	private void prepareMenuBar() {
 		menuBar = new JMenuBar();
-		fileMenu = new JMenu("File");
+		fileMenu = new FileMenu(this);
 		menuBar.add(fileMenu);
-		
-		newAnimationProjectItem = new JMenuItem("New Animation Project");
-		fileMenu.add(newAnimationProjectItem);
-		newAnimationProjectItem.addActionListener(newAnimationProjectListener);
-		newAnimationProjectItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.ALT_DOWN_MASK));
-		
-		openAnimationProjectItem = new JMenuItem("Open Animation Project");
-		fileMenu.add(openAnimationProjectItem);
-		openAnimationProjectItem.addActionListener(openAnimationProjectListener);		
-		openAnimationProjectItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.ALT_DOWN_MASK));
-		
-		saveAnimationProjectItem = new JMenuItem("Save Animation Project");
-		fileMenu.add(saveAnimationProjectItem);
-		saveAnimationProjectItem.addActionListener(saveAnimationProjectListener);
-		
-		fileMenu.add(new JSeparator());
-		
-		setTargetItem = new JMenuItem("Set Target ini File");
-		fileMenu.add(setTargetItem);
-		setTargetItem.addActionListener(setTargetItemActionListener);
-
-		setTargetFolderItem = new JMenuItem("Set Root Folder");
-		fileMenu.add(setTargetFolderItem);
-		setTargetFolderItem.addActionListener(setTargetFolderItemActionListener);
-		
-		fileMenu.add(new JSeparator());
-		
-		writeToTargetItem = new JMenuItem("Write to Target");
-		fileMenu.add(writeToTargetItem);
-		writeToTargetItem.addActionListener(exportToTargetActionListener);
-
-		appendToTargetItem = new JMenuItem("Append to Target");
-		fileMenu.add(appendToTargetItem);
-		appendToTargetItem.addActionListener(exportToTargetActionListener);
-		
-		fileMenu.add(new JSeparator());
-
-		openImageItem = new JMenuItem("Open Image");
-		fileMenu.add(openImageItem);
-		openImageItem.addActionListener(openImageAction);
-		openImageItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.ALT_DOWN_MASK));
-
-		fileMenu.add(new JSeparator());
-
-		exitItem = new JMenuItem("Exit");
-		fileMenu.add(exitItem);
-		exitItem.addActionListener(exitAction);
-		
+				
 		editMenu = new JMenu("Edit");
 		menuBar.add(editMenu);
 
@@ -287,6 +226,9 @@ public class EditorMainWindow extends JFrame {
 		flipYItem.addActionListener(editActionListener);
 		flipYItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, InputEvent.ALT_DOWN_MASK));
 		
+		projectMenu = new ProjectMenu(this);
+		menuBar.add(projectMenu);
+		
 		helpMenu = new JMenu("Help");
 		menuBar.add(helpMenu);
 		
@@ -296,67 +238,13 @@ public class EditorMainWindow extends JFrame {
 		
 	}
 	
-	public void poke_() {
-		doLayout();
-		repaint();		
-	}
-	
-	ActionListener openImageAction = new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			if(imageChooser.showOpenDialog(EditorMainWindow.this)==JFileChooser.APPROVE_OPTION) {
-				frameEditor.openImage(imageChooser.getSelectedFile());
-			}
-		}
-	};
-	
-	ActionListener newAnimationProjectListener = new ActionListener() {
-		public void actionPerformed(ActionEvent arg0) {
-			if(data.isDataChangedSinceLastSave()) {
-				int choice = showSaveChangedProjectDialog();
-				if(choice == JOptionPane.CANCEL_OPTION)
-					return;
-			}
-			newProjectAction();
-		}
-	};
-	
-	private ActionListener setTargetFolderItemActionListener = new ActionListener() {
-		public void actionPerformed(ActionEvent arg0) {
-			if(targetFolderChooser.showOpenDialog(EditorMainWindow.this)==JFileChooser.APPROVE_OPTION) {
-				getData().getProject().targetFolder = getData().getProject().getRelativeFile(targetFolderChooser.getSelectedFile());
-			}			
-		}
-	};
-	
-	public void newProjectAction() {
-		if(editorDataChooser.showSaveDialog(EditorMainWindow.this)==JFileChooser.APPROVE_OPTION) {
-			File projectFile=editorDataChooser.getSelectedFile();
-			if(!projectFile.exists() && !Pattern.matches(".*\\..*",projectFile.getName())) {
-				projectFile = new File(projectFile.getPath()+".oap");
-			}
-			getData().acquireFromData(new EditorData(),projectFile);
-			projectChanged();
-		}
-	}
-	
-	private void projectChanged() {
+	void projectChanged() {
 		imageChooser.setCurrentDirectory(getData().getProject().projectFile.getParentFile());
 		iniChooser.setCurrentDirectory(getData().getProject().projectFile.getParentFile());
 		targetFolderChooser.setCurrentDirectory(getData().getProject().projectFile.getParentFile());
 		repaint();		
 	}
-	
-	ActionListener openAnimationProjectListener = new ActionListener() {
-		public void actionPerformed(ActionEvent arg0) {
-			if(data.isDataChangedSinceLastSave()) {
-				int choice = showSaveChangedProjectDialog();
-				if(choice == JOptionPane.CANCEL_OPTION)
-					return;
-			}
-			openProjectAction();
-		}
-	};
-	
+		
 	public void openProjectAction() {
 		if(editorDataChooser.showOpenDialog(EditorMainWindow.this)==JFileChooser.APPROVE_OPTION) {
 			File projectFile = editorDataChooser.getSelectedFile();
@@ -364,37 +252,11 @@ public class EditorMainWindow extends JFrame {
 			projectChanged();
 		}
 	}
-	
-	
-	ActionListener saveAnimationProjectListener = new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			saveProject();
-		}
-	};
-	
+		
 	public void saveProject() {
 		AnimIO.writeEditorData(getData(),getData().getProject().projectFile);		
 	}
-	
-	ActionListener setTargetItemActionListener = new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			if(iniChooser.showSaveDialog(EditorMainWindow.this)==JFileChooser.APPROVE_OPTION) {
-				getData().getProject().targetIni=getData().getProject().getRelativeFile(iniChooser.getSelectedFile());
-				imageChooser.setCurrentDirectory(getData().getProject().getTargetFolder());
-				editorDataChooser.setCurrentDirectory(getData().getProject().getTargetFolder());
-			}						
-		}
-	};
-	
-	ActionListener exportToTargetActionListener = new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			boolean append;
-			if(e.getSource()==writeToTargetItem) append = false;
-			else append = true;
-			AnimIO.exportEditorData(EditorMainWindow.this,getData(), append);
-		}
-	};
-	
+			
 	ActionListener editActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			if(e.getSource()==flipXItem) {
@@ -464,5 +326,16 @@ public class EditorMainWindow extends JFrame {
 
 	private void setData(EditorData data) {
 		this.data = data;
-	}	
+	}
+	
+	public void newProjectAction() {
+		if(editorDataChooser.showSaveDialog(this)==JFileChooser.APPROVE_OPTION) {
+			File projectFile=editorDataChooser.getSelectedFile();
+			if(!projectFile.exists() && !Pattern.matches(".*\\..*",projectFile.getName())) {
+				projectFile = new File(projectFile.getPath()+".oap");
+			}
+			getData().acquireFromData(new EditorData(),projectFile);
+			projectChanged();
+		}
+	}
 }

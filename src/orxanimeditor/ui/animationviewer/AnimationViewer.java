@@ -1,5 +1,7 @@
 package orxanimeditor.ui.animationviewer;
 
+import java.awt.Dimension;
+
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -17,18 +19,18 @@ public class AnimationViewer extends JPanel {
 	
 	public AnimationViewer(EditorMainWindow editor, SelectionFrameSequence selectionSequence) {
 		this.editor = editor;
-		
-		mainPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-		add(mainPane);
-		
+				
 		animationQueue = new AnimationQueue(this);
 		JScrollPane animationQueueScroller = new JScrollPane(animationQueue);
+		animationQueueScroller.setMinimumSize(new Dimension(100, 100));
+		animationQueueScroller.setPreferredSize(new Dimension(150, 100));
 
 		
 		display = new AnimationViewerDisplay();
 		display.setTransferHandler(animationQueue.getTransferHandler());
-		mainPane.add(animationQueueScroller);
-		mainPane.add(display);		
+		
+		mainPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, animationQueueScroller, display);
+		add(mainPane);
 		
 		selectionProvider = new ContentProvider(selectionSequence, display);
 		selectionSequence.setContentProvider(selectionProvider);

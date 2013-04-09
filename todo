@@ -1,0 +1,9 @@
+X Move the animation set editor to the right of the frame editor
+- Remove the annoying set project dialog
+- enable drag and drop inside the animation queue
+- Enable left-click & select in the frame editor
+   * Enable program-wide selection manipulation
+- Allow writing to an arbitrary config file
+X Move project related menu items to a new menu called "Project"
+- Implement undo-redo support
+- Implement a property viewer
