@@ -27,7 +27,13 @@ public class Project implements Serializable{
 		}
 		
 		public File getAbsoluteFile() {
-			return AppendFile(projectFile.getParentFile(), relativePath);
+			try {
+				return AppendFile(projectFile.getParentFile(), relativePath).getCanonicalFile();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return null;
+			}
 		}
 		
 		public File getRelativeFile() {
