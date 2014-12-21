@@ -96,7 +96,7 @@ public class TemporaryPivotButton extends JToggleButton implements SelectionList
 		setPivot1(null);
 		setPivot2(null);
 		if(isSelected())
-			infoProxy.setInfo("Right click: Indicate the temporary pivot on the \"previous\" frame");
+			infoProxy.setInfo("Left click: Indicate the temporary pivot on the \"previous\" frame");
 	}
 
 	public Point getOffset() {
@@ -113,7 +113,7 @@ public class TemporaryPivotButton extends JToggleButton implements SelectionList
 
 	public void setPivot1(Point pivot1) {
 		this.pivot1 = pivot1;
-		infoProxy.setInfo("Right click: Indicate the temporary pivot on the current frame");
+		infoProxy.setInfo("Left click: Indicate the temporary pivot on the current frame");
 	}
 
 	public Point getPivot2() {
@@ -128,7 +128,7 @@ public class TemporaryPivotButton extends JToggleButton implements SelectionList
 		@Override
 		public void setSelected(boolean b) {
 			if(b) {
-				infoProxy.setInfo("Right click: Indicate the temporary pivot on the \"previous\" frame");
+				infoProxy.setInfo("Left click: Indicate the temporary pivot on the \"previous\" frame");
 			}
 			else {
 			}

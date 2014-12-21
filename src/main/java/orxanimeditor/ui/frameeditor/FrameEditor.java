@@ -71,15 +71,15 @@ public class FrameEditor extends JPanel implements SelectionListener, ActionList
 		if(editor.animationManager.getSelectedFrame()==null)
 			infoProxy.setInfo("Select a frame to edit");
 		else if(isEditingRectangle())
-			infoProxy.setInfo("Right click & drag: Draw the rectangle for the selected frame");
+			infoProxy.setInfo("Left click & drag: Draw the rectangle for the selected frame");
 		else if(isRectangleLocked()) 
-			infoProxy.setInfo("Right click: Set the rectangle for the selected frame to the saved rectangle");
+			infoProxy.setInfo("Left click: Set the rectangle for the selected frame to the saved rectangle");
 		else if(isSettingPivot())
-			infoProxy.setInfo("Right click: Set the pivot of the selected frame");
+			infoProxy.setInfo("Left click: Set the pivot of the selected frame");
 		else if(isSettingOffsetDirectly())
-			infoProxy.setInfo("Right click: Set the offset for this frame from a point");
+			infoProxy.setInfo("Left click: Set the offset for this frame from a point");
 		else if(isSettingOffsetWithRelativePos())
-			infoProxy.setInfo("Right click & drag: Set the offset for this frame as the vector between two arbitrary points");
+			infoProxy.setInfo("Left click & drag: Set the offset for this frame as the vector between two arbitrary points");
 		else if(isSettingOffsetWithTemporaryPivot())
 			{} //The relevant button handles the info message
 		else

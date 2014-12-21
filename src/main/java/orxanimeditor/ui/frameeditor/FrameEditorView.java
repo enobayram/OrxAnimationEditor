@@ -188,7 +188,7 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 	@Override public void mouseDragged(MouseEvent e) {
 		Frame selected = getSelectedFrame();
 		if(selected==null) return;
-		if((e.getModifiersEx() & MouseEvent.BUTTON3_DOWN_MASK) == MouseEvent.BUTTON3_DOWN_MASK) {
+		if((e.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) == MouseEvent.BUTTON1_DOWN_MASK) {
 			if(parent.isSettingOffsetDirectly()) 
 				handleEditOffset(selected,e);			
 			if(parent.isSettingOffsetWithRelativePos())
@@ -231,7 +231,7 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 		Frame selected  = getSelectedFrame();
 		if(selected==null) return;
 	
-		if(e.getButton() == MouseEvent.BUTTON3) {
+		if(e.getButton() == MouseEvent.BUTTON1) {
 			if(parent.isSettingOffsetDirectly()) {
 			    	handleEditOffset(selected, e);
 			}
