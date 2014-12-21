@@ -47,6 +47,7 @@ public class LockRectangleButton extends JToggleButton implements ActionListener
 
 	@Override
 	public void selectionChanged(Object selectedObject) {
+		// FIXME: This button doesn't get enabled/disabled correctly. F.x. selecting an empty frame after a non-empty frame leaves it enabled
 		if(selectedObject instanceof Frame) {
 			selectedFrame = (Frame) selectedObject;
 			if(frameHasProperRectangle())

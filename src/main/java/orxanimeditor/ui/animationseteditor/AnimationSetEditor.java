@@ -165,5 +165,5 @@ public class AnimationSetEditor extends JPanel implements ActionListener, DataLo
 	public void animationSetModified(AnimationSet set) {
 		setsTable.get(set).repaint(20);
 	}
-	
+	//TODO http://java-swing-tips.blogspot.com.tr/2008/09/double-click-on-each-tab-and-change-its.html
 }

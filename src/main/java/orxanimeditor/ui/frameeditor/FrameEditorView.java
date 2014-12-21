@@ -9,6 +9,8 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Stroke;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -20,7 +22,10 @@ import java.io.IOException;
 import java.util.LinkedList;
 
 import javax.imageio.ImageIO;
+import javax.swing.AbstractAction;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
@@ -55,6 +60,18 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 		addMouseMotionListener(this);
 		addMouseWheelListener(this);
 		editorFrame.getData().addFrameListener(this);
+		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_MULTIPLY,0), "zoomIn");
+		getActionMap().put("zoomIn", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				zoomIn();
+			}
+		});
+		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DIVIDE,0), "zoomOut");
+		getActionMap().put("zoomOut", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				zoomOut();
+			}
+		});
 	}
 
 	public void paint(java.awt.Graphics g_) {
@@ -321,8 +338,20 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		if(e.getWheelRotation()<=0) zoom*=2;
-		else zoom = Math.max(1, zoom/2);		
+		if(e.getWheelRotation()<=0) zoomIn();
+		else zoomOut();
+	}
+	
+	private void zoomIn() {
+		setZoom(Math.min(64,zoom*2));
+	}
+
+	private void zoomOut() {
+		setZoom(Math.max(1, zoom/2));
+	}
+	
+	private void setZoom(int newVal) {
+		zoom = newVal;
 		setPreferredSize(new Dimension(image.getWidth()*zoom, image.getHeight()*zoom));
 		setSize(getPreferredSize());
 		editorFrame.getContentPane().repaint(20);
