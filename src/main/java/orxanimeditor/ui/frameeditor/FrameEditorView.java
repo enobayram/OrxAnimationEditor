@@ -3,10 +3,12 @@ package orxanimeditor.ui.frameeditor;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Stroke;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -100,18 +102,49 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 	private int getViewWidth() {return image.getWidth()*zoom;}
 	private int getViewHeight() {return image.getHeight()*zoom;}
 	
+    private final static Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
+    private final static Stroke dashedBackground = new BasicStroke(3);
+    private final static Stroke normal = new BasicStroke(1);
+    private final static Color  shadow = new Color(0,0,0,0.5f);
+    private final static int handleWidth = 10;
 	private void paintFrame(Graphics g_, Frame frame) {
 		Graphics2D g = (Graphics2D) g_.create();
-		if(zoom>1)
-			g.setStroke(new BasicStroke(2));
 		if(frame.getImageFile()!= null && frame.getImageFile().getAbsoluteFile().equals(imageFile)) {
 			if(frame.getRectangle()!=null){
-				g.setColor(Color.BLACK);
 				Rectangle rect = frame.properRectangle();
+				
+				int[] xVals = {toScreen(rect.x)-handleWidth/2, toScreen(rect.x+rect.width)+handleWidth/2};
+				int[] yVals = {toScreen(rect.y)-handleWidth/2, toScreen(rect.y+rect.height)+handleWidth/2};
+				for(int x: xVals) {
+					for (int y: yVals) {
+				        g.setStroke(dashedBackground);
+						g.setColor(shadow);
+						g.drawRect(x-handleWidth/2, y-handleWidth/2, handleWidth, handleWidth);
+				        g.setStroke(normal);
+						g.setColor(Color.WHITE);
+						g.drawRect(x-handleWidth/2, y-handleWidth/2, handleWidth, handleWidth);
+					}
+				}
+				
+		        g.setStroke(dashedBackground);
+				g.setColor(shadow);
 				g.drawRect(toScreen(rect.x), toScreen(rect.y), toScreen(rect.width), toScreen(rect.height));
+		        g.setStroke(dashed);
+				g.setColor(Color.WHITE);
+				g.drawRect(toScreen(rect.x), toScreen(rect.y), toScreen(rect.width), toScreen(rect.height));
+
+				int textWidth = g.getFontMetrics().stringWidth(frame.getName());
+				g.setColor(shadow);
+				g.fillRect(toScreen(rect.x)-5, toScreen(rect.y)-5, textWidth+5, 20);
+				g.setColor(Color.WHITE);
 				g.drawString(frame.getName(), toScreen(rect.x), toScreen(rect.y)+10);
 				Point pivot = frame.getPivot();
 				int r = 5;
+				g.setStroke(dashedBackground);
+				g.setColor(shadow);
+				g.drawOval(toScreen(pivot.x-r), toScreen(pivot.y-r), toScreen(2*r), toScreen(2*r));
+				g.setStroke(normal);
+				g.setColor(Color.WHITE);
 				g.drawOval(toScreen(pivot.x-r), toScreen(pivot.y-r), toScreen(2*r), toScreen(2*r));
 				Point offset = frame.getOffset();
 				if(!offset.equals(new Point(0,0))) {
