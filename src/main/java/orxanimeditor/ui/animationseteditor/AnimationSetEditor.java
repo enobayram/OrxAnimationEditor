@@ -7,15 +7,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
 
 import orxanimeditor.data.v1.Animation;
 import orxanimeditor.data.v1.AnimationListener;
@@ -52,6 +56,16 @@ public class AnimationSetEditor extends JPanel implements ActionListener, DataLo
 
 		editor.getData().addAnimationListener(this);
 		editor.getData().addAnimationSetListener(this);
+		
+		animationSets.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("F2"), "RenameSet");
+		animationSets.getActionMap().put("RenameSet", new AbstractAction() {			
+			public void actionPerformed(ActionEvent arg0) {
+				AnimationSetViewer view = (AnimationSetViewer) animationSets.getSelectedComponent();
+				if(view==null) return;
+				String newName = JOptionPane.showInputDialog("Change The Animation Set Name To:", view.set.getName());
+				if(newName!=null) view.set.setName(newName);
+			}
+		});
 	}
 
 	private void prepareToolbar() {
@@ -164,6 +178,7 @@ public class AnimationSetEditor extends JPanel implements ActionListener, DataLo
 	@Override
 	public void animationSetModified(AnimationSet set) {
 		setsTable.get(set).repaint(20);
+		int tabIndex = animationSets.indexOfComponent(setsTable.get(set));
+		animationSets.setTitleAt(tabIndex, set.getName());
 	}
-	//TODO http://java-swing-tips.blogspot.com.tr/2008/09/double-click-on-each-tab-and-change-its.html
 }

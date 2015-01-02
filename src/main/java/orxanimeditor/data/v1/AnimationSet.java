@@ -17,7 +17,7 @@ public class AnimationSet implements Serializable{
 	protected transient EditorData editorData;
 	
 	public AnimationSet(String name) {
-		this.setName(name);
+		this.name = name;
 		init();
 	}
 	
@@ -85,6 +85,7 @@ public class AnimationSet implements Serializable{
 
 	public void setName(String name) {
 		this.name = name;
+		editorData.fireAnimationSetModified(this);
 	}
 
 	public Animation[] getAnimations() {
