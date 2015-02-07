@@ -18,7 +18,6 @@ The Orx Animation Editor has been created with a hope to satisfy the need for mi
 Orx Animation Editor is developed using java and it uses [Gradle](http://gradle.org/) as the build system. In order to compile the project and obtain a runnable jar, all one needs to do is:
 
 * Install [JDK](http://www.oracle.com/technetwork/java/javase/downloads/index.html) (you should be able to run `javac` in your terminal)
-* Install Gradle
-* At the repository root run `gradle jar`
+* At the repository root run `./gradlew jar` (*nix) or `gradlew.bat jar` (Windows)
 
 At this point you should have the runnable jar under the `<repo-root>/build/libs` folder.
