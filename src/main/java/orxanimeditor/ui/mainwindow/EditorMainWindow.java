@@ -102,10 +102,11 @@ public class EditorMainWindow extends JFrame {
 	HelpViewer			helpViewer;
 	
 	public static void main(String[] args) {
+		final String projectFile = args.length > 0 ? args[0] : null;
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				new EditorMainWindow();
+				new EditorMainWindow(projectFile);
 			}
 		});
 	}
@@ -114,7 +115,7 @@ public class EditorMainWindow extends JFrame {
 		return animationManager.getSelectedObjects();
 	}
 	
-	public EditorMainWindow() {
+	public EditorMainWindow(String projectFile) {
 		super("Orx Animation Editor");
 		setData(new EditorData());
 		prepareTree();
@@ -146,14 +147,18 @@ public class EditorMainWindow extends JFrame {
 		
 		editorDataChooser.setFileFilter(new FileNameExtensionFilter("Orx Animation Project", "oap"));
 		targetFolderChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		
-		SetProjectDialog setProjectDialog = new SetProjectDialog(this);
-		setProjectDialog.setLocation(500, 350);
-		setProjectDialog.setVisible(true);
-		
+				
 		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		addWindowListener(windowAdapter);
 		
+		if(projectFile == null) {
+			SetProjectDialog setProjectDialog = new SetProjectDialog(this);
+			setProjectDialog.setLocation(500, 350);
+			setProjectDialog.setVisible(true);			
+		} else {
+			loadProject(new File(projectFile));
+		}
+
 	}
 	
 	public void addSelectionListener(SelectionListener l) {
@@ -247,10 +252,13 @@ public class EditorMainWindow extends JFrame {
 		
 	public void openProjectAction() {
 		if(editorDataChooser.showOpenDialog(EditorMainWindow.this)==JFileChooser.APPROVE_OPTION) {
-			File projectFile = editorDataChooser.getSelectedFile();
-			AnimIO.readEditorData(projectFile,getData());
-			projectChanged();
+			loadProject(editorDataChooser.getSelectedFile());
 		}
+	}
+	
+	public void loadProject(File projectFile) {
+		AnimIO.readEditorData(projectFile,getData());
+		projectChanged();		
 	}
 		
 	public void saveProject() {
