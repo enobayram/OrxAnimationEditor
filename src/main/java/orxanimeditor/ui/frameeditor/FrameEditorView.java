@@ -193,7 +193,7 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 	}
 	
 	private int snap(int snapMe){
-		return java.lang.Math.round( snapMe/parent.SnapSlider.getValue() )*parent.SnapSlider.getValue();
+		return java.lang.Math.round( snapMe/parent.snapSlider.getValue() )*parent.snapSlider.getValue();
 	}
 	
 	@Override public void mouseDragged(MouseEvent e) {

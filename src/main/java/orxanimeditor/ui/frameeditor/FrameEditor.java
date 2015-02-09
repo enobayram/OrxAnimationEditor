@@ -1,9 +1,7 @@
 package orxanimeditor.ui.frameeditor;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
@@ -11,40 +9,28 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.File;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
-import javax.print.attribute.HashAttributeSet;
 import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
 import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
-import javax.swing.border.BevelBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 
 import orxanimeditor.data.v1.Frame;
 import orxanimeditor.ui.SelectionListener;
 import orxanimeditor.ui.ToolBar;
-import orxanimeditor.ui.mainwindow.EditorMainWindow;
 import orxanimeditor.ui.mainwindow.AreaInfoProxy;
+import orxanimeditor.ui.mainwindow.EditorMainWindow;
 import orxanimeditor.ui.mainwindow.ZoomingViewCoordinateUpdater;
 
 public class FrameEditor extends JPanel implements SelectionListener, ActionListener {
 	EditorMainWindow editor;
 	JTabbedPane views;
 	ToolBar toolbar;
-	JSlider SnapSlider;
+	JSlider snapSlider;
 	LockRectangleButton lockRectButton;
 	JToggleButton editRectButton;
 	JToggleButton setPivotButton;
@@ -96,19 +82,9 @@ public class FrameEditor extends JPanel implements SelectionListener, ActionList
 	private void prepareToolbar() {
 		toolbar = new ToolBar();
 
-		SnapSlider = new JSlider(JSlider.HORIZONTAL, 1, 36, 1);
-		SnapSlider.setOpaque(false);
-		SnapSlider.setMajorTickSpacing(5);
-		SnapSlider.setMinorTickSpacing(1);
-		SnapSlider.setPaintTicks(true);
-		SnapSlider.setPaintLabels(true);
-		SnapSlider.setSnapToTicks(true);		
-
-		SnapSlider.setToolTipText("<html>Change the snap size:<br>" +
-				"The snap size is used while modifying <br>" +
-				"the rectangle for a frame, if the snap <br>" +
-				"size is n, the editing will snap to the nth pixel.</html>");		
-		toolbar.add(SnapSlider);
+		snapSlider = new SnapSlider(editor.getInfoProxy());
+		
+		toolbar.add(snapSlider);
 
 		toolbar.addSeparator();
 				
