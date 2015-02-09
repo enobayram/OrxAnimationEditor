@@ -6,6 +6,9 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -17,6 +20,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSlider;
@@ -34,6 +38,7 @@ import orxanimeditor.ui.SelectionListener;
 import orxanimeditor.ui.ToolBar;
 import orxanimeditor.ui.mainwindow.EditorMainWindow;
 import orxanimeditor.ui.mainwindow.AreaInfoProxy;
+import orxanimeditor.ui.mainwindow.ZoomingViewCoordinateUpdater;
 
 public class FrameEditor extends JPanel implements SelectionListener, ActionListener {
 	EditorMainWindow editor;
@@ -53,7 +58,7 @@ public class FrameEditor extends JPanel implements SelectionListener, ActionList
 	Map<File, JScrollPane> openedFiles = new HashMap<File, JScrollPane>();
 	public FrameEditor(EditorMainWindow editorFrame) {
 		editor = editorFrame;
-		views = new JTabbedPane();
+		views = new JTabbedPane();		
 		infoProxy = editor.getInfoProxy();
 		prepareToolbar();
 		setLayout(new BorderLayout());
@@ -167,6 +172,25 @@ public class FrameEditor extends JPanel implements SelectionListener, ActionList
 	public void openImage(Frame frame) {
 		if(frame!=null && frame.getImageFile()!=null) 
 			editor.frameEditor.openImage(frame.getImageFile().getAbsoluteFile());
+
+	}
+	
+	class ScrollZoomHandler implements MouseWheelListener {
+		@Override
+		public void mouseWheelMoved(MouseWheelEvent e) {
+			JScrollPane scrollPane = (JScrollPane) e.getSource();
+			if(e.getModifiers() == InputEvent.CTRL_MASK) {
+				FrameEditorView view = (FrameEditorView) scrollPane.getViewport().getView();
+				if(e.getWheelRotation()<=0) view.zoomIn();
+				else view.zoomOut();			
+			} else if(e.getModifiers() == InputEvent.SHIFT_MASK) {
+				JScrollBar scrollBar = scrollPane.getHorizontalScrollBar();
+				scrollBar.setValue(scrollBar.getValue() + e.getWheelRotation()*10);
+			} else {
+				JScrollBar scrollBar = scrollPane.getVerticalScrollBar();
+				scrollBar.setValue(scrollBar.getValue() + e.getWheelRotation()*10);
+			}
+		}	
 	}
 	
 	public void openImage(File file) {
@@ -176,9 +200,12 @@ public class FrameEditor extends JPanel implements SelectionListener, ActionList
 		} else {
 			FrameEditorView editorPanel = new FrameEditorView(file, editor);
 			JScrollPane newPanel = new JScrollPane(editorPanel);
+			newPanel.addMouseWheelListener(new ScrollZoomHandler());
+			newPanel.setWheelScrollingEnabled(false);
 			views.add(newPanel,file.getName());
 			openedFiles.put(file, newPanel);
 			editorPanel.addMouseListener(infoProxy);
+			new ZoomingViewCoordinateUpdater(editorPanel, editor.getInfoBar());
 		}
 	}
 

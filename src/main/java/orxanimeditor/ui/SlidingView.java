@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -13,7 +14,7 @@ import java.awt.event.MouseWheelListener;
 
 import javax.swing.JPanel;
 
-public abstract class SlidingView extends JPanel implements MouseWheelListener, MouseMotionListener{
+public abstract class SlidingView extends JPanel implements MouseWheelListener, MouseMotionListener, ZoomingView {
 	protected double viewOffsetX = 0;
 	protected double viewOffsetY = 0;
 	protected double viewScale = 1;
@@ -51,8 +52,14 @@ public abstract class SlidingView extends JPanel implements MouseWheelListener, 
 
 	@Override
 	public final void mouseWheelMoved(MouseWheelEvent e) {
-		if(e.getWheelRotation()<=0) viewScale*=scaleMultiplier;
-		else viewScale = Math.max(minScale, viewScale/scaleMultiplier);
+		if(e.getModifiers() == InputEvent.CTRL_MASK) {
+			if(e.getWheelRotation()<=0) viewScale*=scaleMultiplier;
+			else viewScale = Math.max(minScale, viewScale/scaleMultiplier);			
+		} else if (e.getModifiers() == InputEvent.SHIFT_MASK) {
+			addOffset(-e.getWheelRotation()*10, 0);
+		} else {
+			addOffset(0, -e.getWheelRotation()*10);			
+		}
 		repaint(20);
 	}
 
@@ -60,13 +67,17 @@ public abstract class SlidingView extends JPanel implements MouseWheelListener, 
 	public final void mouseDragged(MouseEvent e) {
 		if((e.getModifiersEx()&MouseEvent.BUTTON1_DOWN_MASK) == MouseEvent.BUTTON1_DOWN_MASK) {
 			Point newPoint = e.getPoint();
-			double mouseOffsetX = newPoint.x-lastMousePoint.x, mouseOffsetY = newPoint.y-lastMousePoint.y;
-			viewOffsetX += mouseOffsetX/viewScale;
-			viewOffsetY += mouseOffsetY/viewScale;
 			lastMousePoint = newPoint;
-			requestFocus();
-			repaint(20);
+			double mouseOffsetX = newPoint.x-lastMousePoint.x, mouseOffsetY = newPoint.y-lastMousePoint.y;
+			addOffset(mouseOffsetX, mouseOffsetY);
+			repaint(20);		
 		}
+	}
+	
+	private void addOffset(double xInScreen, double yInScreen) {	
+		viewOffsetX += xInScreen/viewScale;
+		viewOffsetY += yInScreen/viewScale;
+		requestFocus();
 	}
 
 	@Override

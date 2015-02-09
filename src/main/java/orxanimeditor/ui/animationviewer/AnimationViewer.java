@@ -1,6 +1,9 @@
 package orxanimeditor.ui.animationviewer;
 
 import java.awt.Dimension;
+import java.awt.event.InputEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -8,7 +11,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 
 import orxanimeditor.ui.mainwindow.EditorMainWindow;
-import orxanimeditor.ui.mainwindow.SlidingViewCoordinateUpdater;
+import orxanimeditor.ui.mainwindow.ZoomingViewCoordinateUpdater;
 
 public class AnimationViewer extends JPanel {
 	JSplitPane mainPane;
@@ -17,7 +20,7 @@ public class AnimationViewer extends JPanel {
 	EditorMainWindow editor;
 	ContentProvider selectionProvider;
 	ContentProvider queueProvider;
-	SlidingViewCoordinateUpdater coordinateUpdater;
+	ZoomingViewCoordinateUpdater coordinateUpdater;
 	
 	public AnimationViewer(EditorMainWindow editor, SelectionFrameSequence selectionSequence) {
 		this.editor = editor;
@@ -30,7 +33,7 @@ public class AnimationViewer extends JPanel {
 		
 		display = new AnimationViewerDisplay();		
 		display.setTransferHandler(animationQueue.getTransferHandler());
-		coordinateUpdater = new SlidingViewCoordinateUpdater(display, editor.getInfoBar());
+		coordinateUpdater = new ZoomingViewCoordinateUpdater(display, editor.getInfoBar());
 		
 		mainPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, animationQueueScroller, display);
 		add(mainPane);

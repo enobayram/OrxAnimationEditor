@@ -3,7 +3,6 @@ package orxanimeditor.ui.frameeditor;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -14,31 +13,22 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
-import java.util.LinkedList;
 
-import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
-
-import com.sun.corba.se.impl.interceptors.PICurrent;
 
 import orxanimeditor.data.v1.Animation;
 import orxanimeditor.data.v1.Frame;
 import orxanimeditor.data.v1.FrameListener;
 import orxanimeditor.ui.Utilities;
+import orxanimeditor.ui.ZoomingView;
 import orxanimeditor.ui.mainwindow.EditorMainWindow;
 
-public class FrameEditorView extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener, FrameListener{
+public class FrameEditorView extends JPanel implements MouseListener, MouseMotionListener, FrameListener, ZoomingView {
 	BufferedImage 		image;
 	File		  		imageFile;
 	EditorMainWindow 	editorFrame;
@@ -58,7 +48,6 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 		setPreferredSize(new Dimension(image.getWidth(), image.getHeight()));
 		addMouseListener(this);
 		addMouseMotionListener(this);
-		addMouseWheelListener(this);
 		editorFrame.getData().addFrameListener(this);
 		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_MULTIPLY,0), "zoomIn");
 		getActionMap().put("zoomIn", new AbstractAction() {
@@ -198,6 +187,11 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 		return new Point(toScreen(in.x), toScreen(in.y));
 	}
 	
+	@Override
+	public Point screenToWorld(Point point) {
+		return new Point(point.x/zoom, point.y/zoom);
+	}
+	
 	private int snap(int snapMe){
 		return java.lang.Math.round( snapMe/parent.SnapSlider.getValue() )*parent.SnapSlider.getValue();
 	}
@@ -335,18 +329,12 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 	private Frame getSelectedFrame() {
 		return editorFrame.animationManager.getSelectedFrame();
 	}
-
-	@Override
-	public void mouseWheelMoved(MouseWheelEvent e) {
-		if(e.getWheelRotation()<=0) zoomIn();
-		else zoomOut();
-	}
 	
-	private void zoomIn() {
+	protected void zoomIn() {
 		setZoom(Math.min(64,zoom*2));
 	}
 
-	private void zoomOut() {
+	protected void zoomOut() {
 		setZoom(Math.max(1, zoom/2));
 	}
 	

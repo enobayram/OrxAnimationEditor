@@ -9,14 +9,15 @@ import java.awt.event.MouseMotionListener;
 import com.sun.xml.internal.fastinfoset.algorithm.BuiltInEncodingAlgorithm.WordListener;
 
 import orxanimeditor.ui.SlidingView;
+import orxanimeditor.ui.ZoomingView;
 import sun.security.acl.WorldGroupImpl;
 
-public class SlidingViewCoordinateUpdater extends MouseAdapter implements MouseMotionListener {
+public class ZoomingViewCoordinateUpdater extends MouseAdapter implements MouseMotionListener {
 
-	SlidingView view;
+	ZoomingView view;
 	InfoBar infoBar;
 	
-	public SlidingViewCoordinateUpdater(SlidingView view, InfoBar infoBar) {
+	public ZoomingViewCoordinateUpdater(ZoomingView view, InfoBar infoBar) {
 		this.infoBar = infoBar;
 		this.view=view;
 		view.addMouseListener(this);
