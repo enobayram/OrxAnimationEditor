@@ -164,6 +164,10 @@ public class EditorMainWindow extends JFrame {
 	public void addSelectionListener(SelectionListener l) {
 		animationManager.addSelectionListener(l);		
 	}
+	
+	public InfoBar getInfoBar() {
+		return infoBar;
+	}
 
 	public AreaInfoProxy getInfoProxy() {
 		return new AreaInfoProxy(infoBar);

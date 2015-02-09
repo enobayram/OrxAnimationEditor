@@ -8,6 +8,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 
 import orxanimeditor.ui.mainwindow.EditorMainWindow;
+import orxanimeditor.ui.mainwindow.SlidingViewCoordinateUpdater;
 
 public class AnimationViewer extends JPanel {
 	JSplitPane mainPane;
@@ -16,6 +17,7 @@ public class AnimationViewer extends JPanel {
 	EditorMainWindow editor;
 	ContentProvider selectionProvider;
 	ContentProvider queueProvider;
+	SlidingViewCoordinateUpdater coordinateUpdater;
 	
 	public AnimationViewer(EditorMainWindow editor, SelectionFrameSequence selectionSequence) {
 		this.editor = editor;
@@ -26,8 +28,9 @@ public class AnimationViewer extends JPanel {
 		animationQueueScroller.setPreferredSize(new Dimension(150, 100));
 
 		
-		display = new AnimationViewerDisplay();
+		display = new AnimationViewerDisplay();		
 		display.setTransferHandler(animationQueue.getTransferHandler());
+		coordinateUpdater = new SlidingViewCoordinateUpdater(display, editor.getInfoBar());
 		
 		mainPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, animationQueueScroller, display);
 		add(mainPane);
