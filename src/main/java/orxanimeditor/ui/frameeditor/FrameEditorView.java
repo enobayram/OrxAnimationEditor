@@ -27,6 +27,7 @@ import orxanimeditor.data.v1.FrameListener;
 import orxanimeditor.ui.Utilities;
 import orxanimeditor.ui.ZoomingView;
 import orxanimeditor.ui.mainwindow.EditorMainWindow;
+import orxanimeditor.ui.mainwindow.MousePressInfoProxy;
 
 public class FrameEditorView extends JPanel implements MouseListener, MouseMotionListener, FrameListener, ZoomingView {
 	BufferedImage 		image;
@@ -38,12 +39,15 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 
 	Point				freeOffsetStart;
 	Point				freeOffsetEnd;
+	MousePressInfoProxy infoProxy;
 	
 	public FrameEditorView(File file, EditorMainWindow editorFrame) {
 		this.editorFrame = editorFrame;
 		imageFile = file;
 		image = EditorMainWindow.imageManager.openImage(file);
 		parent = editorFrame.frameEditor;
+		infoProxy = new MousePressInfoProxy(editorFrame.getInfoBar(), MouseEvent.BUTTON1);
+		addMouseListener(infoProxy);
 		
 		setPreferredSize(new Dimension(image.getWidth(), image.getHeight()));
 		addMouseListener(this);
@@ -224,6 +228,7 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 				Rectangle newRectangle = new Rectangle(x,y,dx,dy);
 				selected.setRectangle(newRectangle);
 				selected.setImageFile(editorFrame.getData().getProject().getRelativeFile(imageFile));
+				showRectangleInfo(rect);
 			}
 			if(parent.isSettingOffsetWithTemporaryPivot()) {
 				if(parent.temporaryPivotOffsetButton.getPivot2()!=null) {
@@ -260,9 +265,11 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 				selected.setPivot(new Point(getViewX(e)+PivotDX,getViewY(e)+PivotDY));					
 			}
 			if(parent.isEditingRectangle()) {
-				selected.setRectangle(new Rectangle(getViewX(e),getViewY(e),0,0));
+				Rectangle rect = new Rectangle(getViewX(e),getViewY(e),0,0);
+				selected.setRectangle(rect);
 				selected.setImageFile(editorFrame.getData().getProject().getRelativeFile(imageFile));
 				selected.setPivot(null);
+				showRectangleInfo(rect);
 			}
 			if(parent.isSettingOffsetWithTemporaryPivot()) {
 				if(parent.temporaryPivotOffsetButton.getPivot1()==null) {
@@ -274,6 +281,17 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 			}
 		}
 		repaint(20);
+	}
+
+	static final String ratioFormat = "%.2f";
+	private void showRectangleInfo(Rectangle rect) {
+		double ratioX = rect.height == 0 ? 1 : Math.min((double)(rect.width)/rect.height,1);
+		double ratioY = rect.width  == 0 ? 1 : Math.min((double)(rect.height)/rect.width,1);
+		String ratioXString = String.format(ratioFormat, ratioX);
+		String ratioYString = String.format(ratioFormat, ratioY);
+		infoProxy.pushInfo("Rectangle: Start("+rect.x+","+rect.y+") "
+				+ "Size("+rect.width+" x "+rect.height+") "
+				+ "Ratio("+ratioXString+":"+ratioYString+")");
 	}
 
 	private void handleEditOffset(Frame selected, MouseEvent e) {
@@ -324,6 +342,7 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 				repaint(20);
 			}
 		}
+		infoProxy.setInfo("");
 	}
 	
 	private Frame getSelectedFrame() {

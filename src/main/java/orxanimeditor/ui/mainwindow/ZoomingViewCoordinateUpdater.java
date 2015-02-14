@@ -24,7 +24,9 @@ public class ZoomingViewCoordinateUpdater extends MouseAdapter implements MouseM
 		view.addMouseMotionListener(this);
 	}
 	
-	@Override public void mouseDragged(MouseEvent arg0) {}
+	@Override public void mouseDragged(MouseEvent arg0) {
+		mouseMoved(arg0);
+	}
 
 	@Override
 	public void mouseMoved(MouseEvent arg0) {
