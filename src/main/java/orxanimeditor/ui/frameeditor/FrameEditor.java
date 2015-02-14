@@ -55,11 +55,13 @@ public class FrameEditor extends JPanel implements SelectionListener, ActionList
 		editor.addSelectionListener(this);
 		setInfo();
 		setTransferHandler(new FrameEditorViewTransferHandler());
-		
+		views.addMouseListener(infoProxy);
 	}
 
 	private void setInfo() {
-		if(editor.animationManager.getSelectedFrame()==null)
+		if(views.getTabCount() == 0) 
+			infoProxy.setInfo("No image loaded; open an image (File Menu) or select a frame with an attached image.");
+		else if(editor.animationManager.getSelectedFrame()==null)
 			infoProxy.setInfo("Select a frame to edit");
 		else if(isEditingRectangle())
 			infoProxy.setInfo("Left click & drag: Draw the rectangle for the selected frame");
@@ -183,6 +185,7 @@ public class FrameEditor extends JPanel implements SelectionListener, ActionList
 			editorPanel.addMouseListener(infoProxy);
 			new ZoomingViewCoordinateUpdater(editorPanel, editor.getInfoBar());
 		}
+		setInfo();
 	}
 
 	@Override
