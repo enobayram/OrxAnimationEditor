@@ -285,12 +285,14 @@ public class FrameEditorView extends JPanel implements MouseListener, MouseMotio
 
 	static final String ratioFormat = "%.2f";
 	private void showRectangleInfo(Rectangle rect) {
-		double ratioX = rect.height == 0 ? 1 : Math.min((double)(rect.width)/rect.height,1);
-		double ratioY = rect.width  == 0 ? 1 : Math.min((double)(rect.height)/rect.width,1);
+		double width = Math.abs(rect.width);
+		double height = Math.abs(rect.height);
+		double ratioX = height == 0 ? 1 : Math.min(width/height,1);
+		double ratioY = width  == 0 ? 1 : Math.min(height/width,1);
 		String ratioXString = String.format(ratioFormat, ratioX);
 		String ratioYString = String.format(ratioFormat, ratioY);
 		infoProxy.pushInfo("Rectangle: Start("+rect.x+","+rect.y+") "
-				+ "Size("+rect.width+" x "+rect.height+") "
+				+ "Size("+width+" x "+height+") "
 				+ "Ratio("+ratioXString+":"+ratioYString+")");
 	}
 
