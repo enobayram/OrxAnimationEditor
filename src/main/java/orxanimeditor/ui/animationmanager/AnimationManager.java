@@ -44,6 +44,7 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 	ToolBar  toolbar;
 	private AnimationTree	  animationTree;
 	public AnimationTreeModel animationTreeModel;
+	private AnimationTreeInfoProxy treeInfoProxy;
 		
 	//ImageIcon image = (new ImageIcon(getClass().getResource("yourpackage/mypackage/image.gif")));
 	
@@ -72,6 +73,7 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 		prepareToolbar();
 		prepareTree();
 		
+		treeInfoProxy = new AnimationTreeInfoProxy(animationTree, editorFrame.getInfoProxy());
 		setLayout(new BorderLayout());
 		add(toolbar, BorderLayout.NORTH);
 		JScrollPane pane = new JScrollPane(animationTree);
@@ -179,6 +181,7 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 	}
 
 
+	public static final int JUMPTOFRAMEIMAGEKEY = KeyEvent.VK_SPACE;
 	@Override
 	public void keyPressed(KeyEvent e) {
 
@@ -202,7 +205,7 @@ public class AnimationManager extends JPanel implements ActionListener, KeyListe
 			}
 		} else {
 			switch (e.getKeyCode()) {
-			case KeyEvent.VK_SPACE:
+			case JUMPTOFRAMEIMAGEKEY:
 				Frame selectedFrame = getSelectedFrame();
 				editor.frameEditor.openImage(selectedFrame);
 				break;
