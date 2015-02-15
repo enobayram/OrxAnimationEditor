@@ -1,6 +1,8 @@
 Orx Animation Editor
 ====================
 
+![Screenshot](https://bitbucket.org/orx/animationeditor/raw/screenshots/screenshot.png "Screenshot")
+
 The Orx Animation Editor has been created with a hope to satisfy the need for minimal animation editing without touching Orx config files. Skeletal animations are, as of now, out of the scope of this editor.
 
 ### Main Features:
