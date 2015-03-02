@@ -1,7 +1,28 @@
 apply plugin: 'java'
 
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.dockingframes', name: 'docking-frames-common', version: '1.1.1'
+}
+
 jar {
+
+    from {
+        configurations.runtime.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+        configurations.compile.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+
     manifest {
         attributes 'Main-Class': 'orxanimeditor.ui.mainwindow.EditorMainWindow'
     }
+    
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
 }
+

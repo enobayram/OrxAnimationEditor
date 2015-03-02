@@ -13,6 +13,7 @@
 package orxanimeditor.ui.mainwindow;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.MenuItem;
@@ -38,6 +39,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
@@ -48,6 +50,10 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import bibliothek.gui.dock.common.CControl;
+import bibliothek.gui.dock.common.CGrid;
+import bibliothek.gui.dock.common.DefaultSingleCDockable;
+import bibliothek.gui.dock.common.SingleCDockable;
 import orxanimeditor.data.v1.Animation;
 import orxanimeditor.data.v1.EditorData;
 import orxanimeditor.data.v1.Frame;
@@ -115,6 +121,17 @@ public class EditorMainWindow extends JFrame {
 		return animationManager.getSelectedObjects();
 	}
 	
+	private SingleCDockable create( String id, String title, String iconName, JPanel panel){
+		DefaultSingleCDockable dockable = new DefaultSingleCDockable( id, title );
+		dockable.setTitleText( title );
+		dockable.setCloseable( false );
+		ImageIcon icon = getImageIcon("icons/"+iconName);
+		dockable.setTitleIcon(icon);
+		dockable.add( panel );
+		
+		return dockable;
+	}
+	
 	public EditorMainWindow(String projectFile) {
 		super("Orx Animation Editor");
 		setData(new EditorData());
@@ -132,12 +149,16 @@ public class EditorMainWindow extends JFrame {
 		addSelectionListener(selectionSequence);
 		animationViewer  	= new AnimationViewer(this, selectionSequence);
 
+		CControl control = new CControl(this);
 		
-		JSplitPane leftSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, animationManager, animationSetEditor);
-		JSplitPane mainRightSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, frameEditor, animationViewer);
-		JSplitPane mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftSplitPane, mainRightSplitPane);
+		CGrid grid = new CGrid(control);
+		grid.add(0, 0, 1, 1, create("animationManager", "Animation Manager", "Tree.png", animationManager));
+		grid.add(0, 1, 1, 1, create("animationSetEditor", "Animation Set Editor", "AnimSetSmall.png", animationSetEditor));
+		grid.add(1, 0, 2, 2, create("frameEditor", "Frame Editor", "FrameSmall.png", frameEditor));
+		grid.add(1, 1, 1, 1, create("animationViewer", "Animation Viewer", "OffsetIconSmall.png", animationViewer));
+		control.getContentArea().deploy(grid);
 		prepareMenuBar();
-		getContentPane().add(mainSplitPane, BorderLayout.CENTER);
+		getContentPane().add(control.getContentArea(), BorderLayout.CENTER);
 		getContentPane().add(menuBar, BorderLayout.NORTH);
 		getContentPane().add(infoBar, BorderLayout.SOUTH);
 		pack();
